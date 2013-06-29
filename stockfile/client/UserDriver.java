@@ -8,6 +8,7 @@ import java.rmi.UnknownHostException;
 import stockfile.api.UserApi;
 import static stockfile.client.AbstractClient.connectToServer;
 import stockfile.client.protocol.UserProtocol;
+import stockfile.api.FileScanner;
 
 /**
  * UserDriver class is the driver for User type client
@@ -33,6 +34,7 @@ public class UserDriver extends AbstractClient
                 UserSession.setRemoteApi((UserApi) UserSession.registry.lookup(UserApi.class.getSimpleName()));
                 System.out.println("Welcome to Stock File @ " + UserSession.getHost());
                 isConnected = true;
+
             }
             catch (UnknownHostException uhex)
             {
@@ -45,7 +47,15 @@ public class UserDriver extends AbstractClient
 
         }
 
+        //Create a thread to run FileScanner class separetly to update stock prices frequently
+        Thread userFileScannerThread = new Thread(new FileScanner("C:\\Users\\Bahman\\Documents\\User StockFile Repo"));
+
+        //Start the FileScanner thread
+        userFileScannerThread.start();
+
+
         //Runs the protocol
         run();
+
     }
 }

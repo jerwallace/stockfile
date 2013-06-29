@@ -1,5 +1,6 @@
 package stockfile.server;
 
+import stockfile.api.FileScanner;
 import stockfile.api.UserApi;
 import java.rmi.AlreadyBoundException;
 import java.rmi.Remote;
@@ -17,7 +18,7 @@ import java.util.Scanner;
 public class ServerDriver
 {
 
-    private static final int PORT = 1099;
+    private static final int PORT = 4099;
     private static Registry registry;
     private SaveState stateTools;
 
@@ -93,7 +94,7 @@ public class ServerDriver
         }
 
         //Create a thread to run FileScanner class separetly to update stock prices frequently
-        Thread fileScannerThread = new Thread(new FileScanner());
+        Thread fileScannerThread = new Thread(new FileScanner("C:\\Users\\Bahman\\Documents\\Server StockFile Repo"));
 
         //Start the FileScanner thread
         fileScannerThread.start();

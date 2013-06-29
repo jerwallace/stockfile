@@ -2,10 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package stockfile.server;
+package stockfile.api;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
@@ -21,16 +22,23 @@ public class FileScanner implements Runnable
 
     Collection files;
     File thisDir;
-    String directory = "data/stockfile_repos";
+    String directory;
 
     public void collectFiles()
     {
         thisDir = new File(directory);
         files = FileUtils.listFiles(
                 thisDir,
+                //new RegexFileFilter("^*"),
                 new RegexFileFilter("^(.*?)"),
                 DirectoryFileFilter.DIRECTORY);
-        System.out.println(files);
+        Iterator iterator = files.iterator();
+        while (iterator.hasNext())
+        {
+            StockFile thisFile = new StockFile(iterator.next().toString());
+//            FileList.getInstance().getFileList().put(thisFile.getName(), thisFile);
+            System.out.println(thisFile);
+        }
     }
 
     /**
@@ -43,8 +51,8 @@ public class FileScanner implements Runnable
         {
             try
             {
+//                System.out.println("filescanner");
                 collectFiles();
-
                 Thread.sleep(1200);
             }
             catch (InterruptedException ex)
@@ -52,5 +60,11 @@ public class FileScanner implements Runnable
                 Logger.getLogger(FileScanner.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    public FileScanner(String directory)
+    {
+
+        this.directory = directory;
     }
 }

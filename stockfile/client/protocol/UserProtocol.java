@@ -2,6 +2,7 @@ package stockfile.client.protocol;
 
 import java.rmi.RemoteException;
 import stockfile.api.User;
+import stockfile.api.UserApi;
 import stockfile.client.UserSession;
 
 /**
@@ -14,22 +15,6 @@ public class UserProtocol extends AbstractProtocol
     // This is the menu screen first displayed when the user is logged in.
     //private String menu = "1. Buy Stock    2. Sell Stock   3. Query Stock  4. Print Stock  5. Logout";
     UserSession thisSession = UserSession.getInstance();
-
-    /**
-     * This method accepts a number and issues a state change.
-     * <p/>
-     * @param input The number that corresponds to the menu.
-     * <p/>
-     * @throws InvalidCommandException When an invalid number is selected.
-     */
-    @Override
-    public void toggleStateByCommand(int input) throws CustomException
-    {
-        switch (input)
-        {
-
-        }
-    }
 
     /**
      * getInstruction will return a question to the client based on a state.
@@ -93,12 +78,16 @@ public class UserProtocol extends AbstractProtocol
 
                     currentUser = thisSession.getRemoteApi().getUser(thisSession.getUsername());
                     return "User " + thisSession.getUsername();
-                case SELECT_COMMAND:
-                    toggleStateByCommand(Integer.parseInt(input));
-                    break;
+                default:
+                    return "";
             }
-        }
-        return "";
 
+        }
+
+    }
+
+    public void sync()
+    {
+        ((UserApi) thisSession.getRemoteApi()).getServerFileList();
     }
 }

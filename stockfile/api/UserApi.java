@@ -6,4 +6,6 @@ package stockfile.api;
  */
 public interface UserApi extends AbstractApi
 {
+
+    public FileList getServerFileList();
 }
