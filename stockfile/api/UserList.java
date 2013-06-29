@@ -9,7 +9,6 @@ import java.util.Map;
 public class UserList
 {
 
-    //Map containing "key=userName" &  "value=User Object"
     private Map<String, User> userList;
     private static UserList currentUserList;
 
