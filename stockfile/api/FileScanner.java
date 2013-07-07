@@ -36,7 +36,7 @@ public class FileScanner implements Runnable
         while (iterator.hasNext())
         {
             StockFile thisFile = new StockFile(iterator.next().toString());
-//            FileList.getInstance().getFileList().put(thisFile.getName(), thisFile);
+//          FileList.getInstance().getFileList().put(thisFile.getName(), thisFile);
             System.out.println(thisFile);
         }
     }
@@ -64,7 +64,6 @@ public class FileScanner implements Runnable
 
     public FileScanner(String directory)
     {
-
         this.directory = directory;
     }
 }
