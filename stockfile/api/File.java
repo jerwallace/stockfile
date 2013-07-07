@@ -1,6 +1,6 @@
 package stockfile.api;
 
-import java.util.Date;
+import org.joda.time.DateTime;
 
 /**
  *
@@ -11,10 +11,10 @@ public class File
 
     private String filePath;
     private String fileName;
-    private Date lastModified;
+    private DateTime lastModified;
     private float version;
 
-    public File(String path, String name, Date lastMod, float ver)
+    public File(String path, String name, DateTime lastMod, float ver)
     {
         this.filePath = path;
         this.fileName = name;
@@ -27,7 +27,7 @@ public class File
         return fileName;
     }
 
-    public Date getLastModified()
+    public DateTime getLastModified()
     {
         return lastModified;
     }
@@ -42,7 +42,7 @@ public class File
         this.fileName = fileName;
     }
 
-    public void setLastModified(Date lastModified)
+    public void setLastModified(DateTime lastModified)
     {
         this.lastModified = lastModified;
     }
