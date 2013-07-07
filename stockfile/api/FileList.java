@@ -1,8 +1,5 @@
 package stockfile.api;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Class describing the Singleton FileList
  */
@@ -10,14 +7,15 @@ public class FileList
 {
 
     private static FileList currentFileList = null;
-    private static HashMap fileList;
+    private static Manifest manifest;
 
     /**
      * Singleton class constructor
      */
     protected FileList()
     {
-        fileList = new HashMap<String, StockFile>();
+        //fileList = new HashMap<String, StockFile>();
+        FileList.manifest = new Manifest();
     }
 
     /**
@@ -47,9 +45,4 @@ public class FileList
 
         return currentFileList;
     }
-//
-//    public HashMap<String, StockFile> getFileList()
-//    {
-//        return this.fileList;
-//    }
 }
