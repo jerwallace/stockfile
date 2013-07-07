@@ -1,6 +1,7 @@
 package stockfile.api;
 
 import java.io.Serializable;
+import org.joda.time.DateTime;
 
 /**
  * Class describing a User object
@@ -9,8 +10,15 @@ public class User implements Serializable
 {
 
     private String userName;
+	private String first_name;
+	private String last_name;
+	private String email;
+	private DateTime date_joined;
     private String homeDirectory;
 
+	public User() {
+		this.userName = "";
+	}
     /**
      * Default public constructor for the User class
      * <p/>
