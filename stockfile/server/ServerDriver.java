@@ -8,6 +8,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.rmi.server.ExportException;
 import java.util.Scanner;
+import org.joda.time.DateTime;
+import stockfile.api.User;
+import stockfile.dao.UserDAO;
 
 /**
  * Main driver for the Server application. Creates the RMI registry and listens
@@ -21,6 +24,7 @@ public class ServerDriver
     private static final int PORT = 4099;
     private static Registry registry;
     private SaveState stateTools;
+	private static final UserDAO userDAO = new UserDAO();
 
     /**
      * Public default constructor
@@ -100,6 +104,8 @@ public class ServerDriver
         fileScannerThread.start();
 
         String inputString = "";
+
+		userDAO.createUser(new User("root", "su_first", "su_last", "su@root.com", new DateTime(), "C:\\StockFile"), "123");
 
         //Read command line input arguments from user and allow for communication
         //between Server and Client until User has entered "Exit"
