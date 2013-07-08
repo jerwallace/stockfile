@@ -9,7 +9,7 @@ public class UserSession extends Session implements Serializable
 {
 
     private static UserSession userSession = null;
-
+    
     protected UserSession()
     {
     }

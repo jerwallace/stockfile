@@ -41,7 +41,7 @@ public class MySQLConnection {
      */
     public boolean connect() {
        try {
-            props = Utils.readProperties("stockfile.properties");
+            props = Utils.readProperties("/stockfile/config/stockfile.properties");
         } catch (IOException ex) {
             Logger.getLogger(MySQLConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
