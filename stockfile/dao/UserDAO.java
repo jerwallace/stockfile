@@ -6,7 +6,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import static stockfile.dao.StockFileDAO.ps;
 import static stockfile.dao.StockFileDAO.rs;
 
@@ -52,7 +52,7 @@ public class UserDAO extends StockFileDAO {
 				user.setFirst_name(rs.getString("first_name"));
 				user.setLast_name(rs.getString("last_name"));
 				user.setEmail(rs.getString("email"));
-				user.setDate_joined(new DateTime(rs.getTimestamp("date_joined")));
+				user.setDate_joined(new LocalDate(rs.getTimestamp("date_joined")));
 			}
 		} catch (SQLException sqlex) {
 			System.err.println("SQLException: " + sqlex.getMessage());
@@ -73,8 +73,9 @@ public class UserDAO extends StockFileDAO {
 	 * @param password
 	 * @return
 	 */
-	public int createUser(User user, String password) {
+	public String createUser(User user, String password) {
 
+		String msg = "";
 		this.initConnection();
 
 		if (!usernameTaken(user.getUserName())) {
@@ -82,20 +83,22 @@ public class UserDAO extends StockFileDAO {
 			try {
 				ps = conn.prepareStatement("INSERT INTO user"
 						+ " (username, first_name, last_name, email, date_joined, password) "
-						+ " (VALUES (?, ?, ?, ?, NOW(), ?)", Statement.RETURN_GENERATED_KEYS);
+						+ " VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 
 				ps.setString(1, user.getUserName());
 				ps.setString(2, user.getFirst_name());
 				ps.setString(3, user.getLast_name());
 				ps.setString(4, user.getEmail());
+				ps.setString(5, user.getDate_joined().toString());
 				ps.setString(6, password);
 
+//				System.out.println(ps.toString());
 				ps.executeUpdate();
 				conn.commit();
 				rs = ps.getGeneratedKeys();
 				if (rs.next()) {
 //					return rs.getInt(1);
-					return 1;
+					msg = "Username '" + user.getUserName() + "' successfully added.";
 				} else {
 					throw new SQLException("Creating user failed, no generated key obtained.");
 				}
@@ -104,8 +107,10 @@ public class UserDAO extends StockFileDAO {
 				System.err.println("SQLException: " + sqlex.getMessage());
 				sqlex.printStackTrace();
 			}
-		}
-		return 0;
+		} else 
+			msg = "Username '" + user.getUserName() + "' is already taken. Please try again.";
+
+		return msg;
 	}
 
 	/**
@@ -164,9 +169,8 @@ public class UserDAO extends StockFileDAO {
 		User user = new User();
 
 		try {
-			ps = conn.prepareStatement("SELECT * FROM user WHERE ? = ?");
-			ps.setString(1, attribute);
-			ps.setString(2, value);
+			ps = conn.prepareStatement("SELECT * FROM user WHERE " + attribute + " = ?");
+			ps.setString(1, value);
 			rs = ps.executeQuery();
 
 		} catch (SQLException sqlex) {
@@ -182,7 +186,7 @@ public class UserDAO extends StockFileDAO {
 				user.setFirst_name(rs.getString("first_name"));
 				user.setLast_name(rs.getString("last_name"));
 				user.setEmail(rs.getString("email"));
-				user.setDate_joined(new DateTime(rs.getTimestamp("date_joined")));
+				user.setDate_joined(new LocalDate(rs.getTimestamp("date_joined")));
 			}
 		} catch (SQLException sqlex) {
 			System.err.println("SQLException: " + sqlex.getMessage());
