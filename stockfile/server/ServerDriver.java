@@ -8,7 +8,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.rmi.server.ExportException;
 import java.util.Scanner;
-import stockfile.api.sync.SFTPConnection;
+import stockfile.api.sync.SFTP;
 
 /**
  * Main driver for the Server application. Creates the RMI registry and listens
@@ -94,7 +94,7 @@ public class ServerDriver
 //            System.exit(0);
 //        }
         
-        SFTPConnection.getInstance().connect();
+        SFTP.getInstance().connect();
         System.out.println();
         
         //Create a thread to run FileScanner class separetly to update stock prices frequently
@@ -102,7 +102,8 @@ public class ServerDriver
 
         //Start the FileScanner thread
         fileScannerThread.start();
-
+        
+        
         String inputString = "";
         
         //Read command line input arguments from user and allow for communication

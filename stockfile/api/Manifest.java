@@ -10,14 +10,14 @@ import java.util.Map;
 public class Manifest
 {
 
-    private Map<String, File> manifest;
+    private Map<String, StockFile> manifest;
 
     public Manifest()
     {
         manifest = new HashMap<>();
     }
 
-    public void insertFile(String fullPath, File metaData)
+    public void insertFile(String fullPath, StockFile metaData)
     {
         this.manifest.put(fullPath, metaData);
     }
@@ -32,7 +32,7 @@ public class Manifest
         return this.manifest.containsKey(fullPath);
     }
 
-    public File getFile(String fullPath)
+    public StockFile getFile(String fullPath)
     {
         return this.manifest.get(fullPath);
     }
@@ -45,7 +45,7 @@ public class Manifest
         }
         else
         {
-            for (Map.Entry<String, File> thisManifestEntry : this.manifest.entrySet())
+            for (Map.Entry<String, StockFile> thisManifestEntry : this.manifest.entrySet())
             {
                 if (!newManifest.containsFile(thisManifestEntry.getKey()))
                 {
@@ -66,7 +66,7 @@ public class Manifest
         }
         else
         {
-            for (Map.Entry<String, File> thisManifestEntry : this.manifest.entrySet())
+            for (Map.Entry<String, StockFile> thisManifestEntry : this.manifest.entrySet())
             {
                 if (!newManifest.containsFile(thisManifestEntry.getKey()))
                 {
@@ -75,5 +75,16 @@ public class Manifest
             }
             return differenceList;
         }
+    }
+    
+    @Override
+    public String toString() {
+        String output = "";
+        for (Map.Entry<String, StockFile> thisManifestEntry : this.manifest.entrySet())
+            {
+                output += thisManifestEntry.getKey()+"\n";
+            }
+        return output;
+
     }
 }

@@ -45,4 +45,8 @@ public class FileList
 
         return currentFileList;
     }
+    
+    public static Manifest getManifest() {
+        return FileList.manifest;
+    }
 }
