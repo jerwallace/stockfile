@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.rmi.server.ExportException;
 import java.util.Scanner;
+import stockfile.api.sync.SFTPConnection;
 
 /**
  * Main driver for the Server application. Creates the RMI registry and listens
@@ -78,29 +79,32 @@ public class ServerDriver
         //Create a Scanner object to read user input
         Scanner input = new Scanner(System.in);
 
-        try
-        {
-            //Start the reigstry
-            startRegistry();
-
-            //Create new UserApiImpl
-            registerObject(UserApi.class.getSimpleName(), new UserApiImpl());
-
-        }
-        catch (ExportException epex)
-        {
-            System.err.println("Error starting server. Please check the port or if another instance is already running.");
-            System.exit(0);
-        }
-
+//        try
+//        {
+//            //Start the reigstry
+//            startRegistry();
+//
+//            //Create new UserApiImpl
+//            registerObject(UserApi.class.getSimpleName(), new UserApiImpl());
+//
+//        }
+//        catch (ExportException epex)
+//        {
+//            System.err.println("Error starting server. Please check the port or if another instance is already running.");
+//            System.exit(0);
+//        }
+        
+        SFTPConnection.getInstance().connect();
+        System.out.println();
+        
         //Create a thread to run FileScanner class separetly to update stock prices frequently
-        Thread fileScannerThread = new Thread(new FileScanner("C:\\Users\\Bahman\\Documents\\Server StockFile Repo"));
+        Thread fileScannerThread = new Thread(new FileScanner(System.getProperty("user.home")+"/Stockfile"));
 
         //Start the FileScanner thread
         fileScannerThread.start();
 
         String inputString = "";
-
+        
         //Read command line input arguments from user and allow for communication
         //between Server and Client until User has entered "Exit"
         while (true)
