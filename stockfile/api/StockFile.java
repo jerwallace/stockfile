@@ -1,43 +1,117 @@
 package stockfile.api;
 
-import java.io.File;
-import java.io.Serializable;
-import java.sql.Timestamp;
-import java.util.Date;
+import org.joda.time.DateTime;
 
 /**
- * Class describing a StockFile object
+ * Class describing a File object
+ * @author Bahman
  */
-public class StockFile extends File implements Serializable
-{
+public class StockFile {
 
-    enum File_State
-    {
-        ACTIVE
-    }
+    private String filePath;
+    private String fileName;
+    private float version;
     
-    private Timestamp lastSync;
-    private File_State fileState;
-    private String type;
+    private DateTime lastModified;
+	private String lastSyncBy;
+	private String createdBy;
 
-    public StockFile(String filename)
-    {
-        super(filename);
+    public StockFile(String path, String name, float version, DateTime lastMod, String lastSyncBy, String createdBy){
+        this.filePath = path;
+        this.fileName = name;
+        this.version = version;
+        this.lastModified = lastMod;
+		this.lastSyncBy = lastSyncBy;
+		this.createdBy = createdBy;
+    }
+
+	/**
+	 * @return the filePath
+	 */
+	public String getFilePath() {
+		return this.filePath;
+	}
         
-        Date date = new Date();
+//        /**
+//	 * @return the filePath
+//	 */
+//	public String getFullPath() {
+//		return this.filePath+"/"+this.fileName;
+//	}
+	/**
+	 * @param filePath the filePath to set
+	 */
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
 
-        this.lastSync = new Timestamp(date.getTime());
-        this.fileState = File_State.ACTIVE;
+	/**
+	 * @return the fileName
+	 */
+	public String getFileName() {
+		return fileName;
+	}
 
-        int i = this.getName().lastIndexOf('.');
-        if (i > 0)
-        {
-            this.type = this.getName().substring(i + 1);
-        }
-    }
+	/**
+	 * @param fileName the fileName to set
+	 */
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
 
-    public String toString()
-    {
-        return "File: " + getName() + " | LM: " + lastModified() + " | " + this.lastSync + " | " + this.fileState + " | " + this.type + "\n";
-    }
+	/**
+	 * @return the version
+	 */
+	public float getVersion() {
+		return version;
+	}
+
+	/**
+	 * @param version the version to set
+	 */
+	public void setVersion(float version) {
+		this.version = version;
+	}
+
+	/**
+	 * @return the lastModified
+	 */
+	public DateTime getLastModified() {
+		return lastModified;
+	}
+
+	/**
+	 * @param lastModified the lastModified to set
+	 */
+	public void setLastModified(DateTime lastModified) {
+		this.lastModified = lastModified;
+	}
+
+	/**
+	 * @return the lastSyncBy
+	 */
+	public String getLastSyncBy() {
+		return lastSyncBy;
+	}
+
+	/**
+	 * @param lastSyncBy the lastSyncBy to set
+	 */
+	public void setLastSyncBy(String lastSyncBy) {
+		this.lastSyncBy = lastSyncBy;
+	}
+
+	/**
+	 * @return the createdBy
+	 */
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	/**
+	 * @param createdBy the createdBy to set
+	 */
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
 }

@@ -10,7 +10,7 @@ import java.rmi.server.ExportException;
 import java.util.Scanner;
 import org.joda.time.LocalDate;
 import stockfile.api.User;
-import stockfile.api.sync.SFTPConnection;
+import stockfile.api.sync.SFTP;
 import stockfile.dao.UserDAO;
 
 /**

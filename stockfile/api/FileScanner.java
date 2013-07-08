@@ -5,6 +5,7 @@
 package stockfile.api;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -12,6 +13,8 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.joda.time.DateTime;
+import stockfile.api.sync.SFTP;
 
 /**
  * Runnable class that controls the OnlineStockInfo object by calling it to
@@ -28,16 +31,23 @@ public class FileScanner implements Runnable
     {
         thisDir = new File(directory);
         files = FileUtils.listFiles(
+        
                 thisDir,
                 //new RegexFileFilter("^*"),
                 new RegexFileFilter("^(.*?)"),
                 DirectoryFileFilter.DIRECTORY);
+        
         Iterator iterator = files.iterator();
         while (iterator.hasNext())
         {
-            StockFile thisFile = new StockFile(iterator.next().toString());
-//          FileList.getInstance().getFileList().put(thisFile.getName(), thisFile);
-            System.out.println(thisFile);
+            StockFile thisFile = new StockFile(thisDir.toString(), iterator.next().toString(), 1, null, "", "");
+            FileList.getManifest().insertFile(thisFile.getFileName(), thisFile);
+            try {
+                SFTP.getInstance().send(thisFile.getFileName());
+            } catch (Exception e) {
+                System.out.println("Error sending file "+thisFile.getFileName()+".");
+            }
+            //System.out.println(thisFile);
         }
     }
 
@@ -53,6 +63,8 @@ public class FileScanner implements Runnable
             {
 //                System.out.println("filescanner");
                 collectFiles();
+                System.out.println(FileList.getManifest());
+                //generateManifest();
                 Thread.sleep(1200);
             }
             catch (InterruptedException ex)

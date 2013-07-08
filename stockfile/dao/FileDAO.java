@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.joda.time.DateTime;
 import stockfile.api.User;
-import stockfile.api.File;
+import stockfile.api.StockFile;
 import stockfile.api.Manifest;
 import stockfile.client.Client;
 import static stockfile.dao.StockFileDAO.ps;
@@ -25,7 +25,7 @@ public class FileDAO extends StockFileDAO{
 		super();
 	}
 
-	public int createFile(File file) {
+	public int createFile(StockFile file) {
 
 		this.initConnection();
 
@@ -33,7 +33,7 @@ public class FileDAO extends StockFileDAO{
 		return 0;
 	}
 
-	public int updateFile(File file) {
+	public int updateFile(StockFile file) {
 
 		this.initConnection();
 
@@ -41,7 +41,7 @@ public class FileDAO extends StockFileDAO{
 		return 0;
 	}
 
-	public int removeFile(File file) {
+	public int removeFile(StockFile file) {
 
 		this.initConnection();
 

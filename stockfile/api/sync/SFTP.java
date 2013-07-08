@@ -9,6 +9,8 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -16,26 +18,26 @@ import java.util.logging.Logger;
 import stockfile.client.UserSession;
 import stockfile.dao.connection.Utils;
 
-public class SFTPConnection {
+public class SFTP {
 
     private Properties props;
-    private static SFTPConnection sftp_connection = null;
+    private static SFTP sftp_connection = null;
     private JSch jsch = new JSch();
     private Session session = null;
     private Channel channel = null;
     private ChannelSftp ch_sftp = null;
     private String userRoot = null;
     
-    public SFTPConnection() {
+    public SFTP() {
             
     }
         /**
      * Static method returns a single instance of MySQLConnection.
      * @return  a single instance of MySQLConnection
      */
-    public static SFTPConnection getInstance()  {
+    public static SFTP getInstance()  {
         if (sftp_connection == null) {
-            sftp_connection = new SFTPConnection(); 
+            sftp_connection = new SFTP(); 
         }
         return sftp_connection;
     }
@@ -47,7 +49,7 @@ public class SFTPConnection {
             try {
                 props = Utils.readProperties("/stockfile/config/stockfile_ftp.properties");
             } catch (IOException ex) {
-                Logger.getLogger(SFTPConnection.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SFTP.class.getName()).log(Level.SEVERE, null, ex);
             }
             
             userRoot = props.getProperty("ftpRootDir")+"testuser/";
@@ -94,6 +96,17 @@ public class SFTPConnection {
                 System.err.println("Unable to connect to FTP server. "+e.toString());
                 throw e;
             } 
+    }
+    
+    public void send(String filename) throws Exception {
+        try {
+                File f = new File(filename);
+                System.out.println("Storing file as remote filename: " + f.getName());
+                ch_sftp.put(new FileInputStream(f), f.getName());
+            } catch (Exception e) {
+                System.err.println("Storing remote file failed. "+e.toString());
+                throw e;
+            }
     }
 
 }
