@@ -13,9 +13,9 @@ public class StockFile extends File implements Serializable
 
     enum File_State
     {
-
         ACTIVE
     }
+    
     private Timestamp lastSync;
     private File_State fileState;
     private String type;
@@ -23,7 +23,7 @@ public class StockFile extends File implements Serializable
     public StockFile(String filename)
     {
         super(filename);
-
+        
         Date date = new Date();
 
         this.lastSync = new Timestamp(date.getTime());
