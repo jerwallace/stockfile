@@ -11,45 +11,49 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.joda.time.DateTime;
 import stockfile.api.User;
+import stockfile.api.File;
+import stockfile.api.Manifest;
 import stockfile.client.Client;
 import static stockfile.dao.StockFileDAO.ps;
-import static stockfile.dao.StockFileDAO.rs;
-
 /**
  *
  * @author MrAtheist
  */
-public class ClientDAO extends StockFileDAO{
+public class FileDAO extends StockFileDAO{
 	
-	public ClientDAO () {
+	public FileDAO () {
 		super();
 	}
 
-	public int addClient() {
+	public int createFile(File file) {
 
 		this.initConnection();
-		Client client = new Client();
 
 
 		return 0;
-	} 
+	}
 
-
-	public int removeClient() {
+	public int updateFile(File file) {
 
 		this.initConnection();
-		Client client = new Client();
 
 
 		return 0;
-	} 
+	}
 
-	public ArrayList<Client> getClientsByUser(User user) {
+	public int removeFile(File file) {
 
 		this.initConnection();
-		ArrayList<Client> clientList = new ArrayList<>();
+
+		return 0;
+	}
+
+	public Manifest generateManifest(User user) {
+
+		this.initConnection();
+		Manifest manifest = new Manifest();
 
 
-		return clientList;
+		return manifest;
 	}
 }

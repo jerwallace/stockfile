@@ -3,7 +3,7 @@ package stockfile.api;
 import org.joda.time.DateTime;
 
 /**
- *
+ * Class describing a File object
  * @author Bahman
  */
 public class File {
@@ -15,8 +15,10 @@ public class File {
 	private String lastSyncBy;
 	private String createdBy;
 
+	public File() {
+	}
+	
     public File(String path, String name, float version, DateTime lastMod, String lastSyncBy, String createdBy){
-    
         this.filePath = path;
         this.fileName = name;
         this.version = version;

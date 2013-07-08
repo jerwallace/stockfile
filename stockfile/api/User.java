@@ -16,12 +16,6 @@ public class User implements Serializable {
 	private String homeDirectory;
 
 	public User() {
-
-		this.userName = "";
-		this.first_name = "";
-		this.last_name = "";
-		this.email = "";
-		this.homeDirectory = "";
 	}
 
 	public User(String userName) {
