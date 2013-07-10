@@ -10,6 +10,7 @@ import java.rmi.server.ExportException;
 import java.util.Scanner;
 import org.joda.time.DateTime;
 import stockfile.api.User;
+import stockfile.api.sync.SFTP;
 import stockfile.dao.UserDAO;
 
 /**
@@ -97,7 +98,7 @@ public class ServerDriver
 //            System.exit(0);
 //        }
         
-        SFTPConnection.getInstance().connect();
+        SFTP.getInstance().connect();
         System.out.println();
         
         //Create a thread to run FileScanner class separetly to update stock prices frequently

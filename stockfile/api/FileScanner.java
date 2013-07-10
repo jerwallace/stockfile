@@ -33,8 +33,7 @@ public class FileScanner implements Runnable
         files = FileUtils.listFiles(
         
                 thisDir,
-                //new RegexFileFilter("^*"),
-                new RegexFileFilter("^(.*?)"),
+                null,
                 DirectoryFileFilter.DIRECTORY);
         
         Iterator iterator = files.iterator();

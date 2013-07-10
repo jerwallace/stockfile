@@ -44,8 +44,6 @@ public class SFTP {
     
     public void connect() throws Exception {
             
-            
-            
             try {
                 props = Utils.readProperties("/stockfile/config/stockfile_ftp.properties");
             } catch (IOException ex) {
