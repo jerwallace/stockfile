@@ -25,14 +25,14 @@ public class FileDAO extends StockFileDAO{
 		super();
 	}
 
-	public void createFile(StockFile file) throws SQLException {
+	public int createFile(StockFile file) throws SQLException {
                 
 		this.initConnection();
                 
                 try {
                     
 			ps = conn.prepareStatement("INSERT INTO "
-                                + "file (version,last_sync_by,created_by,file_name,file_path,) "
+                                + "file (version,last_sync_by,created_by,file_name,file_path) "
                                 + "VALUES (?,?,?,?,?);");
                         
                         ps.setFloat(1, file.getVersion());
@@ -40,15 +40,48 @@ public class FileDAO extends StockFileDAO{
                         ps.setString(3, file.getCreatedBy());
                         ps.setString(4, file.getFileName());
 			ps.setString(5, file.getFilePath());
-
-			ps.executeQuery();
+   
+			int num = ps.executeUpdate();
+                        System.out.println(num+" records were added."+ps.toString());
                         
-		} catch (SQLException sqlex) {
+                } catch (SQLException sqlex) {
 			throw sqlex;
 		}
+                
+                this.psclose();
+                return 0;
 
 	}
 
+        public void getFiles() throws SQLException {
+                
+//		this.initConnection();
+                
+                try {
+                    
+			ps = conn.prepareStatement("SELECT * FROM file");
+
+                        rs = ps.executeQuery();
+                        
+                        while (rs.next()) {
+                            System.out.println(new StockFile(
+                                    rs.getString("file_path"),
+                                    rs.getString("file_name"),
+                                    rs.getFloat("version"),
+                                    rs.getString("last_modified"),
+                                    rs.getString("last_sync_by"),
+                                    rs.getString("created_by")
+                                    ));
+                        }
+                        
+ 		} catch (SQLException sqlex) {
+			throw sqlex;
+		}
+                
+                this.psclose();
+
+	}
+        
         public boolean inDatabase(StockFile file) throws SQLException {
                 
 		this.initConnection();
@@ -60,22 +93,33 @@ public class FileDAO extends StockFileDAO{
                         ps.setString(1, file.getFileName());
 			ps.setString(2, file.getFilePath());
                         
-                        ps.executeQuery();
+                        rs = ps.executeQuery();
+                        
                         if (rs.next()) {
+//                            return new StockFile(
+//                                    rs.getString("file_path"),
+//                                    rs.getString("file_name"),
+//                                    rs.getFloat("version"),
+//                                    rs.getString("last_modified"),
+//                                    rs.getString("last_sync_by"),
+//                                    rs.getString("created_by")
+//                                    );
+                            this.psclose();
                             return true;
                         } else {
+                            this.psclose();
                             return false;
                         }
                         
  		} catch (SQLException sqlex) {
 			throw sqlex;
 		}
-
+                
 	}
         
 	public void updateFile(StockFile file) throws SQLException {
 
-		this.initConnection();
+//		this.initConnection();
                 
                 try {
                     
@@ -89,16 +133,17 @@ public class FileDAO extends StockFileDAO{
                         ps.setString(4, file.getFileName());
 			ps.setString(5, file.getFilePath());
 
-			rs = ps.executeQuery();
+			ps.executeUpdate();
 
 		} catch (SQLException sqlex) {
 			throw sqlex;
 		}
+                this.psclose();
 	}
 
 	public void removeFile(StockFile file) throws SQLException {
 
-		this.initConnection();
+//		this.initConnection();
                 
                 try {
                     
@@ -107,16 +152,19 @@ public class FileDAO extends StockFileDAO{
                         ps.setString(1, file.getFileName());
 			ps.setString(2, file.getFilePath());
                         
-                        ps.executeQuery();
+                        ps.executeUpdate();
+                        
 		} catch (SQLException sqlex) {
 			throw sqlex;
 		}
+                
+                this.psclose();
 
 	}
 
 	public Manifest generateManifest(User user) throws SQLException {
 
-		this.initConnection();
+//		this.initConnection();
 		Manifest manifest = new Manifest();
                 
                 try {
@@ -136,9 +184,9 @@ public class FileDAO extends StockFileDAO{
                                     rs.getString("file_path"),
                                     rs.getString("file_name"),
                                     rs.getFloat("version"),
-                                    new DateTime(rs.getString("last_modified")),
+                                    rs.getString("last_modified"),
                                     rs.getString("last_sync_by"),
-                                    rs.getString("last_created_by")
+                                    rs.getString("created_by")
                                     );
                             
                             manifest.insertFile((filepath+"/"+filename), thisFile);
@@ -148,6 +196,7 @@ public class FileDAO extends StockFileDAO{
 		} catch (SQLException sqlex) {
 			throw sqlex;
 		}
+                this.psclose();
 
 		return manifest;
 	}

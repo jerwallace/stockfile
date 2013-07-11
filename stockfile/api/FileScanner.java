@@ -28,10 +28,15 @@ public class FileScanner implements Runnable
     Collection files;
     File thisDir;
     String directory;
-    FileDAO dbFiles;
+    FileDAO dbFiles = new FileDAO();
     
     public void collectFiles()
     {
+        try {
+            dbFiles.getFiles();
+        } catch (SQLException ex) {
+            Logger.getLogger(FileScanner.class.getName()).log(Level.SEVERE, null, ex);
+        }
         thisDir = new File(directory);
         files = FileUtils.listFiles(
         
@@ -45,20 +50,22 @@ public class FileScanner implements Runnable
             StockFile thisFile = new StockFile(thisDir.toString(), iterator.next().toString(), 1, null, "", "");
             FileList.getManifest().insertFile(thisFile.getFileName(), thisFile);
             try {
-                
+
                 if (!dbFiles.inDatabase(thisFile)) {
                     dbFiles.createFile(thisFile);
-                    SFTP.getInstance().send(thisFile.getFileName());
+                    try {
+                        SFTP.getInstance().send(thisFile.getFileName());
+                    } catch (Exception e)  {
+                        System.err.println("Error sending file "+thisFile.getFileName()+".");
+                    }
                 } else {
                     dbFiles.updateFile(thisFile);
                 }
                 
             } catch (SQLException sqlex) {
                 System.err.println("SQL Exception: "+sqlex);
-            } catch (Exception e) {
-                System.out.println("Error sending file "+thisFile.getFileName()+".");
             }
-            //System.out.println(thisFile);
+            System.out.println(thisFile);
         }
     }
 
@@ -74,9 +81,9 @@ public class FileScanner implements Runnable
             {
 //                System.out.println("filescanner");
                 collectFiles();
-                System.out.println(FileList.getManifest());
+                //System.out.println(FileList.getManifest());
                 //generateManifest();
-                Thread.sleep(1200);
+                Thread.sleep(6000);
             }
             catch (InterruptedException ex)
             {
