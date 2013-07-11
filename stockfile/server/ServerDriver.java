@@ -108,8 +108,7 @@ public class ServerDriver
         fileScannerThread.start();
 
         String inputString = "";
-
-		userDAO.createUser(new User("root", "su_first", "su_last", "su@root.com", new DateTime(), "C:\\StockFile"), "123");
+        //userDAO.createUser(new User("root", "su_first", "su_last", "su@root.com", new DateTime(), "C:\\StockFile"), "123");
 
         //Read command line input arguments from user and allow for communication
         //between Server and Client until User has entered "Exit"
