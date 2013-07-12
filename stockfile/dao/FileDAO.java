@@ -27,8 +27,6 @@ public class FileDAO extends StockFileDAO{
 
 	public int createFile(StockFile file) throws SQLException {
                 
-		this.initConnection();
-                
                 try {
                     
 			ps = conn.prepareStatement("INSERT INTO "
@@ -54,8 +52,6 @@ public class FileDAO extends StockFileDAO{
 	}
 
         public void getFiles() throws SQLException {
-                
-//		this.initConnection();
                 
                 try {
                     
@@ -84,8 +80,6 @@ public class FileDAO extends StockFileDAO{
         
         public boolean inDatabase(StockFile file) throws SQLException {
                 
-		this.initConnection();
-                
                 try {
                     
 			ps = conn.prepareStatement("SELECT * FROM file WHERE file_name = ? AND file_path = ?");
@@ -96,14 +90,6 @@ public class FileDAO extends StockFileDAO{
                         rs = ps.executeQuery();
                         
                         if (rs.next()) {
-//                            return new StockFile(
-//                                    rs.getString("file_path"),
-//                                    rs.getString("file_name"),
-//                                    rs.getFloat("version"),
-//                                    rs.getString("last_modified"),
-//                                    rs.getString("last_sync_by"),
-//                                    rs.getString("created_by")
-//                                    );
                             this.psclose();
                             return true;
                         } else {
@@ -118,9 +104,7 @@ public class FileDAO extends StockFileDAO{
 	}
         
 	public void updateFile(StockFile file) throws SQLException {
-
-//		this.initConnection();
-                
+    
                 try {
                     
 			ps = conn.prepareStatement("UPDATE file "
@@ -142,9 +126,7 @@ public class FileDAO extends StockFileDAO{
 	}
 
 	public void removeFile(StockFile file) throws SQLException {
-
-//		this.initConnection();
-                
+    
                 try {
                     
 			ps = conn.prepareStatement("DELETE FROM file WHERE file_name = ? AND file_path = ?");
@@ -164,7 +146,6 @@ public class FileDAO extends StockFileDAO{
 
 	public Manifest generateManifest(User user) throws SQLException {
 
-//		this.initConnection();
 		Manifest manifest = new Manifest();
                 
                 try {

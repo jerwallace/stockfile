@@ -24,9 +24,4 @@ public class UserApiImpl extends AbstractApiImpl implements UserApi
 
     }
 
-    @Override
-    public FileList getServerFileList()
-    {
-        return FileList.getInstance();
-    }
 }

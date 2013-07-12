@@ -86,8 +86,5 @@ public class UserProtocol extends AbstractProtocol
 
     }
 
-    public void sync()
-    {
-        ((UserApi) thisSession.getRemoteApi()).getServerFileList();
-    }
+    
 }
