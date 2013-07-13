@@ -11,6 +11,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Vector;
@@ -113,9 +114,10 @@ public class SFTP {
        Vector files = ch_sftp.ls(userRoot);
        for (int i=0; i<files.size(); i++) {
          com.jcraft.jsch.ChannelSftp.LsEntry lsEntry = (com.jcraft.jsch.ChannelSftp.LsEntry) files.get(i);
-         //System.out.println(lsEntry.getFilename());
+         
          File f = new File("c:\\Users\\wallacej\\Stockfile\\"+lsEntry.getFilename());
-         //ch_sftp.get(lsEntry.getFilename(), new FileOutputStream(f));
+         System.out.println(f.getName());
+         ch_sftp.get(lsEntry.getFilename(), new FileOutputStream(f));
        }
      
     } 

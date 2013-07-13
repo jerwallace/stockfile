@@ -67,7 +67,7 @@ public class FileScanner implements Runnable
                 System.err.println("SQL Exception: "+sqlex);
             }
             System.out.println(thisFile);
-            //SFTP.getInstance().recieveFiles();
+            SFTP.getInstance().recieveFiles();
         }
     }
 
