@@ -109,7 +109,7 @@ public class ServerDriver
 
         String inputString = "";
 
-		User user = userDAO.getUserByAttribute("first_name", "su_first");
+		User user = userDAO.getUserByAttribute(UserDAO.ColumnHeader.USERNAME, "root");
 
 		System.out.println(user.toString());
         //Read command line input arguments from user and allow for communication

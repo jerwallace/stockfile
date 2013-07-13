@@ -21,6 +21,10 @@ public class UserDAO extends StockFileDAO {
 		super();
 	}
 
+	public enum ColumnHeader {
+
+		USERNAME, FIRST_NAME, LAST_NAME, EMAIL, DATE_JOINED, PASSWORD;
+	}
 	/**
 	 * Returns a User object corresponding to the given userName and password
 	 *
@@ -107,6 +111,7 @@ public class UserDAO extends StockFileDAO {
 		} else 
 			msg = "Username '" + user.getUserName() + "' is already taken. Please try again.";
 
+		this.psclose();
 		return msg;
 	}
 
@@ -159,17 +164,16 @@ public class UserDAO extends StockFileDAO {
 	 * @param value
 	 * @return 
 	 */
-	public User getUserByAttribute(String attribute, String value) {
+	public User getUserByAttribute(ColumnHeader attribute, String value) {
 
 		User user = new User();
 
-		// TODO check for attribute value against db header
-
 		try {
-			ps = conn.prepareStatement("SELECT * FROM user WHERE " + attribute + " = ?");
+			ps = conn.prepareStatement("SELECT * FROM user WHERE " + attribute.toString().toLowerCase() + " = ?");
 			ps.setString(1, value);
 			rs = ps.executeQuery();
 
+			System.out.println(ps.toString());
 		} catch (SQLException sqlex) {
 			System.err.println("SQLException: " + sqlex.getMessage());
 			//sqlex.printStackTrace();
@@ -185,6 +189,7 @@ public class UserDAO extends StockFileDAO {
 				user.setEmail(rs.getString("email"));
 				user.setDate_joined(new LocalDate(rs.getTimestamp("date_joined")));
 			}
+
 		} catch (SQLException sqlex) {
 			System.err.println("SQLException: " + sqlex.getMessage());
 			sqlex.printStackTrace();
