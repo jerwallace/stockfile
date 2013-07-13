@@ -60,13 +60,7 @@ public class FileDAO extends StockFileDAO{
 
                         rs = ps.executeQuery();
                         System.out.println("res = ");
-                        
-                        ResultSetMetaData meta = rs.getMetaData();
-                        for (int index = 1; index <= meta.getColumnCount(); index++)
-                        {
-                           System.out.println("Column " + index + " is named " + meta.getColumnName(index));
-                        }
-                        
+
                         while (rs.next()) {
                             System.out.println(new StockFile(
                                     rs.getString("file_path"),
