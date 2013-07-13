@@ -52,10 +52,10 @@ public class UserDAO extends StockFileDAO {
 
 			while (rs.next()) {
 				user.setUserName(rs.getString("username"));
-				user.setFirst_name(rs.getString("first_name"));
-				user.setLast_name(rs.getString("last_name"));
+				user.setFirstName(rs.getString("first_name"));
+				user.setLastName(rs.getString("last_name"));
 				user.setEmail(rs.getString("email"));
-				user.setDate_joined(new LocalDate(rs.getTimestamp("date_joined")));
+				user.setDateJoined(new LocalDate(rs.getTimestamp("date_joined")));
 			}
 		} catch (SQLException sqlex) {
 			System.err.println("SQLException: " + sqlex.getMessage());
@@ -88,10 +88,10 @@ public class UserDAO extends StockFileDAO {
 						+ " VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 
 				ps.setString(1, user.getUserName());
-				ps.setString(2, user.getFirst_name());
-				ps.setString(3, user.getLast_name());
+				ps.setString(2, user.getFirstName());
+				ps.setString(3, user.getLastName());
 				ps.setString(4, user.getEmail());
-				ps.setString(5, user.getDate_joined().toString());
+				ps.setString(5, user.getDateJoined().toString());
 				ps.setString(6, password);
 
 				ps.executeUpdate();
@@ -184,10 +184,10 @@ public class UserDAO extends StockFileDAO {
 
 			while (rs.next()) {
 				user.setUserName(rs.getString("username"));
-				user.setFirst_name(rs.getString("first_name"));
-				user.setLast_name(rs.getString("last_name"));
+				user.setFirstName(rs.getString("first_name"));
+				user.setLastName(rs.getString("last_name"));
 				user.setEmail(rs.getString("email"));
-				user.setDate_joined(new LocalDate(rs.getTimestamp("date_joined")));
+				user.setDateJoined(new LocalDate(rs.getTimestamp("date_joined")));
 			}
 
 		} catch (SQLException sqlex) {
