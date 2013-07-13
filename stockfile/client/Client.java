@@ -42,6 +42,17 @@ public class Client
         this.macAddress = myMacAddress;
     }
 
+    public Client(String type, String description, String manufacturer, String modelNo, byte[] ipAddress, byte[] macAddress) throws UnknownHostException, SocketException
+    {
+
+        this.type = type;
+        this.description = description;
+        this.manufacturer = manufacturer;
+        this.modelNo = modelNo;
+        this.ipAddress = ipAddress;
+        this.macAddress = macAddress;
+    }
+
     /**
      * @return the type
      */
