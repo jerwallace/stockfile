@@ -16,7 +16,6 @@ import java.util.Properties;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import stockfile.client.UserSession;
 import stockfile.dao.connection.Utils;
 
 public class SFTP {
@@ -108,7 +107,7 @@ public class SFTP {
             }
     }
     
-    public void recieve(String filename) throws Exception {
+    public void recieveFiles() throws Exception {
         
        //System.out.println("Downloading file "+filename);
        Vector files = ch_sftp.ls(userRoot);
@@ -118,7 +117,7 @@ public class SFTP {
          File f = new File("c:\\Users\\wallacej\\Stockfile\\"+lsEntry.getFilename());
          //ch_sftp.get(lsEntry.getFilename(), new FileOutputStream(f));
        }
-        
+     
     } 
 
 }

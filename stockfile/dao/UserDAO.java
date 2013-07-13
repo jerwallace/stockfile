@@ -1,5 +1,6 @@
 package stockfile.dao;
 
+import java.sql.ResultSetMetaData;
 import stockfile.api.User;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -49,10 +50,10 @@ public class UserDAO extends StockFileDAO {
 
 			while (rs.next()) {
 				user.setUserName(rs.getString("username"));
-				user.setFirst_name(rs.getString("first_name"));
-				user.setLast_name(rs.getString("last_name"));
+				user.setFirstName(rs.getString("first_name"));
+				user.setLastName(rs.getString("last_name"));
 				user.setEmail(rs.getString("email"));
-				user.setDate_joined(new LocalDate(rs.getTimestamp("date_joined")));
+				user.setDateJoined(new LocalDate(rs.getTimestamp("date_joined")));
 			}
 		} catch (SQLException sqlex) {
 			System.err.println("SQLException: " + sqlex.getMessage());
@@ -86,16 +87,24 @@ public class UserDAO extends StockFileDAO {
 						+ " VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 
 				ps.setString(1, user.getUserName());
-				ps.setString(2, user.getFirst_name());
-				ps.setString(3, user.getLast_name());
+				ps.setString(2, user.getFirstName());
+				ps.setString(3, user.getLastName());
 				ps.setString(4, user.getEmail());
-				ps.setString(5, user.getDate_joined().toString());
+				ps.setString(5, user.getDateJoined().toString());
 				ps.setString(6, password);
 
 //				System.out.println(ps.toString());
 				ps.executeUpdate();
 				conn.commit();
+                                
 				rs = ps.getGeneratedKeys();
+                                
+                                ResultSetMetaData meta = rs.getMetaData();
+                                for (int index = 1; index <= meta.getColumnCount(); index++)
+                                {
+                                   System.out.println("Column " + index + " is named " + meta.getColumnName(index));
+                                }
+                                
 				if (rs.next()) {
 //					return rs.getInt(1);
 					msg = "Username '" + user.getUserName() + "' successfully added.";
@@ -109,7 +118,7 @@ public class UserDAO extends StockFileDAO {
 			}
 		} else 
 			msg = "Username '" + user.getUserName() + "' is already taken. Please try again.";
-
+                this.psclose();
 		return msg;
 	}
 
@@ -163,40 +172,31 @@ public class UserDAO extends StockFileDAO {
 	 * @param value
 	 * @return 
 	 */
-	public User getUserByAttribute(String attribute, String value) {
+	public User getUserByAttribute(String username) {
 
-		this.initConnection();
 		User user = new User();
 
 		// TODO check for attribute value against db header
 
 		try {
-			ps = conn.prepareStatement("SELECT * FROM user WHERE " + attribute + " = ?");
-			ps.setString(1, value);
+			ps = conn.prepareStatement("SELECT * FROM user WHERE username = ?");
+              
+			ps.setString(1, username);
 			rs = ps.executeQuery();
 
-		} catch (SQLException sqlex) {
+                                while (rs.next()) {
+                                        user.setUserName(rs.getString("username"));
+                                        user.setFirstName(rs.getString("first_name"));
+                                        user.setLastName(rs.getString("last_name"));
+                                        user.setEmail(rs.getString("email"));
+                                        user.setDateJoined(new LocalDate(rs.getTimestamp("date_joined")));
+                                }
+
+                } catch (SQLException sqlex) {
 			System.err.println("SQLException: " + sqlex.getMessage());
 			//sqlex.printStackTrace();
 			return null;
 		}
-
-		try {
-
-			while (rs.next()) {
-				user.setUserName(rs.getString("username"));
-				user.setFirst_name(rs.getString("first_name"));
-				user.setLast_name(rs.getString("last_name"));
-				user.setEmail(rs.getString("email"));
-				user.setDate_joined(new LocalDate(rs.getTimestamp("date_joined")));
-			}
-		} catch (SQLException sqlex) {
-			System.err.println("SQLException: " + sqlex.getMessage());
-			sqlex.printStackTrace();
-			this.psclose();
-			return null;
-		}
-
 		this.psclose();
 
 		return user;

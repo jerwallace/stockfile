@@ -109,9 +109,9 @@ public class ServerDriver
 
         String inputString = "";
 
-		User user = userDAO.getUserByAttribute("first_name", "su_first");
-
-		System.out.println(user.toString());
+        //ser user = userDAO.getUserByAttribute("root");
+    	//System.out.println(user.toString());
+        
         //Read command line input arguments from user and allow for communication
         //between Server and Client until User has entered "Exit"
         while (true)

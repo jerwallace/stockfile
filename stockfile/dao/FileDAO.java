@@ -4,6 +4,7 @@
  */
 package stockfile.dao;
 
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -58,6 +59,13 @@ public class FileDAO extends StockFileDAO{
 			ps = conn.prepareStatement("SELECT * FROM file");
 
                         rs = ps.executeQuery();
+                        System.out.println("res = ");
+                        
+                        ResultSetMetaData meta = rs.getMetaData();
+                        for (int index = 1; index <= meta.getColumnCount(); index++)
+                        {
+                           System.out.println("Column " + index + " is named " + meta.getColumnName(index));
+                        }
                         
                         while (rs.next()) {
                             System.out.println(new StockFile(
