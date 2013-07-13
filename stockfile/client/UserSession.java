@@ -1,6 +1,7 @@
 package stockfile.client;
 
 import java.io.Serializable;
+import stockfile.api.User;
 
 /**
  * Class definition for the Singleton User type client session
@@ -9,6 +10,8 @@ public class UserSession extends Session implements Serializable
 {
 
     private static UserSession userSession = null;
+    private User currentUser;
+    private boolean validSession = false;
     
     protected UserSession()
     {
@@ -38,6 +41,34 @@ public class UserSession extends Session implements Serializable
         }
 
         return userSession;
+    }
+
+    /**
+     * @return the currentUser
+     */
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    /**
+     * @param currentUser the currentUser to set
+     */
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
+    }
+
+    /**
+     * @return the validSession
+     */
+    public boolean isValidSession() {
+        return validSession;
+    }
+
+    /**
+     * @param validSession the validSession to set
+     */
+    public void setValidSession(boolean validSession) {
+        this.validSession = validSession;
     }
     /**
      * Public method that returns the Stock_Action value of the currentAction

@@ -8,7 +8,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.rmi.server.ExportException;
 import java.util.Scanner;
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import stockfile.api.User;
 import stockfile.api.sync.SFTP;
 import stockfile.dao.UserDAO;
@@ -108,8 +108,10 @@ public class ServerDriver
         fileScannerThread.start();
 
         String inputString = "";
-        //userDAO.createUser(new User("root", "su_first", "su_last", "su@root.com", new DateTime(), "C:\\StockFile"), "123");
 
+		User user = userDAO.getUserByAttribute("first_name", "su_first");
+
+		System.out.println(user.toString());
         //Read command line input arguments from user and allow for communication
         //between Server and Client until User has entered "Exit"
         while (true)
