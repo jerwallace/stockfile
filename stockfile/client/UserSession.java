@@ -1,6 +1,7 @@
 package stockfile.client;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import stockfile.api.User;
 
 /**
@@ -12,7 +13,8 @@ public class UserSession extends Session implements Serializable
     private static UserSession userSession = null;
     private User currentUser;
     private boolean validSession = false;
-    
+    private Timestamp last_sync;
+
     protected UserSession()
     {
     }
@@ -44,30 +46,50 @@ public class UserSession extends Session implements Serializable
     }
 
     /**
+     * @return the lastSyncTime
+     */
+    public Timestamp getLastSync()
+    {
+        return this.last_sync;
+    }
+
+    /**
+     * @param lastSyncStime for the currentUser to set
+     */
+    public void setlastSync(Timestamp last_sync_time)
+    {
+        this.last_sync = last_sync_time;
+    }
+
+    /**
      * @return the currentUser
      */
-    public User getCurrentUser() {
+    public User getCurrentUser()
+    {
         return currentUser;
     }
 
     /**
      * @param currentUser the currentUser to set
      */
-    public void setCurrentUser(User currentUser) {
+    public void setCurrentUser(User currentUser)
+    {
         this.currentUser = currentUser;
     }
 
     /**
      * @return the validSession
      */
-    public boolean isValidSession() {
+    public boolean isValidSession()
+    {
         return validSession;
     }
 
     /**
      * @param validSession the validSession to set
      */
-    public void setValidSession(boolean validSession) {
+    public void setValidSession(boolean validSession)
+    {
         this.validSession = validSession;
     }
     /**

@@ -23,6 +23,11 @@ public abstract class StockFileDAO {
     protected static ResultSet rs;
     protected static ResultSetMetaData rm;
 
+	public enum Table{
+
+		CLIENT, FILE, USER, USER_CLIENT, USER_FILE;
+	}
+	
     public StockFileDAO() {
         conn = null;
         ps = null;
