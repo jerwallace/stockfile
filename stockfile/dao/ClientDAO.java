@@ -9,15 +9,9 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.joda.time.DateTime;
 import stockfile.api.User;
 import stockfile.client.Client;
-import static stockfile.dao.StockFileDAO.ps;
-import static stockfile.dao.StockFileDAO.rs;
 
 /**
  *

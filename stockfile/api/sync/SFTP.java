@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import stockfile.client.UserSession;
@@ -106,5 +107,18 @@ public class SFTP {
                 throw e;
             }
     }
+    
+    public void recieve(String filename) throws Exception {
+        
+       //System.out.println("Downloading file "+filename);
+       Vector files = ch_sftp.ls(userRoot);
+       for (int i=0; i<files.size(); i++) {
+         com.jcraft.jsch.ChannelSftp.LsEntry lsEntry = (com.jcraft.jsch.ChannelSftp.LsEntry) files.get(i);
+         //System.out.println(lsEntry.getFilename());
+         File f = new File("c:\\Users\\wallacej\\Stockfile\\"+lsEntry.getFilename());
+         //ch_sftp.get(lsEntry.getFilename(), new FileOutputStream(f));
+       }
+        
+    } 
 
 }

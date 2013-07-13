@@ -30,13 +30,14 @@ public class FileScanner implements Runnable
     String directory;
     FileDAO dbFiles = new FileDAO();
     
-    public void collectFiles()
+    public void collectFiles() throws Exception
     {
         try {
             dbFiles.getFiles();
         } catch (SQLException ex) {
             Logger.getLogger(FileScanner.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
         thisDir = new File(directory);
         files = FileUtils.listFiles(
         
@@ -54,9 +55,9 @@ public class FileScanner implements Runnable
                 if (!dbFiles.inDatabase(thisFile)) {
                     dbFiles.createFile(thisFile);
                     try {
-                        SFTP.getInstance().send(thisFile.getFileName());
+                        SFTP.getInstance().send(thisFile.getFullPath());
                     } catch (Exception e)  {
-                        System.err.println("Error sending file "+thisFile.getFileName()+".");
+                        System.err.println("Error sending file "+thisFile.getFullPath()+".");
                     }
                 } else {
                     dbFiles.updateFile(thisFile);
@@ -66,6 +67,7 @@ public class FileScanner implements Runnable
                 System.err.println("SQL Exception: "+sqlex);
             }
             System.out.println(thisFile);
+            SFTP.getInstance().recieve(thisFile.getFileName());
         }
     }
 
@@ -79,8 +81,12 @@ public class FileScanner implements Runnable
         {
             try
             {
-//                System.out.println("filescanner");
-                collectFiles();
+                try {
+                    //                System.out.println("filescanner");
+                                    collectFiles();
+                } catch (Exception ex) {
+                    Logger.getLogger(FileScanner.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 //System.out.println(FileList.getManifest());
                 //generateManifest();
                 Thread.sleep(6000);

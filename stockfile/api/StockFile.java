@@ -16,7 +16,7 @@ public class StockFile {
 
     public StockFile(String path, String name, float version, String lastMod, String lastSyncBy, String createdBy){
         this.filePath = path;
-        this.fileName = name;
+        this.fileName = name.replace(path,"");
         this.version = version;
         this.lastModified = lastMod;
 		this.lastSyncBy = lastSyncBy;
@@ -28,6 +28,13 @@ public class StockFile {
 	 */
 	public String getFilePath() {
 		return this.filePath;
+	}
+        
+        /**
+	 * @return the filePath
+	 */
+	public String getFullPath() {
+		return this.filePath+"\\"+this.fileName;
 	}
         
 //        /**
