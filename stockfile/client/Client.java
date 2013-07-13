@@ -4,82 +4,137 @@
  */
 package stockfile.client;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
 /**
  * Class describing a Client object
+ * <p/>
  * @author MrAtheist
  */
-public class Client {
-	
-	private String type;
-	private String description;
-	private String manufacturer;
-	private String modelNo;
+public class Client
+{
 
-	public Client() {
-		
-	}
+    private String type;
+    private String description;
+    private String manufacturer;
+    private String modelNo;
+    private byte[] ipAddress;
+    private byte[] macAddress;
 
-	public Client(String type, String description, String manufacturer, String modelNo) {
+    public Client()
+    {
+    }
 
-		this.type = type; 
-		this.description = description; 
-		this.manufacturer = manufacturer; 
-		this.modelNo = modelNo; 
-	}
+    public Client(String type, String description, String manufacturer, String modelNo) throws UnknownHostException, SocketException
+    {
 
-	/**
-	 * @return the type
-	 */
-	public String getType() {
-		return type;
-	}
+        this.type = type;
+        this.description = description;
+        this.manufacturer = manufacturer;
+        this.modelNo = modelNo;
+        InetAddress myIpAddress = InetAddress.getLocalHost();
+        NetworkInterface nwi = NetworkInterface.getByInetAddress(myIpAddress);
+        byte myMacAddress[] = nwi.getHardwareAddress();
+        this.ipAddress = myIpAddress.getAddress();
+        this.macAddress = myMacAddress;
+    }
 
-	/**
-	 * @param type the type to set
-	 */
-	public void setType(String type) {
-		this.type = type;
-	}
+    /**
+     * @return the type
+     */
+    public String getType()
+    {
+        return type;
+    }
 
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
+    /**
+     * @param type the type to set
+     */
+    public void setType(String type)
+    {
+        this.type = type;
+    }
 
-	/**
-	 * @param description the description to set
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    /**
+     * @return the description
+     */
+    public String getDescription()
+    {
+        return description;
+    }
 
-	/**
-	 * @return the manufacturer
-	 */
-	public String getManufacturer() {
-		return manufacturer;
-	}
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description)
+    {
+        this.description = description;
+    }
 
-	/**
-	 * @param manufacturer the manufacturer to set
-	 */
-	public void setManufacturer(String manufacturer) {
-		this.manufacturer = manufacturer;
-	}
+    /**
+     * @return the manufacturer
+     */
+    public String getManufacturer()
+    {
+        return manufacturer;
+    }
 
-	/**
-	 * @return the modelNo
-	 */
-	public String getModelNo() {
-		return modelNo;
-	}
+    /**
+     * @param manufacturer the manufacturer to set
+     */
+    public void setManufacturer(String manufacturer)
+    {
+        this.manufacturer = manufacturer;
+    }
 
-	/**
-	 * @param modelNo the modelNo to set
-	 */
-	public void setModelNo(String modelNo) {
-		this.modelNo = modelNo;
-	}
+    /**
+     * @return the modelNo
+     */
+    public String getModelNo()
+    {
+        return modelNo;
+    }
+
+    /**
+     * @param modelNo the modelNo to set
+     */
+    public void setModelNo(String modelNo)
+    {
+        this.modelNo = modelNo;
+    }
+
+    /**
+     * @return IP Address
+     */
+    public byte[] getIpAddress()
+    {
+        return ipAddress;
+    }
+
+    /**
+     * @return MAC Address
+     */
+    public byte[] getMacAddress()
+    {
+        return macAddress;
+    }
+
+    /**
+     * @param ipAddress the last known IP Address for this client
+     */
+    public void setIpAddress(byte[] ipAddress)
+    {
+        this.ipAddress = ipAddress;
+    }
+
+    /**
+     * @param macAddress the MAC Address for this client
+     */
+    public void setMacAddress(byte[] macAddress)
+    {
+        this.macAddress = macAddress;
+    }
 }
