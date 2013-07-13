@@ -169,36 +169,26 @@ public class UserDAO extends StockFileDAO {
 		User user = new User();
 
 		try {
+                        System.out.println("SELECT * FROM user WHERE " + attribute.toString().toLowerCase() + " = ?");
 			ps = conn.prepareStatement("SELECT * FROM user WHERE " + attribute.toString().toLowerCase() + " = ?");
 			ps.setString(1, value);
 			rs = ps.executeQuery();
-
-			System.out.println(ps.toString());
-		} catch (SQLException sqlex) {
-			System.err.println("SQLException: " + sqlex.getMessage());
-			//sqlex.printStackTrace();
-			return null;
-		}
-
-		try {
-
-			while (rs.next()) {
+                        
+                        while (rs.next()) {
 				user.setUserName(rs.getString("username"));
 				user.setFirstName(rs.getString("first_name"));
 				user.setLastName(rs.getString("last_name"));
 				user.setEmail(rs.getString("email"));
-				user.setDateJoined(new LocalDate(rs.getTimestamp("date_joined")));
+				//user.setDateJoined(new LocalDate(rs.getTimestamp("date_joined")));
 			}
-
+                        
+                        
+			//System.out.println(ps.toString());
 		} catch (SQLException sqlex) {
 			System.err.println("SQLException: " + sqlex.getMessage());
-			sqlex.printStackTrace();
-			this.psclose();
-			return null;
+			
 		}
-
-		this.psclose();
-
+                this.psclose();
 		return user;
 	}
 }

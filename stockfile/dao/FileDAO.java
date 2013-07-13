@@ -57,28 +57,22 @@ public class FileDAO extends StockFileDAO{
 		try {
 			
 			ps = conn.prepareStatement("SELECT * FROM file");
-			
-			rs = ps.executeQuery();
-			System.out.println("res = ");
-			
-			ResultSetMetaData meta = rs.getMetaData();
-			for (int index = 1; index <= meta.getColumnCount(); index++)
-			{
-				System.out.println("Column " + index + " is named " + meta.getColumnName(index));
-			}
-			
-			while (rs.next()) {
-				System.out.println(new StockFile(
-						rs.getString("file_path"),
-						rs.getString("file_name"),
-						rs.getFloat("version"),
-						rs.getString("last_modified"),
-						rs.getString("last_sync_by"),
-						rs.getString("created_by")
-						));
-			}
-			
-		} catch (SQLException sqlex) {
+
+                        rs = ps.executeQuery();
+                        System.out.println("res = ");
+
+                        while (rs.next()) {
+                            System.out.println(new StockFile(
+                                    rs.getString("file_path"),
+                                    rs.getString("file_name"),
+                                    rs.getFloat("version"),
+                                    rs.getString("last_modified"),
+                                    rs.getString("last_sync_by"),
+                                    rs.getString("created_by")
+                                    ));
+                        }
+                        
+ 		} catch (SQLException sqlex) {
 			throw sqlex;
 		}
 		
