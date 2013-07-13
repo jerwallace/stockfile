@@ -98,7 +98,7 @@ public class ServerDriver
 //            System.exit(0);
 //        }
         
-        SFTPConnection.getInstance().connect();
+        SFTP.getInstance().connect();
         System.out.println();
         
         //Create a thread to run FileScanner class separetly to update stock prices frequently
