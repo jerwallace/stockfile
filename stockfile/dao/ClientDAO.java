@@ -4,6 +4,10 @@
  */
 package stockfile.dao;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -25,31 +29,31 @@ public class ClientDAO extends StockFileDAO{
 		super();
 	}
 
-	public int addClient() {
+	public void addClient() throws SQLException, SocketException, UnknownHostException {
 
-		this.initConnection();
 		Client client = new Client();
+                InetAddress address = InetAddress.getLocalHost();
+                NetworkInterface nwi = NetworkInterface.getByInetAddress(address);
+                byte mac[] = nwi.getHardwareAddress();
+                System.out.println(mac);
 
-
-		return 0;
+                this.psclose();
 	} 
 
 
-	public int removeClient() {
+	public void removeClient() {
 
-		this.initConnection();
 		Client client = new Client();
 
 
-		return 0;
+		this.psclose();
 	} 
 
 	public ArrayList<Client> getClientsByUser(User user) {
 
-		this.initConnection();
 		ArrayList<Client> clientList = new ArrayList<>();
 
-
+                this.psclose();
 		return clientList;
 	}
 }

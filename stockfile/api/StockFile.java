@@ -1,7 +1,5 @@
 package stockfile.api;
 
-import org.joda.time.DateTime;
-
 /**
  * Class describing a File object
  * @author Bahman
@@ -12,11 +10,11 @@ public class StockFile {
     private String fileName;
     private float version;
     
-    private DateTime lastModified;
+    private String lastModified;
 	private String lastSyncBy;
 	private String createdBy;
 
-    public StockFile(String path, String name, float version, DateTime lastMod, String lastSyncBy, String createdBy){
+    public StockFile(String path, String name, float version, String lastMod, String lastSyncBy, String createdBy){
         this.filePath = path;
         this.fileName = name;
         this.version = version;
@@ -76,14 +74,14 @@ public class StockFile {
 	/**
 	 * @return the lastModified
 	 */
-	public DateTime getLastModified() {
+	public String getLastModified() {
 		return lastModified;
 	}
 
 	/**
 	 * @param lastModified the lastModified to set
 	 */
-	public void setLastModified(DateTime lastModified) {
+	public void setLastModified(String lastModified) {
 		this.lastModified = lastModified;
 	}
 
@@ -114,4 +112,9 @@ public class StockFile {
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
+        
+        public String toString() {
+            return getFileName()+" - "+getVersion();
+            
+        }
 }

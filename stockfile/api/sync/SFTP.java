@@ -44,8 +44,6 @@ public class SFTP {
     
     public void connect() throws Exception {
             
-            
-            
             try {
                 props = Utils.readProperties("/stockfile/config/stockfile_ftp.properties");
             } catch (IOException ex) {
@@ -99,7 +97,7 @@ public class SFTP {
     }
     
     public void send(String filename) throws Exception {
-        try {
+            try {
                 File f = new File(filename);
                 System.out.println("Storing file as remote filename: " + f.getName());
                 ch_sftp.put(new FileInputStream(f), f.getName());

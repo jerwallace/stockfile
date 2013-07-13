@@ -54,7 +54,7 @@ public class MySQLConnection {
             connection = DriverManager.getConnection(props.getProperty("jdbcUrl"), 
                                                      props.getProperty("username"),
                                                      props.getProperty("password"));
-            connection.setAutoCommit(false);
+            
             return true; 
         } catch (SQLException sqlex) {
             //System.err.println("SQLException: " + sqlex.getMessage());
