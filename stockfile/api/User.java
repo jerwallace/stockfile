@@ -9,10 +9,10 @@ import org.joda.time.LocalDate;
 public class User implements Serializable {
 
 	private String userName;
-	private String first_name;
-	private String last_name;
+	private String firstName;
+	private String lastName;
 	private String email;
-	private LocalDate date_joined;
+	private LocalDate dateJoined;
 	private String homeDirectory;
 
 	public User() {
@@ -22,13 +22,13 @@ public class User implements Serializable {
 		this.userName = userName;
 	}
 
-	public User(String userName, String first_name, String last_name, String email, LocalDate date_joined, String homeDir) {
+	public User(String userName, String firstName, String lastName, String email, LocalDate dateJoined, String homeDir) {
 
 		this.userName = userName;
-		this.first_name = first_name;
-		this.last_name = last_name;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.email = email;
-		this.date_joined = date_joined;
+		this.dateJoined = dateJoined;
 		this.homeDirectory = homeDir;
 	}
 	/**
@@ -53,37 +53,37 @@ public class User implements Serializable {
 	@Override
 	public String toString() {
 		return "Username: " + getUserName() +
-			   "\nFirst name: " + getFirst_name() +
-			   "\nLast name: " + getLast_name() +
+			   "\nFirst name: " + getFirstName() +
+			   "\nLast name: " + getLastName() +
 			   "\nEmail: " + getEmail();
 	}
 
 	/**
-	 * @return the first_name
+	 * @return the firstName
 	 */
-	public String getFirst_name() {
-		return first_name;
+	public String getFirstName() {
+		return firstName;
 	}
 
 	/**
-	 * @param first_name the first_name to set
+	 * @param firstName the firstName to set
 	 */
-	public void setFirst_name(String first_name) {
-		this.first_name = first_name;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
 
 	/**
-	 * @return the last_name
+	 * @return the lastName
 	 */
-	public String getLast_name() {
-		return last_name;
+	public String getLastName() {
+		return lastName;
 	}
 
 	/**
-	 * @param last_name the last_name to set
+	 * @param lastName the lastName to set
 	 */
-	public void setLast_name(String last_name) {
-		this.last_name = last_name;
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	/**
@@ -115,16 +115,16 @@ public class User implements Serializable {
 	}
 
 	/**
-	 * @return the date_joined
+	 * @return the dateJoined
 	 */
-	public LocalDate getDate_joined() {
-		return date_joined;
+	public LocalDate getDateJoined() {
+		return dateJoined;
 	}
 
 	/**
-	 * @param date_joined the date_joined to set
+	 * @param dateJoined the dateJoined to set
 	 */
-	public void setDate_joined(LocalDate date_joined) {
-		this.date_joined = date_joined;
+	public void setDateJoined(LocalDate dateJoined) {
+		this.dateJoined = dateJoined;
 	}
 }
