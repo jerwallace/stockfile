@@ -168,6 +168,8 @@ public class UserDAO extends StockFileDAO {
 		this.initConnection();
 		User user = new User();
 
+		// TODO check for attribute value against db header
+
 		try {
 			ps = conn.prepareStatement("SELECT * FROM user WHERE " + attribute + " = ?");
 			ps.setString(1, value);
