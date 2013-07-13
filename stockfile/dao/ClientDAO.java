@@ -9,51 +9,143 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.joda.time.DateTime;
 import stockfile.api.User;
 import stockfile.client.Client;
-import static stockfile.dao.StockFileDAO.ps;
-import static stockfile.dao.StockFileDAO.rs;
 
 /**
  *
  * @author MrAtheist
  */
-public class ClientDAO extends StockFileDAO{
-	
-	public ClientDAO () {
-		super();
-	}
+public class ClientDAO extends StockFileDAO
+{
 
-	public void addClient() throws SQLException, SocketException, UnknownHostException {
+    public ClientDAO()
+    {
+        super();
+    }
 
-		Client client = new Client();
-                InetAddress address = InetAddress.getLocalHost();
-                NetworkInterface nwi = NetworkInterface.getByInetAddress(address);
-                byte mac[] = nwi.getHardwareAddress();
-                System.out.println(mac);
+    public void addClient() throws SQLException, SocketException, UnknownHostException
+    {
 
-                this.psclose();
-	} 
+        Client client = new Client();
+
+        InetAddress ipAddress = InetAddress.getLocalHost();
+        NetworkInterface nwi = NetworkInterface.getByInetAddress(ipAddress);
+        byte macAddress[] = nwi.getHardwareAddress();
+        System.out.println("IP Address: " + ipAddress.getAddress());
+        System.out.println("MAC Address: " + macAddress);
+
+        try
+        {
+
+            ps = conn.prepareStatement("INSERT INTO "
+                    + "user_client (username,client_type,last_sync,ip_address,mac_address) "
+                    + "VALUES (?,?,?,?,?);");
+
+            ps.setString(1, UserSession.getInstance().getUserName());
+            ps.setString(2, client.getType());
+            ps.setString(3, UserSession.getInstance().getLastSync());
+            ps.setBytes(4, ipAddress.getAddress());
+            ps.setBytes(5, macAddress);
+
+            int num = ps.executeUpdate();
+            System.out.println(num + " records were added." + ps.toString());
+
+        }
+        catch (SQLException sqlex)
+        {
+            throw sqlex;
+        }
+
+        this.psclose();
+        return 0;
+    }
+
+    public void removeClient()
+    {
 
 
-	public void removeClient() {
-
-		Client client = new Client();
 
 
-		this.psclose();
-	} 
 
-	public ArrayList<Client> getClientsByUser(User user) {
 
-		ArrayList<Client> clientList = new ArrayList<>();
 
-                this.psclose();
-		return clientList;
-	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public void removeClient()
+    {
+
+        Client client = new Client();
+
+
+        this.psclose();
+    }
+
+    public ArrayList<Client> getClientsByUser(User user)
+    {
+
+        ArrayList<Client> clientList = new ArrayList<>();
+
+        this.psclose();
+        return clientList;
+    }
 }
