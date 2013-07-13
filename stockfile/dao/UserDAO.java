@@ -30,7 +30,6 @@ public class UserDAO extends StockFileDAO {
 	 */
 	public User getUser(String userName, String password) {
 
-		this.initConnection();
 		User user = new User();
 
 		try {
@@ -76,7 +75,6 @@ public class UserDAO extends StockFileDAO {
 	public String createUser(User user, String password) {
 
 		String msg = "";
-		this.initConnection();
 
 		if (!usernameTaken(user.getUserName())) {
 
@@ -92,16 +90,15 @@ public class UserDAO extends StockFileDAO {
 				ps.setString(5, user.getDate_joined().toString());
 				ps.setString(6, password);
 
-//				System.out.println(ps.toString());
 				ps.executeUpdate();
 				conn.commit();
 				rs = ps.getGeneratedKeys();
-				if (rs.next()) {
-//					return rs.getInt(1);
+
+				if (rs.next()) 
 					msg = "Username '" + user.getUserName() + "' successfully added.";
-				} else {
+				else 
 					throw new SQLException("Creating user failed, no generated key obtained.");
-				}
+				
 			} catch (SQLException sqlex) {
 				Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, sqlex);
 				System.err.println("SQLException: " + sqlex.getMessage());
@@ -142,9 +139,8 @@ public class UserDAO extends StockFileDAO {
 
 		// parse the resultset
 		try {
-			while (rs.next()) {
+			while (rs.next()) 
 				return true;
-			}
 
 		} catch (SQLException sqlex) {
 
@@ -165,7 +161,6 @@ public class UserDAO extends StockFileDAO {
 	 */
 	public User getUserByAttribute(String attribute, String value) {
 
-		this.initConnection();
 		User user = new User();
 
 		// TODO check for attribute value against db header
