@@ -7,7 +7,7 @@ package stockfile.dao;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import stockfile.api.User;
 import stockfile.client.Client;
 import stockfile.client.UserSession;
@@ -166,10 +166,10 @@ public class ClientDAO extends StockFileDAO
         this.psclose();
     }
 
-    public ArrayList<Client> getClientsByUser(User user) throws UnknownHostException, SocketException, SQLException
+    public HashMap<byte[], Client> getClientsByUser(User user) throws Exception
     {
 
-        ArrayList<Client> clientList = new ArrayList<>();
+        HashMap<byte[], Client> clientHashMap = new HashMap<>();
 
         try
         {
@@ -186,15 +186,15 @@ public class ClientDAO extends StockFileDAO
                 byte[] clientIpAddress = rs.getBytes("ip_address");
                 byte[] clientMacAddress = rs.getBytes("mac_address");
                 Client newClient = new Client(clientType, clientDesc, clientManuf, clientModelNo, clientIpAddress, clientMacAddress);
-                clientList.add(newClient);
+                clientHashMap.put(clientMacAddress, newClient);
             }
         }
-        catch (SQLException sqlex)
+        catch (Exception sqlex)
         {
             throw sqlex;
         }
         this.psclose();
 
-        return clientList;
+        return clientHashMap;
     }
 }
