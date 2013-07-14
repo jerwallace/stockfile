@@ -17,6 +17,7 @@ import java.util.Properties;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import stockfile.api.FileList;
 import stockfile.dao.connection.Utils;
 
 public class SFTP {
@@ -113,12 +114,16 @@ public class SFTP {
        //System.out.println("Downloading file "+filename);
        Vector files = ch_sftp.ls(userRoot);
        for (int i=0; i<files.size(); i++) {
-         com.jcraft.jsch.ChannelSftp.LsEntry lsEntry = (com.jcraft.jsch.ChannelSftp.LsEntry) files.get(i);
+         System.out.println(FileList.getManifest());
          
-         File f = new File("c:\\Users\\wallacej\\Stockfile\\"+lsEntry.getFilename());
-         System.out.println(f.getName());
-         ch_sftp.get(lsEntry.getFilename(), new FileOutputStream(f));
-       }
+         com.jcraft.jsch.ChannelSftp.LsEntry lsEntry = (com.jcraft.jsch.ChannelSftp.LsEntry) files.get(i);
+         String filename = lsEntry.getFilename();
+         if (filename.length() > 2) {
+            File f = new File("c:\\Users\\wallacej\\Stockfile\\"+filename);         
+            System.out.println(f.getName());
+            ch_sftp.get(lsEntry.getFilename(), new FileOutputStream(f));
+         }
+        }
      
     } 
 
