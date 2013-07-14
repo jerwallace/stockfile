@@ -2,6 +2,7 @@ package stockfile.client;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import stockfile.api.User;
 
 /**
@@ -14,6 +15,7 @@ public class UserSession extends Session implements Serializable
     private User currentUser;
     private boolean validSession = false;
     private Timestamp last_sync;
+    private HashMap<byte[], Client> userClientHashMap;
 
     protected UserSession()
     {
@@ -91,6 +93,16 @@ public class UserSession extends Session implements Serializable
     public void setValidSession(boolean validSession)
     {
         this.validSession = validSession;
+    }
+
+    public HashMap<byte[], Client> getUserClientHashMap()
+    {
+        return userClientHashMap;
+    }
+
+    public void setUserClientHashMap(HashMap<byte[], Client> userClientHashMap)
+    {
+        this.userClientHashMap = userClientHashMap;
     }
     /**
      * Public method that returns the Stock_Action value of the currentAction
