@@ -22,7 +22,7 @@ public abstract class AbstractApiImpl extends UnicastRemoteObject implements Abs
      */
     public AbstractApiImpl() throws RemoteException
     {
-        super();
+        
     }
 
     /**

@@ -5,8 +5,7 @@
 package stockfile.api;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.sql.SQLException;
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -14,9 +13,8 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
-import org.joda.time.DateTime;
-import stockfile.api.sync.SFTP;
 import stockfile.dao.FileDAO;
+import stockfile.server.Sync;
 
 /**
  * Runnable class that controls the OnlineStockInfo object by calling it to
@@ -29,18 +27,11 @@ public class FileScanner implements Runnable
     File thisDir;
     String directory;
     FileDAO dbFiles = new FileDAO();
-    
+
     public void collectFiles() throws Exception
     {
-        try {
-            dbFiles.getFiles();
-        } catch (SQLException ex) {
-            Logger.getLogger(FileScanner.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
         thisDir = new File(directory);
         files = FileUtils.listFiles(
-        
                 thisDir,
                 new RegexFileFilter("^(.*?)"),
                 DirectoryFileFilter.DIRECTORY);
@@ -50,24 +41,6 @@ public class FileScanner implements Runnable
         {
             StockFile thisFile = new StockFile(thisDir.toString(), iterator.next().toString(), 1, null, "", "");
             FileList.getManifest().insertFile(thisFile.getFileName(), thisFile);
-            try {
-
-                if (!dbFiles.inDatabase(thisFile)) {
-                    dbFiles.createFile(thisFile);
-                    try {
-                        SFTP.getInstance().send(thisFile.getFullPath());
-                    } catch (Exception e)  {
-                        System.err.println("Error sending file "+thisFile.getFullPath()+".");
-                    }
-                } else {
-                    dbFiles.updateFile(thisFile);
-                }
-                
-            } catch (SQLException sqlex) {
-                System.err.println("SQL Exception: "+sqlex);
-            }
-            System.out.println(thisFile);
-            SFTP.getInstance().recieveFiles();
         }
     }
 
@@ -81,19 +54,25 @@ public class FileScanner implements Runnable
         {
             try
             {
-                try {
-                    //                System.out.println("filescanner");
-                                    collectFiles();
-                } catch (Exception ex) {
-                    Logger.getLogger(FileScanner.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                 collectFiles();
+                 
+                 Sync sync = new Sync();   
+                 sync.syncronize();
+                 
                 //System.out.println(FileList.getManifest());
                 //generateManifest();
                 Thread.sleep(6000);
+                
             }
             catch (InterruptedException ex)
             {
                 Logger.getLogger(FileScanner.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            catch (RemoteException ex) {
+                    Logger.getLogger(FileScanner.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            catch (Exception ex) {
+                    Logger.getLogger(FileScanner.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

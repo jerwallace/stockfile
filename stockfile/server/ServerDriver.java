@@ -109,6 +109,7 @@ public class ServerDriver
 
         String inputString = "";
 
+        
 //        User user = userDAO.getUserByAttribute(UserDAO.ColumnHeader.USERNAME,"root");
 //    	System.out.println(user.toString());
         

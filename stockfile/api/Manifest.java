@@ -11,10 +11,18 @@ public class Manifest
 {
 
     private Map<String, StockFile> manifest;
-
+    
+    public enum Operation {
+        DOWNLOAD,UPLOAD,DUPLICATE
+    }
+    
     public Manifest()
     {
         manifest = new HashMap<>();
+    }
+    
+    public Map<String,StockFile> getManifestMap() {
+        return this.manifest;
     }
 
     public void insertFile(String fullPath, StockFile metaData)
@@ -36,7 +44,7 @@ public class Manifest
     {
         return this.manifest.get(fullPath);
     }
-
+    
     public boolean isEqual(Manifest newManifest)
     {
         if (this.manifest.size() != newManifest.manifest.size())
@@ -53,27 +61,6 @@ public class Manifest
                 }
             }
             return true;
-        }
-    }
-
-    public Map<String, Float> diff(Manifest newManifest)
-    {
-        Map<String, Float> differenceList = new HashMap<>();
-
-        if (newManifest.isEqual(this))
-        {
-            return null;
-        }
-        else
-        {
-            for (Map.Entry<String, StockFile> thisManifestEntry : this.manifest.entrySet())
-            {
-                if (!newManifest.containsFile(thisManifestEntry.getKey()))
-                {
-                    differenceList.put(thisManifestEntry.getKey(), thisManifestEntry.getValue().getVersion());
-                }
-            }
-            return differenceList;
         }
     }
     

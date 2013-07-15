@@ -9,8 +9,10 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -108,6 +110,36 @@ public class SFTP {
                 throw e;
             }
     }
+    
+    public void get(String filename) {
+        
+        try {
+            File f = new File("c:\\Users\\wallacej\\Stockfile\\"+filename); 
+            System.out.println("Getting file "+ filename);
+            ch_sftp.get(filename, new FileOutputStream(f));
+        } catch (FileNotFoundException ex) {
+                Logger.getLogger(SFTP.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SftpException ex) {
+            Logger.getLogger(SFTP.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+        
+        
+    }
+    
+//    public void duplicate(String filename) {
+//        
+//        try {
+//            File f = new File("c:\\Users\\wallacej\\Stockfile\\"+filename); 
+//            System.out.println("Getting file "+ filename);
+//            ch_sftp.get(filename, new FileOutputStream(f));
+//        } catch (FileNotFoundException ex) {
+//                Logger.getLogger(SFTP.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (SftpException ex) {
+//            Logger.getLogger(SFTP.class.getName()).log(Level.SEVERE, null, ex);
+//        } 
+//        
+//        
+//    }
     
     public void recieveFiles() throws Exception {
         

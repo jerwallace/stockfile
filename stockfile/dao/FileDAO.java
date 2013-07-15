@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import stockfile.api.User;
 import stockfile.api.StockFile;
 import stockfile.api.Manifest;
@@ -41,6 +42,18 @@ public class FileDAO extends StockFileDAO{
 			ps.setString(5, file.getFilePath());
 			
 			int num = ps.executeUpdate();
+                        
+                        ps = conn.prepareStatement("INSERT INTO "
+					+ "user_file (version,last_sync_by,created_by,file_name,file_path) "
+					+ "VALUES (?,?,?,?,?);");
+			
+			ps.setFloat(1, file.getVersion());
+			ps.setString(2, file.getLastSyncBy());
+			ps.setString(3, file.getCreatedBy());
+			ps.setString(4, file.getFileName());
+			ps.setString(5, file.getFilePath());
+			
+			int num = ps.executeUpdate();
 			System.out.println(num+" records were added."+ps.toString());
 			
 		} catch (SQLException sqlex) {
@@ -62,14 +75,7 @@ public class FileDAO extends StockFileDAO{
                         System.out.println("res = ");
 
                         while (rs.next()) {
-                            System.out.println(new StockFile(
-                                    rs.getString("file_path"),
-                                    rs.getString("file_name"),
-                                    rs.getFloat("version"),
-                                    rs.getString("last_modified"),
-                                    rs.getString("last_sync_by"),
-                                    rs.getString("created_by")
-                                    ));
+                           //
                         }
                         
  		} catch (SQLException sqlex) {
@@ -106,25 +112,30 @@ public class FileDAO extends StockFileDAO{
 	}
 	
 	public void updateFile(StockFile file) throws SQLException {
-		
-		try {
-			
-			ps = conn.prepareStatement("UPDATE file "
-					+ "SET version = ?, last_sync_by = ?,created_by = ? "
-					+ "WHERE file_name = ? AND file_path = ? ");
-			
-			ps.setFloat(1, file.getVersion());
-			ps.setString(2, file.getLastSyncBy());
-			ps.setString(3, file.getCreatedBy());
-			ps.setString(4, file.getFileName());
-			ps.setString(5, file.getFilePath());
-			
-			ps.executeUpdate();
-			
-		} catch (SQLException sqlex) {
-			throw sqlex;
-		}
-		this.psclose();
+	
+                if (!inDatabase(file)) {
+                    createFile(file);
+                } else {
+                    try {
+
+                            ps = conn.prepareStatement("UPDATE file "
+                                            + "SET version = ?, last_sync_by = ?,created_by = ? "
+                                            + "WHERE file_name = ? AND file_path = ? ");
+
+                            ps.setFloat(1, file.getVersion());
+                            ps.setString(2, file.getLastSyncBy());
+                            ps.setString(3, file.getCreatedBy());
+                            ps.setString(4, file.getFileName());
+                            ps.setString(5, file.getFilePath());
+
+                            ps.executeUpdate();
+
+                    } catch (SQLException sqlex) {
+                            throw sqlex;
+                    }
+
+                    this.psclose();
+                }
 	}
 	
 	public void removeFile(StockFile file) throws SQLException {
@@ -167,7 +178,7 @@ public class FileDAO extends StockFileDAO{
 						rs.getString("file_path"),
 						rs.getString("file_name"),
 						rs.getFloat("version"),
-						rs.getString("last_modified"),
+						new DateTime(rs.getString("last_modified")),
 						rs.getString("last_sync_by"),
 						rs.getString("created_by")
 						);
