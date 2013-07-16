@@ -24,22 +24,17 @@ public class UserSession extends Session implements Serializable
     }
 
     //Default constructor for the singleton instance of the UserSession
-    public static UserSession getInstance()
-    {
+    public static UserSession getInstance() {
 
-        if (userSession == null)
-        {
+        if (userSession == null) {
 
-            synchronized (UserSession.class)
-            {
+            synchronized (UserSession.class) {
 
                 UserSession inst = userSession;
 
-                if (inst == null)
-                {
+                if (inst == null) {
 
-                    synchronized (UserSession.class)
-                    {
+                    synchronized (UserSession.class) {
                         userSession = new UserSession();
                     }
                 }

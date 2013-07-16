@@ -12,6 +12,7 @@ import org.joda.time.LocalDate;
 
 import static stockfile.dao.StockFileDAO.ps;
 import static stockfile.dao.StockFileDAO.rs;
+import stockfile.security.Security;
 
 /**
  * This is the DAO class for parsing the resultset and return instance of User.
@@ -38,7 +39,7 @@ public class UserDAO extends StockFileDAO {
 	public User getUser(String userName, String password) {
 
 		User user = new User();
-
+                System.out.println(userName + " " + password);
 		try {
 			ps = conn.prepareStatement("SELECT * FROM user WHERE username = ? and password = ?");
 			ps.setString(1, userName);
@@ -92,7 +93,7 @@ public class UserDAO extends StockFileDAO {
 				ps.setString(3, user.getLastName());
 				ps.setString(4, user.getEmail());
 				ps.setString(5, user.getDateJoined().toString());
-				ps.setString(6, password);
+				ps.setString(6, Security.sha(password));
 
 				ps.executeUpdate();
 				conn.commit();
