@@ -2,6 +2,7 @@ package stockfile.security;
 
 import stockfile.client.UserSession;
 import stockfile.dao.*;
+import stockfile.exceptions.InvalidAuthenticationException;
 import stockfile.models.User;
 
 public class AuthenticateService {
@@ -25,7 +26,7 @@ public class AuthenticateService {
         
         System.out.println(username + " " + Security.sha(password));
         User user = this.userDao.getUser(username, Security.sha(password));
-        
+
         if (user != null) {
             
             if (user.getUserName() == null) 

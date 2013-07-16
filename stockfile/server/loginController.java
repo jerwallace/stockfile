@@ -9,9 +9,10 @@ import java.util.InputMismatchException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
+
 import stockfile.client.UserSession;
+import stockfile.exceptions.InvalidAuthenticationException;
 import stockfile.security.AuthenticateService;
-import stockfile.security.InvalidAuthenticationException;
 import stockfile.security.RegexHelper;
 import stockfile.security.RegexHelper.RegExPattern;
 
@@ -21,6 +22,8 @@ import stockfile.security.RegexHelper.RegExPattern;
  */
 public class loginController {
 
+	
+	
     private static void createUser() {
         
         Scanner scanner = new Scanner(System.in);

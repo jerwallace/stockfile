@@ -1,5 +1,7 @@
 package stockfile.security;
 
+import stockfile.exceptions.InvalidAuthenticationException;
+
 public class AuthenticateValidator {
 
 	protected final String ERROR_MESSAGE = "Invalid Credentials. Please try again.";
