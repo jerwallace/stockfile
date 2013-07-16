@@ -8,9 +8,10 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.HashMap;
-import stockfile.api.User;
-import stockfile.client.Client;
+
 import stockfile.client.UserSession;
+import stockfile.models.Client;
+import stockfile.models.User;
 
 /**
  *

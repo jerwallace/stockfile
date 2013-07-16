@@ -15,8 +15,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Map;
-import stockfile.api.FileList;
-import stockfile.api.UserList;
+
+import stockfile.models.FileList;
 
 /**
  *
@@ -33,8 +33,6 @@ public class SaveState
      */
     public void saveState()
     {
-
-        mapsToSave.add(UserList.getInstance().exportUserList());
 
         try
         {
@@ -71,12 +69,10 @@ public class SaveState
                     //deserialize the List
                     mapsToSave = (ArrayList<Map>) input.readObject();
 
-                    UserList.getInstance().importUserList(mapsToSave.get(0));
                     //display its data
                     System.out.println("Stock List Imported:");
                     System.out.println(FileList.getInstance());
-                    System.out.println("User List Imported:");
-                    System.out.println(UserList.getInstance());
+
                 }
             }
             catch (ClassNotFoundException ex)

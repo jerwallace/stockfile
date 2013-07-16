@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package stockfile.client;
+package stockfile.models;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;

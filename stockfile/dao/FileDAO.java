@@ -10,12 +10,14 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import stockfile.api.User;
-import stockfile.api.StockFile;
-import stockfile.api.Manifest;
-import stockfile.client.Client;
+
+import stockfile.models.Client;
+import stockfile.models.Manifest;
+import stockfile.models.StockFile;
+import stockfile.models.User;
 import static stockfile.dao.StockFileDAO.ps;
 /**
  *
@@ -53,8 +55,8 @@ public class FileDAO extends StockFileDAO{
 			ps.setString(4, file.getFileName());
 			ps.setString(5, file.getFilePath());
 			
-			int num = ps.executeUpdate();
-			System.out.println(num+" records were added."+ps.toString());
+			int numUser = ps.executeUpdate();
+			System.out.println(numUser+" records were added."+ps.toString());
 			
 		} catch (SQLException sqlex) {
 			throw sqlex;

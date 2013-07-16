@@ -1,12 +1,15 @@
 package stockfile.dao;
 
-import stockfile.api.User;
+import stockfile.models.User;
+
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.joda.time.LocalDate;
+
 import static stockfile.dao.StockFileDAO.ps;
 import static stockfile.dao.StockFileDAO.rs;
 

@@ -1,8 +1,8 @@
 package stockfile.security;
 
-import stockfile.api.User;
 import stockfile.client.UserSession;
 import stockfile.dao.*;
+import stockfile.models.User;
 
 public class AuthenticateService {
     

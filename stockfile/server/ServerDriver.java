@@ -1,17 +1,24 @@
 package stockfile.server;
 
-import stockfile.api.FileScanner;
+import sandbox.directorywatcher.WatchDir;
 import stockfile.api.UserApi;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.rmi.AlreadyBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.rmi.server.ExportException;
 import java.util.Scanner;
+
 import org.joda.time.LocalDate;
-import stockfile.api.User;
+
 import stockfile.api.sync.SFTP;
+import stockfile.controllers.DirectoryWatcher;
+import stockfile.controllers.FileScanner;
 import stockfile.dao.UserDAO;
+import stockfile.models.User;
 
 /**
  * Main driver for the Server application. Creates the RMI registry and listens
@@ -101,17 +108,17 @@ public class ServerDriver
         SFTP.getInstance().connect();
         System.out.println();
         
-        //Create a thread to run FileScanner class separetly to update stock prices frequently
-        Thread fileScannerThread = new Thread(new FileScanner(System.getProperty("user.home")+"/Stockfile"));
+        Path dir = Paths.get(System.getProperty("user.home")+"/Stockfile");
+
+        //Create a thread to run FileScanner class separately to update stock prices frequently
+        Thread fileScannerThread = new Thread(new DirectoryWatcher());
 
         //Start the FileScanner thread
         fileScannerThread.start();
-
         String inputString = "";
-
         
-//        User user = userDAO.getUserByAttribute(UserDAO.ColumnHeader.USERNAME,"root");
-//    	System.out.println(user.toString());
+        // User user = userDAO.getUserByAttribute(UserDAO.ColumnHeader.USERNAME,"root");
+        // System.out.println(user.toString());
         
         //Read command line input arguments from user and allow for communication
         //between Server and Client until User has entered "Exit"

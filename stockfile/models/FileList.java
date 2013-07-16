@@ -1,4 +1,5 @@
-package stockfile.api;
+package stockfile.models;
+
 
 /**
  * Class describing the Singleton FileList

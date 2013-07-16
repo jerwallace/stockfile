@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package stockfile.api;
+package stockfile.controllers;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -10,10 +10,14 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
+
 import stockfile.dao.FileDAO;
+import stockfile.models.FileList;
+import stockfile.models.StockFile;
 import stockfile.server.Sync;
 
 /**
@@ -35,7 +39,7 @@ public class FileScanner implements Runnable
                 thisDir,
                 new RegexFileFilter("^(.*?)"),
                 DirectoryFileFilter.DIRECTORY);
-        
+        System.out.println(files);
         Iterator iterator = files.iterator();
         while (iterator.hasNext())
         {
@@ -59,9 +63,7 @@ public class FileScanner implements Runnable
                  Sync sync = new Sync();   
                  sync.syncronize();
                  
-                //System.out.println(FileList.getManifest());
-                //generateManifest();
-                Thread.sleep(6000);
+                 Thread.sleep(6000);
                 
             }
             catch (InterruptedException ex)

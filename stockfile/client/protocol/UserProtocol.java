@@ -1,9 +1,10 @@
 package stockfile.client.protocol;
 
 import java.rmi.RemoteException;
-import stockfile.api.User;
+
 import stockfile.api.UserApi;
 import stockfile.client.UserSession;
+import stockfile.models.User;
 
 /**
  * User Protocol contains all of the actions and the flow of states between the
@@ -49,7 +50,7 @@ public class UserProtocol extends AbstractProtocol
     @Override
     public String processInput(String input) throws CustomException, RemoteException
     {
-        User currentUser = thisSession.getRemoteApi().getUser(thisSession.getUsername());
+        
         String output = "";
 
         if (input.equalsIgnoreCase("cancel"))
@@ -62,22 +63,8 @@ public class UserProtocol extends AbstractProtocol
             switch (thisSession.getCurrentState())
             {
                 case LOGIN:
-                    thisSession.setCurrentState(AbstractProtocol.State.SELECT_COMMAND);
-                    thisSession.setUsername(input);
-                    String action = "";
-
-                    // If the user does not exist, a new user will be created.
-                    if (thisSession.getRemoteApi().userExists(thisSession.getUsername()))
-                    {
-                        action = "signed in";
-                    }
-                    else
-                    {
-                        action = "created";
-                    }
-
-                    currentUser = thisSession.getRemoteApi().getUser(thisSession.getUsername());
-                    return "User " + thisSession.getUsername();
+                    //TODO;
+                	;
                 default:
                     return "";
             }

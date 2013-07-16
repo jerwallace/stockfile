@@ -3,7 +3,9 @@ package stockfile.client;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.HashMap;
-import stockfile.api.User;
+
+import stockfile.models.Client;
+import stockfile.models.User;
 
 /**
  * Class definition for the Singleton User type client session

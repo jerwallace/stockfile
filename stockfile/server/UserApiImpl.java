@@ -1,8 +1,10 @@
 package stockfile.server;
 
 import stockfile.api.UserApi;
+
 import java.rmi.*;
-import stockfile.api.FileList;
+
+import stockfile.models.FileList;
 
 /**
  * Extends the AbstractApiImpl by adding Server side remotely invoked methods

@@ -9,9 +9,10 @@ import java.rmi.registry.Registry;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import stockfile.api.FileScanner;
+
 import stockfile.client.protocol.AbstractProtocol;
 import stockfile.client.protocol.CustomException;
+import stockfile.controllers.FileScanner;
 
 /**
  * Abstract Client class

@@ -1,4 +1,4 @@
-package stockfile.api;
+package stockfile.models;
 
 import java.util.HashMap;
 import java.util.Map;

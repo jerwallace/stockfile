@@ -10,6 +10,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -19,8 +20,9 @@ import java.util.Properties;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import stockfile.api.FileList;
+
 import stockfile.dao.connection.Utils;
+import stockfile.models.FileList;
 
 public class SFTP {
 

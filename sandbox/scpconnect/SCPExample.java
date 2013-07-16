@@ -1,4 +1,4 @@
-package SCPConnect;
+package sandbox.scpconnect;
 
 /*
  * To change this template, choose Tools | Templates

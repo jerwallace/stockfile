@@ -1,4 +1,4 @@
-package stockfile.api;
+package stockfile.models;
 
 import org.joda.time.DateTime;
 

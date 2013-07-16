@@ -10,14 +10,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import stockfile.api.FileList;
-import stockfile.api.Manifest;
-import stockfile.api.Manifest.Operation;
-import stockfile.api.StockFile;
+
 import stockfile.api.SyncApi;
 import stockfile.api.sync.SFTP;
 import stockfile.client.UserSession;
 import stockfile.dao.FileDAO;
+import stockfile.models.FileList;
+import stockfile.models.Manifest;
+import stockfile.models.StockFile;
+import stockfile.models.Manifest.Operation;
 
 /**
  *
