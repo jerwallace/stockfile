@@ -4,18 +4,24 @@
  */
 package stockfile.dao;
 
+import java.io.File;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import stockfile.client.UserSession;
 import stockfile.models.Client;
+import stockfile.models.FileList;
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
 import stockfile.models.User;
@@ -45,18 +51,20 @@ public class FileDAO extends StockFileDAO{
 			ps.setString(5, file.getFilePath());
 			
 			ps.executeUpdate();
-                        
+			System.out.println("Added file to database.");
+			
             ps = conn.prepareStatement("INSERT INTO "
 					+ "user_file (username,file_name,file_path,current_version) "
-					+ "VALUES (?,?,?,?,?);");
+					+ "VALUES (?,?,?,?);");
 			
 			
-			ps.setString(1, UserSession.getInstance().getUsername());
+			ps.setString(1, UserSession.getInstance().getCurrentUser().getUserName());
 			ps.setString(2, file.getFileName());
 			ps.setString(3, file.getFilePath());			
 			ps.setFloat(4, file.getVersion());
-			
+
 			ps.executeUpdate();
+			System.out.println("Connected user to file in database.");
 			
 		} catch (SQLException sqlex) {
 			throw sqlex;
@@ -159,23 +167,25 @@ public class FileDAO extends StockFileDAO{
 		
 	}
 	
-	public Manifest generateManifest(User user) throws SQLException {
+	public Manifest generateManifest() throws SQLException {
 		
 		Manifest manifest = new Manifest();
-		
+		System.out.println(conn);
 		try {
 			
 			ps = conn.prepareStatement("SELECT * FROM user_file "
 					+ "JOIN file ON user_file.file_path = file.file_path AND user_file.file_name = file.file_name "
-					+ "WHERE username = ?");
-			ps.setString(1, user.getUserName());
+					+ "WHERE username = 'testuser'");
+			
+			//ps.setString(1, UserSession.getInstance().getCurrentUser().getUserName());
 			
 			rs = ps.executeQuery();
 			
 			while (rs.next()) {
-				
+			 
 				String filename = rs.getString("file_name");
 				String filepath = rs.getString("file_path");
+				
 				StockFile thisFile = new StockFile(
 						filepath,
 						filename,
@@ -184,6 +194,9 @@ public class FileDAO extends StockFileDAO{
 						rs.getString("last_sync_by"),
 						rs.getString("created_by")
 						);
+				
+				System.out.println("run ");
+				System.out.println(thisFile);
 				
 				manifest.insertFile((filepath+"/"+filename), thisFile);
 				

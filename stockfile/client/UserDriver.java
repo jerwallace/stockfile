@@ -49,10 +49,10 @@ public class UserDriver extends AbstractClient
         }
 
         //Create a thread to run FileScanner class separetly to update stock prices frequently
-        Thread userFileScannerThread = new Thread(new FileScanner("C:\\Users\\Bahman\\Documents\\User StockFile Repo"));
+        //Thread userFileScannerThread = new Thread(new FileScanner("C:\\Users\\Bahman\\Documents\\User StockFile Repo"));
 
         //Start the FileScanner thread
-        userFileScannerThread.start();
+        //userFileScannerThread.start();
 
 
         //Runs the protocol

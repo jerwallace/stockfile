@@ -1,4 +1,4 @@
-package stockfile.api.sync;
+package stockfile.controllers;
 
 /*
  * To change this template, choose Tools | Templates
@@ -69,7 +69,7 @@ public class SFTP {
                 //Create a session sending through our username and password
                 session = jsch.getSession(
                         props.getProperty("username"), 
-                        props.getProperty("ftpHost"), 
+                        props.getProperty("ftpMaster"), 
                         new Integer(props.getProperty("ftpPort")));
                 
                 System.out.println("Session created.");
@@ -123,7 +123,7 @@ public class SFTP {
     public void send(String filename) throws Exception {
         
     	   try {
-                File f = new File(filename);
+                File f = new File(UserSession.getInstance().getCurrentUser().getHomeDirectory()+filename);
                 System.out.println("Storing file as remote filename: " + f.getName());
                 ch_sftp.put(new FileInputStream(f), f.getName());
             } catch (Exception e) {
@@ -135,7 +135,7 @@ public class SFTP {
     public void get(String filename) {
         
         try {
-            File f = new File("c:\\Users\\wallacej\\Stockfile\\"+filename); 
+            File f = new File(UserSession.getInstance().getCurrentUser().getHomeDirectory()+filename); 
             System.out.println("Getting file "+ filename);
             ch_sftp.get(filename, new FileOutputStream(f));
         } catch (FileNotFoundException ex) {
@@ -166,7 +166,7 @@ public class SFTP {
        //System.out.println("Downloading file "+filename);
        Vector files = ch_sftp.ls(userRoot);
        for (int i=0; i<files.size(); i++) {
-         System.out.println(FileList.getManifest());
+         System.out.println(FileList.getInstance().getManifest());
          
          com.jcraft.jsch.ChannelSftp.LsEntry lsEntry = (com.jcraft.jsch.ChannelSftp.LsEntry) files.get(i);
          String filename = lsEntry.getFilename();

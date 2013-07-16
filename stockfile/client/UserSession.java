@@ -22,7 +22,9 @@ public class UserSession extends Session implements Serializable
     protected UserSession()
     {
     	System.out.println("Starting user session...");
+    	
     	currentUser = new User("testuser");
+    	
     	System.out.println("User "+currentUser.getUserName()+" session started...");
     }
 

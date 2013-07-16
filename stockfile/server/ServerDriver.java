@@ -14,9 +14,9 @@ import java.util.Scanner;
 
 import org.joda.time.LocalDate;
 
-import stockfile.api.sync.SFTP;
 import stockfile.controllers.DirectoryWatcher;
 import stockfile.controllers.FileScanner;
+import stockfile.controllers.SFTP;
 import stockfile.dao.UserDAO;
 import stockfile.models.User;
 
@@ -107,8 +107,6 @@ public class ServerDriver
         
         SFTP.getInstance().connect();
         System.out.println();
-        
-        Path dir = Paths.get(System.getProperty("user.home")+"/Stockfile");
 
         //Create a thread to run FileScanner class separately to update stock prices frequently
         Thread fileScannerThread = new Thread(new DirectoryWatcher());

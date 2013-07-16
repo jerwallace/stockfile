@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import stockfile.api.sync.SFTP;
 import stockfile.client.UserSession;
+import stockfile.controllers.SFTP;
 import stockfile.dao.FileDAO;
 import stockfile.models.FileList;
 import stockfile.models.Manifest;
@@ -35,7 +35,7 @@ public class Sync   {
     private void generateSyncList() {
         
         Manifest serverManifest = getServerManifest();
-        Manifest clientManifest = FileList.getManifest();
+        Manifest clientManifest = FileList.getInstance().getManifest();
         System.out.println(serverManifest);
         syncList = new HashMap<>();
         
@@ -65,7 +65,7 @@ public class Sync   {
                     
                     if (serverVersion==clientVersion) {
                         if (clientManifestEntry.getValue().getLastModified().isAfter(serverManifestEntry.getLastModified())) {
-                            FileList.getManifest().getFile(clientManifestEntry.getKey()).incrementVersion();
+                            FileList.getInstance().getManifest().getFile(clientManifestEntry.getKey()).incrementVersion();
                             syncList.put(clientManifestEntry.getKey(), Operation.UPLOAD);
                         }
                     } else {
@@ -100,11 +100,11 @@ public class Sync   {
                                 break;
                         case UPLOAD:
                                 SFTP.getInstance().send(syncItem.getKey());
-                                fileDAO.updateFile(FileList.getManifest().getFile(syncItem.getKey()));
+                                fileDAO.updateFile(FileList.getInstance().getManifest().getFile(syncItem.getKey()));
                                 break;
                         case DUPLICATE:
                                 SFTP.getInstance().send(syncItem.getKey());
-                                fileDAO.updateFile(FileList.getManifest().getFile(syncItem.getKey()));
+                                fileDAO.updateFile(FileList.getInstance().getManifest().getFile(syncItem.getKey()));
                                 break;
                         default: break;
                     }
@@ -118,7 +118,7 @@ public class Sync   {
 
     private Manifest getServerManifest()   {
         try {
-            Manifest serverManifest = fileDAO.generateManifest(new User("testuser"));
+            Manifest serverManifest = fileDAO.generateManifest();
             return serverManifest;
         } catch (SQLException ex) {
             Logger.getLogger(Sync.class.getName()).log(Level.SEVERE, null, ex);

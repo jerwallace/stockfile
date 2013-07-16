@@ -51,13 +51,13 @@ public class MySQLConnection {
                 driverLoaded = true; 
             }
             
-            connection = DriverManager.getConnection(props.getProperty("jdbcUrl"), 
+            connection = DriverManager.getConnection(props.getProperty("jdbcMaster"), 
                                                      props.getProperty("username"),
                                                      props.getProperty("password"));
             
             return true; 
         } catch (SQLException sqlex) {
-            //System.err.println("SQLException: " + sqlex.getMessage());
+            System.err.println("SQLException: " + sqlex.getMessage());
             return false;
         }
     }

@@ -21,7 +21,7 @@ public class User implements Serializable
     private String lastName;
     private String email;
     private LocalDate dateJoined;
-    private String homeDirectory;
+    private String homeDirectory = System.getProperty("user.home")+"/Stockfile";
     private HashMap<byte[], Client> userClients = new HashMap<>();
     private ClientDAO clientDao = new ClientDAO();
 
