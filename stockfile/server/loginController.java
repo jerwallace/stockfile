@@ -27,11 +27,11 @@ public class loginController {
         Console console = System.console();
         
         String[] arr = {"Username", "Password", "First name", "Last name", "Estrmail"};
-        String[] err = {"- length between 8 to 30 consists only of the following...\n"
+        String[] err = {"- length between 5 to 30 consists only of the following...\n"
             + "- lower case letters\n"
             + "- digits\n"
             + "- underscore or hiphen\n",
-            "",
+            "- length between 8 to 30 consists of any characters",
             "- length between 1 to 50 consists only of the following...\n"
             + "- lower case letters\n"
             + "- spaces",
@@ -65,13 +65,12 @@ public class loginController {
                 
                 try {
                     tmp = scanner.nextLine();         // Blocks for user input
-                    if (RegexHelper.validate(tmp, reg[i])) {
-                        ret[i] = tmp;
-                        scanner.nextLine();             // flush
-                        break;                          // Got valid input, stop looping
-                    } else {
+                    if (!RegexHelper.validate(tmp, reg[i]) || tmp.length() == 0) {
                         System.out.println("Allowed pattern:\n" + err[i]);
                         continue;                       // restart loop, wrong number
+                    } else {
+                        ret[i] = tmp;
+                        break;                          // Got valid input, stop looping
                     }
                 } catch (final InputMismatchException e) {
                     System.out.println("Invalid input; please try again.\n");
@@ -114,7 +113,6 @@ public class loginController {
         String username = scanner.nextLine();
         System.out.print("Password: ");
         String password = scanner.nextLine();
-        System.out.println(username + " --> " + password);
 
         try {
             final AuthenticateService as = new AuthenticateService();

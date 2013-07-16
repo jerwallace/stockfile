@@ -39,7 +39,7 @@ public class UserDAO extends StockFileDAO {
 	public User getUser(String userName, String password) {
 
 		User user = new User();
-                System.out.println(userName + " " + password);
+                
 		try {
 			ps = conn.prepareStatement("SELECT * FROM user WHERE username = ? and password = ?");
 			ps.setString(1, userName);
