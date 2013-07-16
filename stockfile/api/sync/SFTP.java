@@ -9,6 +9,7 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 
 import java.io.File;
@@ -21,6 +22,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import stockfile.client.UserSession;
 import stockfile.dao.connection.Utils;
 import stockfile.models.FileList;
 
@@ -56,7 +58,7 @@ public class SFTP {
                 Logger.getLogger(SFTP.class.getName()).log(Level.SEVERE, null, ex);
             }
             
-            userRoot = props.getProperty("ftpRootDir")+"testuser/";
+            userRoot = props.getProperty("ftpRootDir")+UserSession.getInstance().getCurrentUser().getUserName();
             
             //
             //Now connect and SFTP to the SFTP Server
@@ -92,18 +94,35 @@ public class SFTP {
                 channel.connect();
                 ch_sftp = (ChannelSftp)channel;
                 
-                System.out.println("Changing to FTP remote dir: " + userRoot);
-                ch_sftp.cd(userRoot);
+                try {
+                	goToHomeDir();
+                } catch (SftpException e) {
+                	if (e.id==2) {
+                		System.out.println("Creating remote directory: "+userRoot);
+                		ch_sftp.mkdir(userRoot);
+                		goToHomeDir();
+                	} else {
+                		System.err.println(e);
+                	}
+                }
+               
                 
                 
             } catch (Exception e) {
-                System.err.println("Unable to connect to FTP server. "+e.toString());
+            	Class cls = e.getClass(); 
+                System.err.println("Unable to connect to FTP server. "+cls.getName()+" | "+e.toString());
                 throw e;
             } 
     }
     
+    public void goToHomeDir() throws SftpException {
+    	System.out.println("Changing to FTP remote dir: " + userRoot);
+    	ch_sftp.cd(userRoot);
+    }
+    
     public void send(String filename) throws Exception {
-            try {
+        
+    	   try {
                 File f = new File(filename);
                 System.out.println("Storing file as remote filename: " + f.getName());
                 ch_sftp.put(new FileInputStream(f), f.getName());
@@ -124,8 +143,7 @@ public class SFTP {
         } catch (SftpException ex) {
             Logger.getLogger(SFTP.class.getName()).log(Level.SEVERE, null, ex);
         } 
-        
-        
+
     }
     
 //    public void duplicate(String filename) {

@@ -21,6 +21,9 @@ public class UserSession extends Session implements Serializable
 
     protected UserSession()
     {
+    	System.out.println("Starting user session...");
+    	currentUser = new User("testuser");
+    	System.out.println("User "+currentUser.getUserName()+" session started...");
     }
 
     //Default constructor for the singleton instance of the UserSession
@@ -29,10 +32,9 @@ public class UserSession extends Session implements Serializable
 
         if (userSession == null)
         {
-
+        	
             synchronized (UserSession.class)
             {
-
                 UserSession inst = userSession;
 
                 if (inst == null)

@@ -82,16 +82,17 @@ public class DirectoryWatcher implements Runnable {
     }
     
     public DirectoryWatcher() throws IOException {
-    	System.out.println("testwatcher");
+
     	this.watchServ = FileSystems.getDefault().newWatchService();
         this.keys = new HashMap<WatchKey,Path>();
         registerHome();
+        
         // enable trace after initial registration
         this.trace = true;
     }
     
     public void run() {
-    	System.out.println("testrun");
+
     	for (;;) {
 
             // wait for key to be signalled
