@@ -4,14 +4,12 @@
  */
 package stockfile.server;
 
-import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import stockfile.api.SyncApi;
 import stockfile.api.sync.SFTP;
 import stockfile.client.UserSession;
 import stockfile.dao.FileDAO;
@@ -19,6 +17,7 @@ import stockfile.models.FileList;
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
 import stockfile.models.Manifest.Operation;
+import stockfile.models.User;
 
 /**
  *
@@ -37,14 +36,19 @@ public class Sync   {
         
         Manifest serverManifest = getServerManifest();
         Manifest clientManifest = FileList.getManifest();
-        
+        System.out.println(serverManifest);
         syncList = new HashMap<>();
         
         if (serverManifest.isEqual(clientManifest))
         {
             syncList = null;
-        }
-        else
+        
+        } else if (clientManifest==null) {
+        	for (Map.Entry<String,StockFile> serverManifestEntry : serverManifest.getManifestMap().entrySet()) {
+        		syncList.put(serverManifestEntry.getKey(), Operation.DOWNLOAD);
+        	}
+        	
+        } else
         {
             for (Map.Entry<String, StockFile> clientManifestEntry : clientManifest.getManifestMap().entrySet())
             {
@@ -114,7 +118,7 @@ public class Sync   {
 
     private Manifest getServerManifest()   {
         try {
-            Manifest serverManifest = fileDAO.generateManifest(UserSession.getInstance().getCurrentUser());
+            Manifest serverManifest = fileDAO.generateManifest(new User("testuser"));
             return serverManifest;
         } catch (SQLException ex) {
             Logger.getLogger(Sync.class.getName()).log(Level.SEVERE, null, ex);

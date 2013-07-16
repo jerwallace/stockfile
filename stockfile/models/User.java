@@ -12,6 +12,7 @@ import stockfile.dao.ClientDAO;
 /**
  * Class describing a User object
  */
+@SuppressWarnings("serial")
 public class User implements Serializable
 {
 

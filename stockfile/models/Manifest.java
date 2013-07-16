@@ -47,7 +47,9 @@ public class Manifest
     
     public boolean isEqual(Manifest newManifest)
     {
-        if (this.manifest.size() != newManifest.manifest.size())
+    	if (this.manifest==null&&newManifest==null) {
+    		return true;
+    	} else if (newManifest==null||this.manifest.size() != newManifest.getManifestMap().size())
         {
             return false;
         }

@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
+import stockfile.client.UserSession;
 import stockfile.models.Client;
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
@@ -43,20 +44,19 @@ public class FileDAO extends StockFileDAO{
 			ps.setString(4, file.getFileName());
 			ps.setString(5, file.getFilePath());
 			
-			int num = ps.executeUpdate();
+			ps.executeUpdate();
                         
-                        ps = conn.prepareStatement("INSERT INTO "
-					+ "user_file (version,last_sync_by,created_by,file_name,file_path) "
+            ps = conn.prepareStatement("INSERT INTO "
+					+ "user_file (username,file_name,file_path,current_version) "
 					+ "VALUES (?,?,?,?,?);");
 			
-			ps.setFloat(1, file.getVersion());
-			ps.setString(2, file.getLastSyncBy());
-			ps.setString(3, file.getCreatedBy());
-			ps.setString(4, file.getFileName());
-			ps.setString(5, file.getFilePath());
 			
-			int numUser = ps.executeUpdate();
-			System.out.println(numUser+" records were added."+ps.toString());
+			ps.setString(1, UserSession.getInstance().getUsername());
+			ps.setString(2, file.getFileName());
+			ps.setString(3, file.getFilePath());			
+			ps.setFloat(4, file.getVersion());
+			
+			ps.executeUpdate();
 			
 		} catch (SQLException sqlex) {
 			throw sqlex;
@@ -165,7 +165,7 @@ public class FileDAO extends StockFileDAO{
 		
 		try {
 			
-			ps = conn.prepareStatement("SELECT file FROM user_file "
+			ps = conn.prepareStatement("SELECT * FROM user_file "
 					+ "JOIN file ON user_file.file_path = file.file_path AND user_file.file_name = file.file_name "
 					+ "WHERE username = ?");
 			ps.setString(1, user.getUserName());
@@ -177,8 +177,8 @@ public class FileDAO extends StockFileDAO{
 				String filename = rs.getString("file_name");
 				String filepath = rs.getString("file_path");
 				StockFile thisFile = new StockFile(
-						rs.getString("file_path"),
-						rs.getString("file_name"),
+						filepath,
+						filename,
 						rs.getFloat("version"),
 						new DateTime(rs.getString("last_modified")),
 						rs.getString("last_sync_by"),
