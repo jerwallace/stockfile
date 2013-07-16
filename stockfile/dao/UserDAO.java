@@ -48,11 +48,11 @@ public class UserDAO extends StockFileDAO {
 		} catch (SQLException sqlex) {
 			System.err.println("SQLException: " + sqlex.getMessage());
 			//sqlex.printStackTrace();
-			return null;
+			this.psclose();
+                        return null;
 		}
 
 		try {
-
 			while (rs.next()) {
 				user.setUserName(rs.getString("username"));
 				user.setFirstName(rs.getString("first_name"));
@@ -68,7 +68,6 @@ public class UserDAO extends StockFileDAO {
 		}
 
 		this.psclose();
-
 		return user;
 	}
 
@@ -79,9 +78,7 @@ public class UserDAO extends StockFileDAO {
 	 * @param password
 	 * @return
 	 */
-	public String createUser(User user, String password) {
-
-		String msg = "";
+	public int createUser(User user, String password) throws InvalidException, SQLException {
 
 		if (!usernameTaken(user.getUserName())) {
 
@@ -101,21 +98,25 @@ public class UserDAO extends StockFileDAO {
 				conn.commit();
 				rs = ps.getGeneratedKeys();
 
-				if (rs.next()) 
-					msg = "Username '" + user.getUserName() + "' successfully added.";
-				else 
-					throw new SQLException("Creating user failed, no generated key obtained.");
-				
+				if (rs.next()) {
+                                    	this.psclose();
+					return 1;
+                                } else { 
+                                        this.psclose();
+                                        throw new SQLException("Creating user failed, no generated key obtained.");
+                                }
 			} catch (SQLException sqlex) {
 				Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, sqlex);
 				System.err.println("SQLException: " + sqlex.getMessage());
 				sqlex.printStackTrace();
+                                this.psclose();
+                                return 0;
 			}
-		} else 
-			msg = "Username '" + user.getUserName() + "' is already taken. Please try again.";
-
-		this.psclose();
-		return msg;
+		} else {
+                    this.psclose();
+                    throw new InvalidException("Username '" + user.getUserName() + "' is already taken. Please try again.");
+                }
+                
 	}
 
 	/**
@@ -125,40 +126,30 @@ public class UserDAO extends StockFileDAO {
 	 * @return true if the given username already exists in the database
 	 *
 	 */
-	public boolean usernameTaken(String username) {
+	public boolean usernameTaken(String username) throws SQLException {
 
-		this.initConnection();
-
-		if (username == null) {
+		if (username == null) 
 			return true;
-		}
-
+		
 		try {
 
 			ps = conn.prepareStatement("SELECT * FROM user WHERE username = ?");
 			ps.setString(1, username);
 			rs = ps.executeQuery();
 
-		} catch (SQLException sqlex) {
-
-			System.err.println("SQLException: " + sqlex.getMessage());
-			sqlex.printStackTrace();
-		}
-
-		// parse the resultset
-		try {
-			while (rs.next()) 
+                        if (rs.next()) {
+				this.psclose();
 				return true;
-
+			} else {
+				this.psclose();
+				return false;
+			}
+                        
 		} catch (SQLException sqlex) {
 
 			System.err.println("SQLException: " + sqlex.getMessage());
-			sqlex.printStackTrace();
-			this.psclose();
-			return false;
+			throw sqlex;
 		}
-		this.psclose();
-		return false;
 	}
 
 	/**
@@ -185,8 +176,6 @@ public class UserDAO extends StockFileDAO {
 				//user.setDateJoined(new LocalDate(rs.getTimestamp("date_joined")));
 			}
                         
-                        
-			//System.out.println(ps.toString());
 		} catch (SQLException sqlex) {
 			System.err.println("SQLException: " + sqlex.getMessage());
 			
