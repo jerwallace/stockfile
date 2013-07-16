@@ -26,12 +26,12 @@ public class AuthenticateService {
         System.out.println(username + " " + Security.sha(password));
         User user = this.userDao.getUser(username, Security.sha(password));
         
-        if (user!=null) {
+        if (user != null) {
+            
             if (user.getUserName() == null) 
                 throw new InvalidAuthenticationException(ERROR_MESSAGE);
             else
                 currentUserSession.setCurrentUser(user);
-            
         } else 
             throw new InvalidAuthenticationException("Could not connect to server.");
     }

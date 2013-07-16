@@ -45,7 +45,7 @@ public class Security {
          
         try {
             
-            MessageDigest mDigest = MessageDigest.getInstance("SHA-512");
+            MessageDigest mDigest = MessageDigest.getInstance("SHA-256");
 
             mDigest.update(stringToConvert.getBytes(), 0, stringToConvert.length());
 
