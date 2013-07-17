@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 
 import stockfile.client.protocol.AbstractProtocol;
 import stockfile.client.protocol.CustomException;
-import stockfile.controllers.FileScanner;
 
 /**
  * Abstract Client class

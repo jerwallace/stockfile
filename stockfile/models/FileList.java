@@ -8,7 +8,7 @@ public class FileList
 {
 
     private static FileList currentFileList = null;
-    private static Manifest manifest;
+    private Manifest manifest;
 
     /**
      * Singleton class constructor
@@ -16,7 +16,7 @@ public class FileList
     protected FileList()
     {
         //fileList = new HashMap<String, StockFile>();
-        FileList.manifest = new Manifest();
+        this.manifest = new Manifest();
     }
 
     /**
@@ -48,6 +48,10 @@ public class FileList
     }
     
     public Manifest getManifest() {
-        return FileList.manifest;
+        return this.manifest;
+    }
+    
+    public void loadManifest(Manifest manifest) {
+    	this.manifest = manifest;
     }
 }

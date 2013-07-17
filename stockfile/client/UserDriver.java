@@ -9,7 +9,6 @@ import java.rmi.UnknownHostException;
 import stockfile.api.UserApi;
 import static stockfile.client.AbstractClient.connectToServer;
 import stockfile.client.protocol.UserProtocol;
-import stockfile.controllers.FileScanner;
 
 /**
  * UserDriver class is the driver for User type client

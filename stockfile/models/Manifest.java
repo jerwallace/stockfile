@@ -1,16 +1,24 @@
 package stockfile.models;
 
+import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  *
  * @author Bahman
  */
-public class Manifest
+public class Manifest implements Serializable
 {
 
-    private Map<String, StockFile> manifest;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6177083960456115163L;
+	public Map<String, StockFile> manifest;
     
     public enum Operation {
         DOWNLOAD,UPLOAD,DUPLICATE
@@ -18,18 +26,21 @@ public class Manifest
     
     public Manifest()
     {
-        manifest = new HashMap<>();
+        manifest = new TreeMap<>();
     }
     
-    public Map<String,StockFile> getManifestMap() {
-        return this.manifest;
-    }
-
-    public void insertFile(String fullPath, StockFile metaData)
+    public void updateFile(String fullPath, StockFile thisFile)
     {
-        this.manifest.put(fullPath, metaData);
+        this.manifest.put(fullPath, thisFile);
     }
 
+    public void insertFile(String fullPath, StockFile thisFile)
+    {
+    	System.out.println("Added dir to FileList "+thisFile);
+    	if (!this.manifest.containsKey(fullPath))
+    		this.manifest.put(fullPath, thisFile);
+    }
+    
     public void removeFile(String fullPath)
     {
         this.manifest.remove(fullPath);
@@ -47,33 +58,20 @@ public class Manifest
     
     public boolean isEqual(Manifest newManifest)
     {
-    	if (this.manifest==null&&newManifest==null) {
-    		return true;
-    	} else if (newManifest==null||this.manifest.size() != newManifest.getManifestMap().size())
-        {
-            return false;
-        }
-        else
-        {
-            for (Map.Entry<String, StockFile> thisManifestEntry : this.manifest.entrySet())
-            {
-                if (!newManifest.containsFile(thisManifestEntry.getKey()))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
+    	Set<StockFile> values1 = new HashSet<StockFile>(newManifest.manifest.values());
+    	Set<StockFile> values2 = new HashSet<StockFile>(newManifest.manifest.values());
+    	return values1.equals(values2);
     }
     
     @Override
     public String toString() {
         String output = "";
-        for (Map.Entry<String, StockFile> thisManifestEntry : this.manifest.entrySet())
+        for (String key : this.manifest.keySet())
             {
-                output += thisManifestEntry.getKey()+"\n";
+                output += key+"\n";
             }
         return output;
 
     }
+
 }
