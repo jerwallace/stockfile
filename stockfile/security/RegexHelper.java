@@ -17,14 +17,14 @@ public class RegexHelper {
 		ALPHABETS, COURSE_NUMBER, LETTER_DIGIT, UPPSERCASE_LETTER, NAME
     }
     private static final String RGX_USERNAME = "^[a-z0-9_-]{5,30}$";
-    private static final String RGX_PASSWORD = ".{8, 30}";
+    private static final String RGX_PASSWORD = ".{8,30}";
     private static final String RGX_EMAIL = "^([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})$";
     private static final String RGX_POSTAL_CODE = "[A-Za-z0-9\\-]+$";
     private static final String RGX_FLOAT = "^(?=.+)(?:[1-9]\\d*|0)?(?:\\.\\d+)?$";
     private static final String RGX_INT = "^[1-9]\\d*$";
     private static final String RGX_PHONE_NUMBER = "^\\(?([0-9]{3})\\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$";
     private static final String RGX_COURSE_NUMBER = "^\\d{1,11}";
-    private static final String RGX_ALPHABETS = "^[[:alpha:]\\s]{1,50}";
+    private static final String RGX_ALPHABETS = "^^[a-zA-Z ]{1,50}$";
     private static final String RGX_LETTER_DIGIT = "\\w" ;
     private static final String RGX_UPPERCASE_LETTER = "^[A-Z]*$" ;
     private static final String RGX_NAME = "[A-Za-z0-9_~\\-'\\$%\\&]+$";
@@ -58,6 +58,9 @@ public class RegexHelper {
         switch (regEx) {
             case USERNAME:
                 patternToUse = RGX_USERNAME;
+                break;
+            case PASSWORD:
+                patternToUse = RGX_PASSWORD;
                 break;
             case POSTAL_CODE:
                 patternToUse = RGX_POSTAL_CODE;
