@@ -15,8 +15,8 @@ import java.util.Scanner;
 import org.joda.time.LocalDate;
 
 import stockfile.controllers.DirectoryWatcher;
-import stockfile.controllers.FileScanner;
-import stockfile.controllers.SFTP;
+import stockfile.controllers.SFTPController;
+import stockfile.controllers.StateController;
 import stockfile.dao.UserDAO;
 import stockfile.models.User;
 
@@ -31,7 +31,7 @@ public class ServerDriver
 
     private static final int PORT = 4099;
     private static Registry registry;
-    private SaveState stateTools;
+    private StateController stateTools;
 	private static final UserDAO userDAO = new UserDAO();
 
     /**
@@ -39,7 +39,7 @@ public class ServerDriver
      */
     public ServerDriver()
     {
-        stateTools = new SaveState();
+        stateTools = new StateController();
         stateTools.loadState();
     }
 
@@ -105,7 +105,7 @@ public class ServerDriver
 //            System.exit(0);
 //        }
         
-        SFTP.getInstance().connect();
+        SFTPController.getInstance().connect();
         System.out.println();
 
         //Create a thread to run FileScanner class separately to update stock prices frequently

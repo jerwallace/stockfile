@@ -1,5 +1,7 @@
 package stockfile.dao;
 
+import stockfile.exceptions.CreateUserException;
+import stockfile.exceptions.CreateUserException.CreateUserError;
 import stockfile.exceptions.InvalidException;
 import stockfile.models.User;
 
@@ -80,7 +82,7 @@ public class UserDAO extends StockFileDAO {
 	 * @param password
 	 * @return
 	 */
-	public int createUser(User user, String password) throws InvalidException, SQLException {
+	public int createUser(User user, String password) throws CreateUserException, SQLException {
 
 		if (!usernameTaken(user.getUserName())) {
 
@@ -116,7 +118,7 @@ public class UserDAO extends StockFileDAO {
 			}
 		} else {
                     this.psclose();
-                    throw new InvalidException("Username '" + user.getUserName() + "' is already taken. Please try again.");
+                    throw new CreateUserException(CreateUserError.USERNAME_TAKEN);
                 }
                 
 	}

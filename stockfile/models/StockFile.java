@@ -1,28 +1,36 @@
 package stockfile.models;
 
+import java.io.File;
+import java.sql.Timestamp;
+import java.util.Date;
+
 import org.joda.time.DateTime;
 
 /**
  * Class describing a File object
  * @author Bahman
  */
-public class StockFile {
+@SuppressWarnings("serial")
+public class StockFile extends File {
 
     private String filePath;
     private String fileName;
     private float version;
+    private String type;
     
     private DateTime lastModified;
     private String lastSyncBy;
     private String createdBy;
     
-    public StockFile(String path, String name, float version, DateTime lastMod, String lastSyncBy, String createdBy){
-        this.filePath = path;
+    public StockFile(String path, String name, float version, Timestamp lastMod, String lastSyncBy, String createdBy, String type){
+        super(name);
+    	this.filePath = path;
         this.fileName = name.replace(path,"");
         this.version = version;
-        this.lastModified = lastMod;
+        this.lastModified = new DateTime(lastMod);
 		this.lastSyncBy = lastSyncBy;
 		this.createdBy = createdBy;
+		this.setType(type);
     }
 
 	/**
@@ -94,8 +102,8 @@ public class StockFile {
 	/**
 	 * @param lastModified the lastModified to set
 	 */
-	public void setLastModified(DateTime lastModified) {
-		this.lastModified = lastModified;
+	public void setLastModified(Date lastModified) {
+		this.lastModified = new DateTime(lastModified);
 	}
 
 	/**
@@ -130,4 +138,12 @@ public class StockFile {
             return getFileName()+" - "+getVersion();
             
         }
+
+		public String getType() {
+			return type;
+		}
+
+		public void setType(String type) {
+			this.type = type;
+		}
 }
