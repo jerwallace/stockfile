@@ -5,6 +5,7 @@
 package stockfile.dao;
 
 import java.io.File;
+import java.util.Date;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -41,14 +42,15 @@ public class FileDAO extends StockFileDAO{
 		try {
 			
 			ps = conn.prepareStatement("INSERT INTO "
-					+ "file (version,last_sync_by,created_by,file_name,file_path) "
-					+ "VALUES (?,?,?,?,?);");
+					+ "file (version,last_sync_by,created_by,file_name,file_path,file_type) "
+					+ "VALUES (?,?,?,?,?,?);");
 			
 			ps.setFloat(1, file.getVersion());
 			ps.setString(2, file.getLastSyncBy());
 			ps.setString(3, file.getCreatedBy());
 			ps.setString(4, file.getFileName());
 			ps.setString(5, file.getFilePath());
+			ps.setString(6, file.getType());
 			
 			ps.executeUpdate();
 			System.out.println("Added file to database.");
@@ -170,7 +172,7 @@ public class FileDAO extends StockFileDAO{
 	public Manifest generateManifest() throws SQLException {
 		
 		Manifest manifest = new Manifest();
-		System.out.println(conn);
+
 		try {
 			
 			ps = conn.prepareStatement("SELECT * FROM user_file "
@@ -186,19 +188,18 @@ public class FileDAO extends StockFileDAO{
 				String filename = rs.getString("file_name");
 				String filepath = rs.getString("file_path");
 				
+				@SuppressWarnings("deprecation")
 				StockFile thisFile = new StockFile(
 						filepath,
 						filename,
 						rs.getFloat("version"),
-						new DateTime(rs.getString("last_modified")),
+						rs.getTimestamp("last_modified"),
 						rs.getString("last_sync_by"),
-						rs.getString("created_by")
+						rs.getString("created_by"),
+						rs.getString("file_type")
 						);
 				
-				System.out.println("run ");
-				System.out.println(thisFile);
-				
-				manifest.insertFile((filepath+"/"+filename), thisFile);
+				manifest.updateFile(filename, thisFile);
 				
 			}
 			

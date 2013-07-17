@@ -25,27 +25,28 @@ import java.util.logging.Logger;
 import stockfile.client.UserSession;
 import stockfile.dao.connection.Utils;
 import stockfile.models.FileList;
+import stockfile.models.StockFile;
 
-public class SFTP {
+public class SFTPController {
 
     private Properties props;
-    private static SFTP sftp_connection = null;
+    private static SFTPController sftp_connection = null;
     private JSch jsch = new JSch();
     private Session session = null;
     private Channel channel = null;
     private ChannelSftp ch_sftp = null;
     private String userRoot = null;
     
-    public SFTP() {
+    public SFTPController() {
             
     }
         /**
      * Static method returns a single instance of MySQLConnection.
      * @return  a single instance of MySQLConnection
      */
-    public static SFTP getInstance()  {
+    public static SFTPController getInstance()  {
         if (sftp_connection == null) {
-            sftp_connection = new SFTP(); 
+            sftp_connection = new SFTPController(); 
         }
         return sftp_connection;
     }
@@ -55,7 +56,7 @@ public class SFTP {
             try {
                 props = Utils.readProperties("/stockfile/config/stockfile_ftp.properties");
             } catch (IOException ex) {
-                Logger.getLogger(SFTP.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SFTPController.class.getName()).log(Level.SEVERE, null, ex);
             }
             
             userRoot = props.getProperty("ftpRootDir")+UserSession.getInstance().getCurrentUser().getUserName();
@@ -121,11 +122,16 @@ public class SFTP {
     }
     
     public void send(String filename) throws Exception {
-        
+    	   System.out.println("Manifest contents:"+FileList.getInstance().getManifest());
+           System.out.println("Attempting to send file: "+filename);
     	   try {
-                File f = new File(UserSession.getInstance().getCurrentUser().getHomeDirectory()+filename);
-                System.out.println("Storing file as remote filename: " + f.getName());
-                ch_sftp.put(new FileInputStream(f), f.getName());
+                StockFile f = FileList.getInstance().getManifest().getFile(filename);
+                System.out.println("Storing file as remote filename: " + userRoot+ f.getFileName());
+                if (f.getType()=="dir") {
+                	ch_sftp.mkdir(userRoot+f.getFileName());
+                } else {
+                	ch_sftp.put(new FileInputStream(f), userRoot+f.getFileName());
+                }
             } catch (Exception e) {
                 System.err.println("Storing remote file failed. "+e.toString());
                 throw e;
@@ -135,13 +141,18 @@ public class SFTP {
     public void get(String filename) {
         
         try {
-            File f = new File(UserSession.getInstance().getCurrentUser().getHomeDirectory()+filename); 
-            System.out.println("Getting file "+ filename);
-            ch_sftp.get(filename, new FileOutputStream(f));
+            File f = new File(filename); 
+            String fname = UserSession.getInstance().getCurrentUser().getHomeDirectory()+ filename;
+            System.out.println("Getting file "+ fname);
+            if (f.mkdirs()) {
+            	ch_sftp.get(UserSession.getInstance().getCurrentUser().getHomeDirectory()+filename, new FileOutputStream(f));
+            } else {
+            	System.err.println("Could not make directories. Please check persmissions of user home folder: "+UserSession.getInstance().getCurrentUser().getHomeDirectory());
+            }
         } catch (FileNotFoundException ex) {
-                Logger.getLogger(SFTP.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SFTPController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SftpException ex) {
-            Logger.getLogger(SFTP.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SFTPController.class.getName()).log(Level.SEVERE, null, ex);
         } 
 
     }
@@ -160,23 +171,5 @@ public class SFTP {
 //        
 //        
 //    }
-    
-    public void recieveFiles() throws Exception {
-        
-       //System.out.println("Downloading file "+filename);
-       Vector files = ch_sftp.ls(userRoot);
-       for (int i=0; i<files.size(); i++) {
-         System.out.println(FileList.getInstance().getManifest());
-         
-         com.jcraft.jsch.ChannelSftp.LsEntry lsEntry = (com.jcraft.jsch.ChannelSftp.LsEntry) files.get(i);
-         String filename = lsEntry.getFilename();
-         if (filename.length() > 2) {
-            File f = new File("c:\\Users\\wallacej\\Stockfile\\"+filename);         
-            System.out.println(f.getName());
-            ch_sftp.get(lsEntry.getFilename(), new FileOutputStream(f));
-         }
-        }
-     
-    } 
 
 }

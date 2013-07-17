@@ -1,6 +1,13 @@
 package stockfile;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -11,45 +18,39 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import stockfile.client.UserSession;
 import stockfile.controllers.DirectoryWatcher;
-import stockfile.controllers.SFTP;
+import stockfile.controllers.SFTPController;
+import stockfile.controllers.StateController;
+import stockfile.controllers.SyncController;
 import stockfile.dao.FileDAO;
 import stockfile.models.FileList;
 import stockfile.models.StockFile;
-import stockfile.server.Sync;
 
 public class StockFileDriver {
 	
-	Collection<?> files;
-    File thisDir;
-    String directory;
-    FileDAO dbFiles = new FileDAO();
-    
+	StateController stateTools;
+	
     public StockFileDriver() throws Exception
     {
-        thisDir = new File(UserSession.getInstance().getCurrentUser().getHomeDirectory());
-        files = FileUtils.listFiles(
-                thisDir,
-                new RegexFileFilter("^(.*?)"),
-                TrueFileFilter.INSTANCE);
-        System.out.println(files);
-        Iterator<?> iterator = files.iterator();
-        
-        while (iterator.hasNext())
-        {
-            StockFile thisFile = new StockFile(thisDir.toString(), iterator.next().toString(), 1, null, "", "");
-			FileList.getInstance().getManifest().insertFile(thisFile.getFileName(), thisFile);
-        }
-        
+    	
+    	stateTools = new StateController();
+        stateTools.loadState();
+        stateTools.loadDirectoryState();
+
     }
     
     public static void main(String[] args) throws Exception
     {
-    	new StockFileDriver();
-    	System.out.println(FileList.getInstance().getManifest());
-    	// Make FTP connection to server.
-    	SFTP.getInstance().connect();
     	
-    	Sync syncTools = new Sync();
+    	StockFileDriver stockfileInstance = new StockFileDriver();
+    	
+    	//Attach shutDownhook for data persistence after shutDown
+    	stockfileInstance.attachShutDownHook();
+    	System.out.println(FileList.getInstance().getManifest());
+    	
+    	// Make FTP connection to server.
+    	SFTPController.getInstance().connect();
+    	
+    	SyncController syncTools = new SyncController();
         syncTools.syncronize();
     	
     	// Create a thread to run FileScanner class separately to update stock prices frequently.
@@ -58,5 +59,22 @@ public class StockFileDriver {
         // Start the FileScanner thread.
         watcherThread.start();
         
+    }
+    
+    /**
+     * Public method that creates a Runtime ShutDownHook thread to maintain the
+     * State object values in case of system shut down to allow for data
+     * persistence
+     */
+    public void attachShutDownHook()
+    {
+        Runtime.getRuntime().addShutdownHook(new Thread()
+        {
+            @Override
+            public void run()
+            {
+                stateTools.saveState();
+            }
+        });
     }
 }
