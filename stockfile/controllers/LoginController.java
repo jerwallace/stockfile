@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package stockfile.server;
+package stockfile.controllers;
 
 import java.io.Console;
 import java.util.InputMismatchException;
@@ -22,7 +22,7 @@ import stockfile.security.RegexHelper.RegExPattern;
  *
  * @author MrAtheist
  */
-public class loginController {
+public class LoginController {
 
     private static void createUser() throws CreateUserException {
 
