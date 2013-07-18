@@ -9,16 +9,13 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -110,7 +107,7 @@ public class SFTPController {
                 
                 
             } catch (Exception e) {
-            	Class cls = e.getClass(); 
+            	Class<? extends Exception> cls = e.getClass(); 
                 System.err.println("Unable to connect to FTP server. "+cls.getName()+" | "+e.toString());
                 throw e;
             } 

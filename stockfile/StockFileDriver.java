@@ -1,6 +1,6 @@
 package stockfile;
 
-import stockfile.controllers.DirectoryWatcher;
+import stockfile.controllers.LoginController;
 import stockfile.controllers.SFTPController;
 import stockfile.controllers.StateController;
 import stockfile.controllers.SyncController;
@@ -11,16 +11,16 @@ public class StockFileDriver {
 	
     public StockFileDriver() throws Exception
     {
-    	
+    	LoginController.run();
     	stateTools = new StateController();
-        stateTools.loadState();
+        //stateTools.loadState();
         stateTools.loadDirectoryState();
 
     }
     
     public static void main(String[] args) throws Exception
     {
-    	
+   
     	StockFileDriver stockfileInstance = new StockFileDriver();
     	
     	//Attach shutDownhook for data persistence after shutDown

@@ -9,7 +9,6 @@ public class AuthenticateService {
     protected final String ERROR_MESSAGE = "Invalid Credentials. Please try again.";
     
     private final UserDAO userDao;
-    private UserSession currentUserSession = UserSession.getInstance();
     
     private final AuthenticateValidator authenticateValidator;
     	
@@ -30,8 +29,10 @@ public class AuthenticateService {
             
             if (user.getUserName() == null) 
                 throw new InvalidAuthenticationException(ERROR_MESSAGE);
-            else
-                currentUserSession.setCurrentUser(user);
+            else {
+                UserSession.getInstance().setCurrentUser(user);
+                System.out.println("User "+UserSession.getInstance().getCurrentUser().getUserName()+" signed in.");
+            }
         } else 
             throw new InvalidAuthenticationException("Could not connect to server.");
     }

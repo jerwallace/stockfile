@@ -5,7 +5,6 @@
 package stockfile.controllers;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -16,7 +15,6 @@ import stockfile.models.FileList;
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
 import stockfile.models.Manifest.Operation;
-import stockfile.models.User;
 import stockfile.security.UserSession;
 
 /**
@@ -72,16 +70,15 @@ public class SyncController {
 					serverManifest.remove(key);
 				}
 
-				for (String servkey : serverManifest.keySet()) {
-					FileList.getInstance()
-							.getManifest()
-							.insertFile(homeDir + servkey,
-									serverManifest.get(servkey));
-					syncList.put(servkey, Operation.DOWNLOAD);
-				}
-
 			}
 
+			for (String servkey : serverManifest.keySet()) {
+				FileList.getInstance()
+						.getManifest()
+						.insertFile(homeDir + servkey,
+								serverManifest.get(servkey));
+				syncList.put(servkey, Operation.DOWNLOAD);
+			}
 		}
 
 	}

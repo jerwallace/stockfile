@@ -2,19 +2,14 @@ package stockfile.dao;
 
 import stockfile.exceptions.CreateUserException;
 import stockfile.exceptions.CreateUserException.CreateUserError;
-import stockfile.exceptions.InvalidException;
 import stockfile.models.User;
 
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.joda.time.LocalDate;
 
-import static stockfile.dao.StockFileDAO.ps;
-import static stockfile.dao.StockFileDAO.rs;
 import stockfile.security.Security;
 
 /**

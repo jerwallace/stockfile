@@ -8,6 +8,7 @@ package stockfile.exceptions;
  *
  * @author 
  */
+@SuppressWarnings("serial")
 public class InvalidAuthenticationException extends Exception {
 
     public InvalidAuthenticationException(String message) {

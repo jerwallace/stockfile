@@ -142,6 +142,7 @@ public class StockFile extends File {
 		this.createdBy = createdBy;
 	}
 
+	@Override
 	public String toString() {
 		String output = "=============\n"+"FILE DETAILS: \n";
 		output += "Name: "+getName()+"\n";

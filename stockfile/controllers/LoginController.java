@@ -4,15 +4,11 @@
  */
 package stockfile.controllers;
 
-import java.io.Console;
 import java.sql.SQLException;
 import java.util.InputMismatchException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Scanner;
 import org.joda.time.LocalDate;
 
-import stockfile.security.UserSession;
 import stockfile.dao.UserDAO;
 import stockfile.exceptions.CreateUserException;
 import stockfile.exceptions.CreateUserException.CreateUserError;
@@ -28,10 +24,9 @@ import stockfile.security.RegexHelper.RegExPattern;
  */
 public class LoginController {
 
-    private static void createUser() throws CreateUserException, SQLException {
+    private static void createUser() throws SQLException, CreateUserException {
 
         Scanner scanner = new Scanner(System.in);
-        Console console = System.console();
         UserDAO userDAO = new UserDAO();
 
         String[] arr = {"Username", "Password", "First name", "Last name", "Email"};
@@ -78,15 +73,14 @@ public class LoginController {
             
 
         }
-        
+        scanner.close();
         userDAO.createUser(new User(ret[0], ret[2], ret[3], ret[4], new LocalDate(), System.getProperty("user.home") + "/Stockfile"), ret[1]);
             
     }
 
-    private static void login() throws InvalidAuthenticationException {
+    private static void login() {
 
         Scanner scanner = new Scanner(System.in);
-        Console console = System.console();
         final AuthenticateService as = new AuthenticateService();
         String username, password;
         
@@ -109,15 +103,18 @@ public class LoginController {
                 as.authenticate(username, password);
 
                 break;
+                
             } catch (InvalidAuthenticationException ex) {
                 System.err.println(ex.getMessage());
                 continue;
             }
+            
         } while (true);
+        scanner.close();
 
     }
 
-    public static void main(String[] args) throws InvalidAuthenticationException, CreateUserException, SQLException {
+    public static void run() {
 
         Scanner scanner = new Scanner(System.in);
 
@@ -147,13 +144,22 @@ public class LoginController {
             }
         } while (true);
 
-        switch (choice) {
-            case 1:
-                login();
-                break;
-            case 2:
-                createUser();
-                break;
-        }
+	        switch (choice) {
+	            case 1:
+	            	login();
+	                break;
+	            case 2:
+	            	try {
+	                	createUser();
+					} catch (CreateUserException ex) {
+						System.err.println(ex.getMessage());
+					} catch (SQLException ex) {
+						System.err.println(ex.getMessage());
+					}
+	                break;
+	        }
+	        
+	        scanner.close();
+        
     }
 }
