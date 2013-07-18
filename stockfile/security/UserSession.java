@@ -1,16 +1,17 @@
-package stockfile.client;
+package stockfile.security;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.HashMap;
 
+import stockfile.client.Session;
 import stockfile.models.Client;
 import stockfile.models.User;
 
 /**
  * Class definition for the Singleton User type client session
  */
-public class UserSession extends Session implements Serializable
+public class UserSession implements Serializable
 {
 
     private static UserSession userSession = null;
@@ -110,24 +111,5 @@ public class UserSession extends Session implements Serializable
     {
         this.userClientHashMap = userClientHashMap;
     }
-    /**
-     * Public method that returns the Stock_Action value of the currentAction
-     * and can be any of the three values" BUY_STOCK, SELL_STOCK, QUERY_STOCK
-     * <p/>
-     * @return
-     */
-//    public Stock_Action getCurrentAction()
-//    {
-//        return this.currentAction;
-//    }
-    /**
-     * Public method that sets the Stock_Action value of the currentAction and
-     * can be any of the three values" BUY_STOCK, SELL_STOCK, QUERY_STOCK
-     * <p/>
-     * @param currentAction the currentAction to set
-     */
-//    public void setCurrentAction(Stock_Action currentAction)
-//    {
-//        this.currentAction = currentAction;
-//    }
+
 }

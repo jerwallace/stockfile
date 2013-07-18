@@ -1,6 +1,5 @@
 package stockfile.security;
 
-import stockfile.client.UserSession;
 import stockfile.dao.*;
 import stockfile.exceptions.InvalidAuthenticationException;
 import stockfile.models.User;

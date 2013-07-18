@@ -16,7 +16,6 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 
-import stockfile.client.UserSession;
 import stockfile.controllers.DirectoryWatcher;
 import stockfile.controllers.SFTPController;
 import stockfile.controllers.StateController;
@@ -24,6 +23,7 @@ import stockfile.controllers.SyncController;
 import stockfile.dao.FileDAO;
 import stockfile.models.FileList;
 import stockfile.models.StockFile;
+import stockfile.security.UserSession;
 
 public class StockFileDriver {
 	

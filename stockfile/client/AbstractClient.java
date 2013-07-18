@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import stockfile.client.protocol.AbstractProtocol;
 import stockfile.client.protocol.CustomException;
+import stockfile.security.UserSession;
 
 /**
  * Abstract Client class

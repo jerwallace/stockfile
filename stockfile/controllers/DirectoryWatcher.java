@@ -21,6 +21,10 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
 
+import stockfile.models.FileList;
+import stockfile.models.StockFile;
+import stockfile.security.UserSession;
+
 public class DirectoryWatcher implements Runnable {
 	
 	private final WatchService watchServ;
@@ -38,10 +42,10 @@ public class DirectoryWatcher implements Runnable {
         if (trace) {
             Path prev = keys.get(key);
             if (prev == null) {
-                System.out.format("register: %s\n", dir);
+                //System.out.format("register: %s\n", dir);
             } else {
                 if (!dir.equals(prev)) {
-                    System.out.format("update: %s -> %s\n", prev, dir);
+                    //System.out.format("update: %s -> %s\n", prev, dir);
                 }
             }
         }
@@ -121,13 +125,23 @@ public class DirectoryWatcher implements Runnable {
                 WatchEvent<Path> ev = cast(event);
                 Path name = ev.context();
                 Path child = dir.resolve(name);
+                System.out.println(name.toString()+" "+child.toString());
+                String fileKey = FileList.convertToRelativePath(name.toString());
 
-                // print out event
-                System.out.format("%s: %s\n", event.kind().name(), child);
+                if (kind == ENTRY_DELETE) {
+                	FileList.getInstance().getManifest().removeFile(fileKey);
+                }
+                
+                if (kind == ENTRY_MODIFY) {
+                	System.out.println(fileKey);
+                	FileList.getInstance().getManifest().getFile(fileKey).incrementVersion();
+                }
 
                 // if directory is created, and watching recursively, then
                 // register it and its sub-directories
                 if ((kind == ENTRY_CREATE)) {
+                	StockFile thisFile = new StockFile(UserSession.getInstance().getCurrentUser().getHomeDirectory(), name.toString(), 1, null, "", "");
+    	        	FileList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
                     try {
                         if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
                             registerAll(child);
@@ -137,7 +151,9 @@ public class DirectoryWatcher implements Runnable {
                     }
                 }
             }
-
+            
+            System.out.println(FileList.getInstance().getManifest());
+            
             // reset key and remove from set if directory no longer accessible
             boolean valid = key.reset();
             if (!valid) {

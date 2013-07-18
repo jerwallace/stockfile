@@ -22,10 +22,10 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import stockfile.client.UserSession;
 import stockfile.dao.connection.Utils;
 import stockfile.models.FileList;
 import stockfile.models.StockFile;
+import stockfile.security.UserSession;
 
 public class SFTPController {
 
@@ -122,15 +122,15 @@ public class SFTPController {
     }
     
     public void send(String filename) throws Exception {
-    	   System.out.println("Manifest contents:"+FileList.getInstance().getManifest());
+    	   //System.out.println("Manifest contents:"+FileList.getInstance().getManifest());
            System.out.println("Attempting to send file: "+filename);
     	   try {
                 StockFile f = FileList.getInstance().getManifest().getFile(filename);
-                System.out.println("Storing file as remote filename: " + userRoot+ f.getFileName());
-                if (f.getType()=="dir") {
-                	ch_sftp.mkdir(userRoot+f.getFileName());
+                System.out.println("Storing file as remote filename: " + userRoot+ f.getRelativePath());
+                if (f.isDirectory()) {
+                	ch_sftp.mkdir(userRoot+f.getRelativePath());
                 } else {
-                	ch_sftp.put(new FileInputStream(f), userRoot+f.getFileName());
+                	ch_sftp.put(new FileInputStream(f), userRoot+f.getRelativePath(), ChannelSftp.OVERWRITE);
                 }
             } catch (Exception e) {
                 System.err.println("Storing remote file failed. "+e.toString());
@@ -141,16 +141,20 @@ public class SFTPController {
     public void get(String filename) {
         
         try {
-            File f = new File(filename); 
-            String fname = UserSession.getInstance().getCurrentUser().getHomeDirectory()+ filename;
-            System.out.println("Getting file "+ fname);
-            if (f.mkdirs()) {
-            	ch_sftp.get(UserSession.getInstance().getCurrentUser().getHomeDirectory()+filename, new FileOutputStream(f));
+
+        	StockFile f = new StockFile(UserSession.getInstance().getCurrentUser().getHomeDirectory(),filename); 
+        	System.out.println(f.getPath());
+
+            if (f.isDirectory()) {
+            	System.out.println("Making directory: "+ f.getPath());
+            	f.mkdir();
             } else {
-            	System.err.println("Could not make directories. Please check persmissions of user home folder: "+UserSession.getInstance().getCurrentUser().getHomeDirectory());
+            	System.out.println("Getting file "+ f.getPath());
+            	ch_sftp.get(UserSession.getInstance().getCurrentUser().getHomeDirectory()+f.getPath(), new FileOutputStream(f));
             }
+        
         } catch (FileNotFoundException ex) {
-                Logger.getLogger(SFTPController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SFTPController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SftpException ex) {
             Logger.getLogger(SFTPController.class.getName()).log(Level.SEVERE, null, ex);
         } 

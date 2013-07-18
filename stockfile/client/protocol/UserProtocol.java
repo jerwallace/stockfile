@@ -3,8 +3,8 @@ package stockfile.client.protocol;
 import java.rmi.RemoteException;
 
 import stockfile.api.UserApi;
-import stockfile.client.UserSession;
 import stockfile.models.User;
+import stockfile.security.UserSession;
 
 /**
  * User Protocol contains all of the actions and the flow of states between the

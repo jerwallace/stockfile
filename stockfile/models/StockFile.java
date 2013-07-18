@@ -8,70 +8,73 @@ import org.joda.time.DateTime;
 
 /**
  * Class describing a File object
+ * 
  * @author Bahman
  */
 @SuppressWarnings("serial")
 public class StockFile extends File {
 
-    private String filePath;
-    private String fileName;
-    private float version;
-    private String type;
-    
-    private DateTime lastModified;
-    private String lastSyncBy;
-    private String createdBy;
-    
-    public StockFile(String path, String name, float version, Timestamp lastMod, String lastSyncBy, String createdBy, String type){
-        super(name);
-    	this.filePath = path;
-        this.fileName = name.replace(path,"");
-        this.version = version;
-        this.lastModified = new DateTime(lastMod);
+	private String homePath;
+	private String relFilePath;
+	private float version;
+	private DateTime lastModified;
+	private String lastSyncBy;
+	private String createdBy;
+	private boolean inSync;
+
+	public StockFile(String homePath, String fullPath, float version,
+			Timestamp lastMod, String lastSyncBy, String createdBy) {
+		super(fullPath);
+		resetSync();
+		this.homePath = homePath;
+		this.relFilePath = fullPath.replace(homePath, "");
+		this.version = version;
+		this.lastModified = new DateTime(lastMod);
 		this.lastSyncBy = lastSyncBy;
 		this.createdBy = createdBy;
-		this.setType(type);
-    }
+	}
+
+	public StockFile(String homePath, String fullPath) {
+		super(fullPath);
+		resetSync();
+		this.homePath = fullPath;
+		this.relFilePath = fullPath.replace(homePath, "");
+	}
 
 	/**
 	 * @return the filePath
 	 */
 	public String getFilePath() {
-		return this.filePath;
+		return this.homePath;
 	}
-        
-        /**
-	 * @return the filePath
-	 */
-	public String getFullPath() {
-		return this.filePath+"\\"+this.fileName;
-	}
-        
-//        /**
-//	 * @return the filePath
-//	 */
-//	public String getFullPath() {
-//		return this.filePath+"/"+this.fileName;
-//	}
+
+	// /**
+	// * @return the filePath
+	// */
+	// public String getFullPath() {
+	// return this.filePath+"/"+this.fileName;
+	// }
 	/**
-	 * @param filePath the filePath to set
+	 * @param homePath
+	 *            the filePath to set
 	 */
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
+	public void setHomePath(String homePath) {
+		this.homePath = homePath;
 	}
 
 	/**
 	 * @return the fileName
 	 */
-	public String getFileName() {
-		return fileName;
+	public String getRelativePath() {
+		return relFilePath;
 	}
 
 	/**
-	 * @param fileName the fileName to set
+	 * @param relativePath
+	 *            the relative path to set
 	 */
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
+	public void setRelativePath(String relativePath) {
+		this.relFilePath = relativePath;
 	}
 
 	/**
@@ -82,15 +85,19 @@ public class StockFile extends File {
 	}
 
 	/**
-	 * @param version the version to set
+	 * @param version
+	 *            the version to set
 	 */
 	public void setVersion(float version) {
 		this.version = version;
 	}
-        
-        public void incrementVersion() {
-            this.version = this.version+((float)0.1);
-        }
+
+	public void incrementVersion() {
+		if (inSync()) {
+			this.version = this.version + ((float) 0.1);
+			this.inSync = false;
+		}
+	}
 
 	/**
 	 * @return the lastModified
@@ -100,7 +107,8 @@ public class StockFile extends File {
 	}
 
 	/**
-	 * @param lastModified the lastModified to set
+	 * @param lastModified
+	 *            the lastModified to set
 	 */
 	public void setLastModified(Date lastModified) {
 		this.lastModified = new DateTime(lastModified);
@@ -114,7 +122,8 @@ public class StockFile extends File {
 	}
 
 	/**
-	 * @param lastSyncBy the lastSyncBy to set
+	 * @param lastSyncBy
+	 *            the lastSyncBy to set
 	 */
 	public void setLastSyncBy(String lastSyncBy) {
 		this.lastSyncBy = lastSyncBy;
@@ -128,22 +137,23 @@ public class StockFile extends File {
 	}
 
 	/**
-	 * @param createdBy the createdBy to set
+	 * @param createdBy
+	 *            the createdBy to set
 	 */
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
-        
-        public String toString() {
-            return getFileName()+" - "+getVersion();
-            
-        }
 
-		public String getType() {
-			return type;
-		}
+	public String toString() {
+		return getRelativePath() + " - " + getVersion();
 
-		public void setType(String type) {
-			this.type = type;
-		}
+	}
+
+	private boolean inSync() {
+		return inSync;
+	}
+
+	private void resetSync() {
+		this.inSync = true;
+	}
 }

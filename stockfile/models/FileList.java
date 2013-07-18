@@ -1,5 +1,7 @@
 package stockfile.models;
 
+import stockfile.security.UserSession;
+
 
 /**
  * Class describing the Singleton FileList
@@ -19,6 +21,10 @@ public class FileList
         this.manifest = new Manifest();
     }
 
+    public static String convertToRelativePath(String fullPath) {
+    	return fullPath.replace(UserSession.getInstance().getCurrentUser().getHomeDirectory(),"");
+    }
+    
     /**
      * Returns the only userList instance object
      */

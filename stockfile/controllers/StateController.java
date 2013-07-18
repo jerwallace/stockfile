@@ -22,8 +22,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
-import stockfile.client.UserSession;
 import stockfile.models.FileList;
+import stockfile.security.UserSession;
 
 /**
  *
@@ -66,16 +66,17 @@ public class StateController
     	        
     	    	@Override
     	        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-    	    		StockFile thisFile = new StockFile(UserSession.getInstance().getCurrentUser().getHomeDirectory(), dir.toString(), 1, null, "", "","dir");		
-	    	        FileList.getInstance().getManifest().insertFile(thisFile.getFileName(), thisFile);
+    	    		
+    	    		StockFile thisFile = new StockFile(UserSession.getInstance().getCurrentUser().getHomeDirectory(), dir.toString(), 1, null, "", "");		
+	    	        if (!thisFile.getRelativePath().equals(""))
+    	    		FileList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
     	            return FileVisitResult.CONTINUE;
     	        }
 
     	        @Override
     	        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-    	        	
-    	        	StockFile thisFile = new StockFile(UserSession.getInstance().getCurrentUser().getHomeDirectory(), file.toString(), 1, null, "", "","file");
-    	        	FileList.getInstance().getManifest().insertFile(thisFile.getFileName(), thisFile);
+    	        	StockFile thisFile = new StockFile(UserSession.getInstance().getCurrentUser().getHomeDirectory(), file.toString(), 1, null, "", "");
+    	        	FileList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
     	            return FileVisitResult.CONTINUE;
     	        }
 

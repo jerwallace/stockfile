@@ -9,9 +9,9 @@ import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-import stockfile.client.UserSession;
 import stockfile.models.Client;
 import stockfile.models.User;
+import stockfile.security.UserSession;
 
 /**
  *
@@ -38,7 +38,7 @@ public class ClientDAO extends StockFileDAO
                     + "user_client (username,client_type,last_sync,ip_address,mac_address) "
                     + "VALUES (?,?,?,?,?);");
 
-            ps.setString(1, UserSession.getInstance().getUsername());
+            ps.setString(1, UserSession.getInstance().getCurrentUser().getUserName());
             ps.setString(2, client.getType());
             ps.setTimestamp(3, UserSession.getInstance().getLastSync());
             ps.setBytes(4, client.getIpAddress());

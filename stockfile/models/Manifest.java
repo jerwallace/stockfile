@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import stockfile.security.UserSession;
+
 /**
  *
  * @author Bahman
@@ -65,10 +67,10 @@ public class Manifest implements Serializable
     
     @Override
     public String toString() {
-        String output = "";
+        String output = "\nKey (Version) || Type\n";
         for (String key : this.manifest.keySet())
             {
-                output += key+"\n";
+                output += key+" ("+this.manifest.get(key).getVersion()+") || Directory: "+this.manifest.get(key).isDirectory()+"\n";
             }
         return output;
 
