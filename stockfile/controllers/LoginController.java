@@ -67,7 +67,9 @@ public class LoginController {
                         ret[i] = tmp;
                         i++;                          // Got valid input, stop looping
                     }
-                } catch (final CreateUserException e) {};
+                } catch (final CreateUserException e) {
+                	System.err.println(e);
+                };
 
             
 

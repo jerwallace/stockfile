@@ -3,13 +3,15 @@ package stockfile.exceptions;
 @SuppressWarnings("serial")
 public class CreateUserException extends Exception {
 
+	String msg = ""; 
+	
 	public enum CreateUserError {
 		PASSWORD,EMAIL, INVALID_USERNAME, INVALID_FIRSTNAME,INVALID_LASTNAME,USERNAME_TAKEN
 	}
 	
 	public CreateUserException (CreateUserError error) {
-            
-            String msg = "Invalid input. Allowed pattern:\n";
+
+		msg = "Invalid input. Allowed pattern:\n";
             
 		switch (error) {
 		
@@ -38,9 +40,12 @@ public class CreateUserException extends Exception {
 		}
                 
                 msg = msg + "Please try again.\n";
-                
-                System.err.println(msg);
+
 		
+	}
+	
+	public String toString() {
+		return msg;
 	}
 	
 }
