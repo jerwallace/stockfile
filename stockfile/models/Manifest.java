@@ -23,7 +23,7 @@ public class Manifest implements Serializable
 	public Map<String, StockFile> manifest;
     
     public enum Operation {
-        DOWNLOAD,UPLOAD,DUPLICATE
+        DOWNLOAD,UPLOAD,DUPLICATE,UPLOAD_AND_OVERWRITE,DOWNLOAD_AND_OVERWRITE
     }
     
     public Manifest()

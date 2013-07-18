@@ -21,7 +21,7 @@ public class StockFile extends File {
 	private String remoteHomePath = "/stockfiles/"+UserSession.getInstance().getCurrentUser().getUserName();
 	private String relFilePath;
 	private float version = (float) 1.0;
-	private DateTime lastModified;
+	private DateTime lastModifiedDB;
 	private String lastSyncBy;
 	private String createdBy;
 	private boolean inSync;
@@ -33,7 +33,7 @@ public class StockFile extends File {
 		resetSync();
 		this.setRelativePath(relativePath);
 		this.setVersion(version);
-		this.setLastModified(lastMod);
+		this.setLastModifiedDB(lastMod);
 		this.setLastSyncBy(lastSyncBy);
 		this.setCreatedBy(createdBy);
 		if (remotePath!=null)
@@ -100,16 +100,16 @@ public class StockFile extends File {
 	/**
 	 * @return the lastModified
 	 */
-	public DateTime getLastModified() {
-		return lastModified;
+	public DateTime getLastModifiedDB() {
+		return lastModifiedDB;
 	}
 
 	/**
 	 * @param lastModified
 	 *            the lastModified to set
 	 */
-	public void setLastModified(Date lastModified) {
-		this.lastModified = new DateTime(lastModified);
+	public void setLastModifiedDB(Date lastModified) {
+		this.lastModifiedDB = new DateTime(lastModified);
 	}
 
 	/**

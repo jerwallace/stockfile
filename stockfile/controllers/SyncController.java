@@ -27,7 +27,9 @@ public class SyncController {
 
 	private FileDAO fileDAO = new FileDAO();
 	private Map<String, Operation> syncList;
-	private String homeDir = UserSession.getInstance().getCurrentUser().getHomeDirectory();
+	private String homeDir = UserSession.getInstance().getCurrentUser()
+			.getHomeDirectory();
+
 	public SyncController() {
 
 	}
@@ -35,7 +37,8 @@ public class SyncController {
 	private void generateSyncList() {
 
 		Map<String, StockFile> serverManifest = getServerManifest().manifest;
-		Map<String, StockFile> clientManifest = FileList.getInstance().getManifest().manifest;
+		Map<String, StockFile> clientManifest = FileList.getInstance()
+				.getManifest().manifest;
 
 		this.syncList = new TreeMap<>();
 
@@ -46,8 +49,9 @@ public class SyncController {
 			}
 
 		} else {
-
+			
 			for (String key : clientManifest.keySet()) {
+
 				StockFile clientFile = clientManifest.get(key);
 
 				if (!serverManifest.containsKey(key)) {
@@ -58,26 +62,21 @@ public class SyncController {
 					StockFile servFile = serverManifest.get(key);
 
 					if (servFile.getVersion() == clientFile.getVersion()) {
-//						if (clientFile.getLastModified().isAfter(
-//								servFile.getLastModified())) {
-							FileList.getInstance().getManifest().getFile(key)
-									.incrementVersion();
-							syncList.put(key, Operation.UPLOAD);
-//						}
+						syncList.put(key, Operation.UPLOAD_AND_OVERWRITE);
+					} else if (servFile.getVersion() > clientFile.getVersion()) {
+						syncList.put(key, Operation.DOWNLOAD_AND_OVERWRITE);
 					} else {
-						if (clientManifest.get(key).getLastModified()
-								.isAfter(servFile.getLastModified())) {
-							syncList.put(key, Operation.DUPLICATE);
-						} else {
-							syncList.put(key, Operation.DOWNLOAD);
-						}
+						syncList.put(key, Operation.UPLOAD);
 					}
+
 					serverManifest.remove(key);
 				}
 
 				for (String servkey : serverManifest.keySet()) {
-					FileList.getInstance().getManifest()
-							.insertFile(homeDir+servkey,serverManifest.get(servkey));
+					FileList.getInstance()
+							.getManifest()
+							.insertFile(homeDir + servkey,
+									serverManifest.get(servkey));
 					syncList.put(servkey, Operation.DOWNLOAD);
 				}
 
@@ -97,12 +96,19 @@ public class SyncController {
 				try {
 					switch (syncList.get(key)) {
 					case DOWNLOAD:
-						System.out.println("Downloading "
-								+ key + "...");
+					case DOWNLOAD_AND_OVERWRITE:
+						System.out.println("Downloading " + key + "...");
 						SFTPController.getInstance().get(key);
 						break;
 					case UPLOAD:
 						System.out.println("Uploading " + key + "...");
+						SFTPController.getInstance().send(key);
+						fileDAO.updateFile(FileList.getInstance().getManifest()
+								.getFile(key));
+						break;
+					case UPLOAD_AND_OVERWRITE:
+						System.out.println("Uploading and overwriting " + key + "...");
+						FileList.getInstance().getManifest().getFile(key).incrementVersion();
 						SFTPController.getInstance().send(key);
 						fileDAO.updateFile(FileList.getInstance().getManifest()
 								.getFile(key));
