@@ -49,7 +49,7 @@ public class FileDAO extends StockFileDAO{
 			ps.setString(2, file.getLastSyncBy());
 			ps.setString(3, file.getCreatedBy());
 			ps.setString(4, file.getRelativePath());
-			ps.setString(5, file.getFilePath());
+			ps.setString(5, file.getRemoteHomePath());
 			
 			ps.executeUpdate();
 			System.out.println("Added file to database.");
@@ -61,7 +61,7 @@ public class FileDAO extends StockFileDAO{
 			
 			ps.setString(1, UserSession.getInstance().getCurrentUser().getUserName());
 			ps.setString(2, file.getRelativePath());
-			ps.setString(3, file.getFilePath());			
+			ps.setString(3, file.getRemoteHomePath());			
 			ps.setFloat(4, file.getVersion());
 
 			ps.executeUpdate();
@@ -104,7 +104,7 @@ public class FileDAO extends StockFileDAO{
 			ps = conn.prepareStatement("SELECT * FROM file WHERE file_name = ? AND file_path = ?");
 			
 			ps.setString(1, file.getRelativePath());
-			ps.setString(2, file.getFilePath());
+			ps.setString(2, file.getRemoteHomePath());
 			
 			rs = ps.executeQuery();
 			
@@ -125,6 +125,7 @@ public class FileDAO extends StockFileDAO{
 	public void updateFile(StockFile file) throws SQLException {
 	
                 if (!inDatabase(file)) {
+                	file.setRemoteHomePath("/stockfiles/"+UserSession.getInstance().getCurrentUser().getUserName());
                     createFile(file);
                 } else {
                     try {
@@ -135,9 +136,9 @@ public class FileDAO extends StockFileDAO{
 
                             ps.setFloat(1, file.getVersion());
                             ps.setString(2, file.getLastSyncBy());
-                            ps.setString(3, file.getCreatedBy());
+                            ps.setString(3, file.getRemoteHomePath());
                             ps.setString(4, file.getRelativePath());
-                            ps.setString(5, file.getFilePath());
+                            ps.setString(5, file.getCreatedBy());
 
                             ps.executeUpdate();
 
@@ -156,7 +157,7 @@ public class FileDAO extends StockFileDAO{
 			ps = conn.prepareStatement("DELETE FROM file WHERE file_name = ? AND file_path = ?");
 			
 			ps.setString(1, file.getRelativePath());
-			ps.setString(2, file.getFilePath());
+			ps.setString(2, file.getCreatedBy());
 			
 			ps.executeUpdate();
 			
@@ -185,16 +186,14 @@ public class FileDAO extends StockFileDAO{
 			while (rs.next()) {
 			 
 				String filename = rs.getString("file_name");
-				String filepath = rs.getString("file_path");
 				
 				@SuppressWarnings("deprecation")
 				StockFile thisFile = new StockFile(
-						filepath,
 						filename,
+						rs.getString("file_path"),
 						rs.getFloat("version"),
 						rs.getTimestamp("last_modified"),
-						rs.getString("last_sync_by"),
-						rs.getString("created_by")
+						rs.getString("last_sync_by"), rs.getString("created_by")
 						);
 				
 				manifest.updateFile(filename, thisFile);

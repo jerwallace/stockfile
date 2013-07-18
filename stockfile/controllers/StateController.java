@@ -32,7 +32,7 @@ import stockfile.security.UserSession;
 public class StateController
 {
 	private final String DATA_FILE_NAME = "/stockdata.pbj";
-    private String homeDir = UserSession.getInstance().getCurrentUser().getHomeDirectory();
+    private final String HOME_DIR = UserSession.getInstance().getCurrentUser().getHomeDirectory();
     private Manifest currentManifest = FileList.getInstance().getManifest();
 
     /**
@@ -44,7 +44,7 @@ public class StateController
         try
         {
             try (
-                    FileOutputStream fileOut = new FileOutputStream(this.homeDir + DATA_FILE_NAME);
+                    FileOutputStream fileOut = new FileOutputStream(this.HOME_DIR + DATA_FILE_NAME);
                     ObjectOutputStream out = new ObjectOutputStream(fileOut))
             {
                 out.writeObject(currentManifest);
@@ -67,7 +67,7 @@ public class StateController
     	    	@Override
     	        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
     	    		
-    	    		StockFile thisFile = new StockFile(UserSession.getInstance().getCurrentUser().getHomeDirectory(), dir.toString(), 1, null, "", "");		
+    	    		StockFile thisFile = new StockFile(dir.toString(), null);		
 	    	        if (!thisFile.getRelativePath().equals(""))
     	    		FileList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
     	            return FileVisitResult.CONTINUE;
@@ -75,7 +75,7 @@ public class StateController
 
     	        @Override
     	        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-    	        	StockFile thisFile = new StockFile(UserSession.getInstance().getCurrentUser().getHomeDirectory(), file.toString(), 1, null, "", "");
+    	        	StockFile thisFile = new StockFile(file.toString(), null);
     	        	FileList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
     	            return FileVisitResult.CONTINUE;
     	        }
@@ -97,14 +97,14 @@ public class StateController
     public void loadState()
     {
 
-        File f = new File(this.homeDir+DATA_FILE_NAME);
+        File f = new File(this.HOME_DIR+DATA_FILE_NAME);
 
         if (f.exists())
         {
             try
             {
                 //use buffering
-                InputStream file = new FileInputStream(this.homeDir+DATA_FILE_NAME);
+                InputStream file = new FileInputStream(this.HOME_DIR+DATA_FILE_NAME);
                 InputStream buffer = new BufferedInputStream(file);
                 try (ObjectInput input = new ObjectInputStream(buffer))
                 {

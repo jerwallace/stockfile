@@ -23,7 +23,6 @@ import java.util.Map;
 
 import stockfile.models.FileList;
 import stockfile.models.StockFile;
-import stockfile.security.UserSession;
 
 public class DirectoryWatcher implements Runnable {
 	
@@ -140,7 +139,7 @@ public class DirectoryWatcher implements Runnable {
                 // if directory is created, and watching recursively, then
                 // register it and its sub-directories
                 if ((kind == ENTRY_CREATE)) {
-                	StockFile thisFile = new StockFile(UserSession.getInstance().getCurrentUser().getHomeDirectory(), name.toString(), 1, null, "", "");
+                	StockFile thisFile = new StockFile(name.toString(), null, 1, null, "", "");
     	        	FileList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
                     try {
                         if (Files.isDirectory(child, NOFOLLOW_LINKS)) {

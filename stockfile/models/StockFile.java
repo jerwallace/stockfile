@@ -6,6 +6,8 @@ import java.util.Date;
 
 import org.joda.time.DateTime;
 
+import stockfile.security.UserSession;
+
 /**
  * Class describing a File object
  * 
@@ -14,38 +16,37 @@ import org.joda.time.DateTime;
 @SuppressWarnings("serial")
 public class StockFile extends File {
 
-	private String homePath;
+	private static final String HOME_PATH = UserSession.getInstance().getCurrentUser().getHomeDirectory();
+	
+	private String remoteHomePath = "/stockfiles/"+UserSession.getInstance().getCurrentUser().getUserName();
 	private String relFilePath;
-	private float version;
+	private float version = (float) 1.0;
 	private DateTime lastModified;
 	private String lastSyncBy;
 	private String createdBy;
 	private boolean inSync;
 
-	public StockFile(String homePath, String fullPath, float version,
+	public StockFile(String relativePath, String remotePath, float version,
 			Timestamp lastMod, String lastSyncBy, String createdBy) {
-		super(fullPath);
+		super(fixAbsPath(relativePath));
+		//System.out.println("LONG"+" | HOME_PATH: "+HOME_PATH+ " | Rel: " + relativePath);
 		resetSync();
-		this.homePath = homePath;
-		this.relFilePath = fullPath.replace(homePath, "");
-		this.version = version;
-		this.lastModified = new DateTime(lastMod);
-		this.lastSyncBy = lastSyncBy;
-		this.createdBy = createdBy;
+		this.setRelativePath(relativePath);
+		this.setVersion(version);
+		this.setLastModified(lastMod);
+		this.setLastSyncBy(lastSyncBy);
+		this.setCreatedBy(createdBy);
+		if (remotePath!=null)
+			this.setRemoteHomePath(remotePath);
 	}
 
-	public StockFile(String homePath, String fullPath) {
-		super(fullPath);
+	public StockFile(String relativePath, String remotePath) {
+		super(fixAbsPath(relativePath));
+		//System.out.println("SHORT"+" | HOME_PATH: "+HOME_PATH+ " | Rel: " + relativePath);
 		resetSync();
-		this.homePath = fullPath;
-		this.relFilePath = fullPath.replace(homePath, "");
-	}
-
-	/**
-	 * @return the filePath
-	 */
-	public String getFilePath() {
-		return this.homePath;
+		this.setRelativePath(relativePath);
+		if (remotePath!=null)
+			this.setRemoteHomePath(remotePath);
 	}
 
 	// /**
@@ -54,12 +55,9 @@ public class StockFile extends File {
 	// public String getFullPath() {
 	// return this.filePath+"/"+this.fileName;
 	// }
-	/**
-	 * @param homePath
-	 *            the filePath to set
-	 */
-	public void setHomePath(String homePath) {
-		this.homePath = homePath;
+
+	public static String fixAbsPath(String relativePath) {
+		return HOME_PATH+relativePath.replace(HOME_PATH, "");
 	}
 
 	/**
@@ -74,7 +72,7 @@ public class StockFile extends File {
 	 *            the relative path to set
 	 */
 	public void setRelativePath(String relativePath) {
-		this.relFilePath = relativePath;
+		this.relFilePath = relativePath.replace(HOME_PATH, "");
 	}
 
 	/**
@@ -145,7 +143,16 @@ public class StockFile extends File {
 	}
 
 	public String toString() {
-		return getRelativePath() + " - " + getVersion();
+		String output = "=============\n"+"FILE DETAILS: \n";
+		output += "Name: "+getName()+"\n";
+		output += "Path: "+getPath()+"\n";
+		output += "Relative Path: "+getRelativePath()+"\n";
+		output += "Remote Home Path: "+getRemoteHomePath()+"\n";
+		output += "Remote Path: "+getFullRemotePath()+"\n";
+		output += "Absolute Path: "+getAbsolutePath()+"\n";
+		output += "Version: "+getVersion()+"\n";
+		output += "============";
+		return output;
 
 	}
 
@@ -155,5 +162,17 @@ public class StockFile extends File {
 
 	private void resetSync() {
 		this.inSync = true;
+	}
+
+	public String getRemoteHomePath() {
+		return remoteHomePath;
+	}
+	
+	public String getFullRemotePath() {
+		return getRemoteHomePath()+getRelativePath();
+	}
+
+	public void setRemoteHomePath(String remotePath) {
+		this.remoteHomePath = remotePath;
 	}
 }

@@ -126,11 +126,12 @@ public class SFTPController {
            System.out.println("Attempting to send file: "+filename);
     	   try {
                 StockFile f = FileList.getInstance().getManifest().getFile(filename);
-                System.out.println("Storing file as remote filename: " + userRoot+ f.getRelativePath());
+                System.out.println(f);
+
                 if (f.isDirectory()) {
-                	ch_sftp.mkdir(userRoot+f.getRelativePath());
+                	ch_sftp.mkdir(f.getFullRemotePath());
                 } else {
-                	ch_sftp.put(new FileInputStream(f), userRoot+f.getRelativePath(), ChannelSftp.OVERWRITE);
+                	ch_sftp.put(new FileInputStream(f), f.getFullRemotePath(), ChannelSftp.OVERWRITE);
                 }
             } catch (Exception e) {
                 System.err.println("Storing remote file failed. "+e.toString());
@@ -141,16 +142,16 @@ public class SFTPController {
     public void get(String filename) {
         
         try {
-
-        	StockFile f = new StockFile(UserSession.getInstance().getCurrentUser().getHomeDirectory(),filename); 
-        	System.out.println(f.getPath());
+        	System.out.println("Filename to Lookup: "+filename);
+        	System.out.println(FileList.getInstance().getManifest());
+        	StockFile f = FileList.getInstance().getManifest().getFile(filename);
+        	
         	if (!f.exists()) {
         		f.mkdirs();
-        		f.createNewFile();
         	}
 
             System.out.println("Getting file "+ f.getPath());
-            ch_sftp.get(UserSession.getInstance().getCurrentUser().getHomeDirectory()+f.getPath(), new FileOutputStream(f));
+            ch_sftp.get(f.getPath(), new FileOutputStream(f));
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(SFTPController.class.getName()).log(Level.SEVERE, null, ex);

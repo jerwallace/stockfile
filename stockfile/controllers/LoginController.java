@@ -35,11 +35,13 @@ public class LoginController {
         UserDAO userDAO = new UserDAO();
 
         String[] arr = {"Username", "Password", "First name", "Last name", "Email"};
+        
         CreateUserError[] err = {CreateUserException.CreateUserError.INVALID_USERNAME,
             CreateUserException.CreateUserError.PASSWORD,
             CreateUserException.CreateUserError.INVALID_FIRSTNAME,
             CreateUserException.CreateUserError.INVALID_LASTNAME,
             CreateUserException.CreateUserError.EMAIL};
+        
         RegExPattern[] reg = {RegexHelper.RegExPattern.USERNAME,
             RegexHelper.RegExPattern.PASSWORD,
             RegexHelper.RegExPattern.ALPHABETS,
@@ -68,7 +70,9 @@ public class LoginController {
                         i++;                          // Got valid input, stop looping
                     }
                 } catch (final CreateUserException e) {
+                	
                 	System.err.println(e);
+                	
                 };
 
             
