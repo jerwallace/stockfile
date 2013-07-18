@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.HashMap;
 
-import stockfile.client.Session;
 import stockfile.models.Client;
 import stockfile.models.User;
 
