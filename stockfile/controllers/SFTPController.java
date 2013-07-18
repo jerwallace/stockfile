@@ -144,20 +144,22 @@ public class SFTPController {
 
         	StockFile f = new StockFile(UserSession.getInstance().getCurrentUser().getHomeDirectory(),filename); 
         	System.out.println(f.getPath());
+        	if (!f.exists()) {
+        		f.mkdirs();
+        		f.createNewFile();
+        	}
 
-            if (f.isDirectory()) {
-            	System.out.println("Making directory: "+ f.getPath());
-            	f.mkdir();
-            } else {
-            	System.out.println("Getting file "+ f.getPath());
-            	ch_sftp.get(UserSession.getInstance().getCurrentUser().getHomeDirectory()+f.getPath(), new FileOutputStream(f));
-            }
-        
+            System.out.println("Getting file "+ f.getPath());
+            ch_sftp.get(UserSession.getInstance().getCurrentUser().getHomeDirectory()+f.getPath(), new FileOutputStream(f));
+
         } catch (FileNotFoundException ex) {
             Logger.getLogger(SFTPController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SftpException ex) {
             Logger.getLogger(SFTPController.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+        } catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 
     }
     

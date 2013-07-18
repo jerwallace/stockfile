@@ -49,10 +49,8 @@ public class LoginController {
         String[] ret = new String[5];
         String tmp;
 
-        for (int i = 0; i < arr.length; i++) {
+        for (int i = 0; i < arr.length;) {
             
-            do {
-                
                 System.out.print(arr[i] + ": ");
 
                 try {
@@ -67,14 +65,11 @@ public class LoginController {
 
                     } else {
                         ret[i] = tmp;
-                        scanner.nextLine();
-                        break;                          // Got valid input, stop looping
+                        i++;                          // Got valid input, stop looping
                     }
-                } catch (final CreateUserException e) {
+                } catch (final CreateUserException e) {};
 
-                    continue;                           // restart loop, didn't get an integer input
-                }
-            } while (true);
+            
 
         }
         
@@ -101,11 +96,12 @@ public class LoginController {
                 
                 System.out.print("Username: ");
                 username = scanner.nextLine();
+                
                 System.out.print("Password: ");
                 password = scanner.nextLine();
+                
                 as.authenticate(username, password);
 
-                UserSession.getInstance();
                 break;
             } catch (InvalidAuthenticationException ex) {
                 System.err.println(ex.getMessage());

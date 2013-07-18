@@ -99,8 +99,6 @@ public class RegexHelper {
 
         if (patternToUse != null) {
 
-            System.out.println(input);
-
             Pattern rPattern = Pattern.compile(patternToUse);
             Matcher matcher = rPattern.matcher(input);
 
