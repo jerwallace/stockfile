@@ -15,21 +15,21 @@ public class CreateUserException extends Exception {
 		
 			case INVALID_USERNAME:
                                 msg = msg + "- length between 5 to 30 consisting only of the following...\n"
-                                        + "- lower case letters\n"
-                                        + "- digits\n"
-                                        + "- underscore or hiphen\n";
+                                        + "   - lower case letters\n"
+                                        + "   - digits\n"
+                                        + "   - underscore or hiphen\n";
                                 break;
                         case PASSWORD:
                                 msg = msg + "- length between 8 to 30 consisting of any characters\n";
                                 break;
                         case EMAIL:
-				msg = msg + "Invalid email address.\n";
+				msg = msg + "Invalid email format; lower case letters only.\n";
                                 break;
                         case INVALID_FIRSTNAME:
                         case INVALID_LASTNAME:
                                 msg = msg + "- length between 1 to 50 consisting only of the following...\n"
-                                        + "- lower case letters\n"
-                                        + "- spaces\n";
+                                        + "   - lower case letters\n"
+                                        + "   - spaces\n";
                                 break;
 			case USERNAME_TAKEN:
 				msg = msg + "Username is already taken.\n";

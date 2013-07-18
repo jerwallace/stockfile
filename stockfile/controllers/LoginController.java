@@ -5,15 +5,19 @@
 package stockfile.controllers;
 
 import java.io.Console;
+import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
+import org.joda.time.LocalDate;
 
 import stockfile.client.UserSession;
+import stockfile.dao.UserDAO;
 import stockfile.exceptions.CreateUserException;
 import stockfile.exceptions.CreateUserException.CreateUserError;
 import stockfile.exceptions.InvalidAuthenticationException;
+import stockfile.models.User;
 import stockfile.security.AuthenticateService;
 import stockfile.security.RegexHelper;
 import stockfile.security.RegexHelper.RegExPattern;
@@ -24,10 +28,11 @@ import stockfile.security.RegexHelper.RegExPattern;
  */
 public class LoginController {
 
-    private static void createUser() throws CreateUserException {
+    private static void createUser() throws CreateUserException, SQLException {
 
         Scanner scanner = new Scanner(System.in);
         Console console = System.console();
+        UserDAO userDAO = new UserDAO();
 
         String[] arr = {"Username", "Password", "First name", "Last name", "Email"};
         CreateUserError[] err = {CreateUserException.CreateUserError.INVALID_USERNAME,
@@ -44,55 +49,37 @@ public class LoginController {
         String[] ret = new String[5];
         String tmp;
 
-        /*  once migrate to ec2, uncomment the next block
-         String username = console.readLine("Username: ");
-         char[] password = console.readPassword("Password: ");
-         String firstnam = console.readLine("First name: ");
-         String lastname = console.readLine("Last name: ");
-         String email = console.readLine("Email: ");
-        
-         System.out.println(new String(password));
-         */
-
         for (int i = 0; i < arr.length; i++) {
-            do {  // Loop until we have correct input
-
+            
+            do {
+                
                 System.out.print(arr[i] + ": ");
 
                 try {
+                    /* if (arr[i].equals("Password"))
+                        tmp = new String(console.readPassword(arr[i] + ":"));
+                    else tmp = console.readLine(arr[i] + ":");
+                    */
                     tmp = scanner.nextLine();         // Blocks for user input
                     if (!RegexHelper.validate(tmp, reg[i]) || tmp.length() == 0) {
+                    
                         throw new CreateUserException(err[i]);
-//                        continue;                       // restart loop, wrong input
+
                     } else {
                         ret[i] = tmp;
+                        scanner.nextLine();
                         break;                          // Got valid input, stop looping
                     }
                 } catch (final CreateUserException e) {
-//                    System.out.println("Invalid input; please try again.\n");
-                    //scanner.nextLine();                 // discard non-int input
+
                     continue;                           // restart loop, didn't get an integer input
                 }
             } while (true);
 
         }
-        /*
-         System.out.print("Username: ");
-         String username = scanner.nextLine();
-         System.out.print("Password: ");
-         String password = scanner.nextLine();
-         System.out.print("First name: ");
-         String firstname = scanner.nextLine();
-         System.out.print("Lastname: ");
-         String lastname = scanner.nextLine();
-         System.out.print("Email: ");
-         String Email = scanner.nextLine();
-         System.out.println(username + " --> " + password);
-         */
-
-        for (String str : ret) {
-            System.out.println(str);
-        }
+        
+        userDAO.createUser(new User(ret[0], ret[2], ret[3], ret[4], new LocalDate(), System.getProperty("user.home") + "/Stockfile"), ret[1]);
+            
     }
 
     private static void login() throws InvalidAuthenticationException {
@@ -100,25 +87,26 @@ public class LoginController {
         Scanner scanner = new Scanner(System.in);
         Console console = System.console();
         final AuthenticateService as = new AuthenticateService();
+        String username, password;
         
-
-        /*  once migrate to ec2, uncomment the next block
-         String username = console.readLine("Username:");
-         char[] password = console.readPassword("Password");
-        
-         System.out.println(new String(password));
-         */
-
         do {
             try {
+                
+              /*  once migrate to ec2, uncomment the next block
+                username = console.readLine("Username:");
+                password = new String(console.readPassword("Password"));
+        
+                System.out.println(new String(password));
+                */
+                
                 System.out.print("Username: ");
-                String username = scanner.nextLine();
+                username = scanner.nextLine();
                 System.out.print("Password: ");
-                String password = scanner.nextLine();
+                password = scanner.nextLine();
                 as.authenticate(username, password);
 
                 UserSession.getInstance();
-
+                break;
             } catch (InvalidAuthenticationException ex) {
                 System.err.println(ex.getMessage());
                 continue;
@@ -127,18 +115,18 @@ public class LoginController {
 
     }
 
-    public static void main(String[] args) throws InvalidAuthenticationException, CreateUserException {
+    public static void main(String[] args) throws InvalidAuthenticationException, CreateUserException, SQLException {
 
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("********Welcome to Stockfile********\n");
 
         int choice = 0;
-        do {  // Loop until we have correct input
-
+        do {
+            
             System.out.println("Please select one of the following...");
-            System.out.println("Login ......... 1");
-            System.out.println("New user ...... 2");
+            System.out.println("Login .........> 1");
+            System.out.println("New user ......> 2");
             System.out.print(">  ");
 
             try {
@@ -147,11 +135,11 @@ public class LoginController {
                     scanner.nextLine();             // flush
                     break;                          // Got valid input, stop looping
                 } else {
-                    System.out.println("Please pick between 1 or 2.\n");
+                    System.err.println("Please pick between 1 or 2.\n");
                     continue;                       // restart loop, wrong number
                 }
             } catch (final InputMismatchException e) {
-                System.out.println("Invalid input; please try again.\n");
+                System.err.println("Invalid input; please try again.\n");
                 scanner.nextLine();                 // discard non-int input
                 continue;                           // restart loop, didn't get an integer input
             }
