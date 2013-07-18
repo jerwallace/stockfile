@@ -4,29 +4,10 @@
  */
 package stockfile.dao;
 
-import java.io.File;
-import java.util.Date;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.commons.io.filefilter.RegexFileFilter;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-
-import stockfile.models.Client;
-import stockfile.models.FileList;
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
-import stockfile.models.User;
 import stockfile.security.UserSession;
-import static stockfile.dao.StockFileDAO.ps;
 /**
  *
  * @author MrAtheist
@@ -177,9 +158,9 @@ public class FileDAO extends StockFileDAO{
 			
 			ps = conn.prepareStatement("SELECT * FROM user_file "
 					+ "JOIN file ON user_file.file_path = file.file_path AND user_file.file_name = file.file_name "
-					+ "WHERE username = 'testuser'");
+					+ "WHERE username = ?");
 			
-			//ps.setString(1, UserSession.getInstance().getCurrentUser().getUserName());
+			ps.setString(1, UserSession.getInstance().getCurrentUser().getUserName());
 			
 			rs = ps.executeQuery();
 			
@@ -187,7 +168,6 @@ public class FileDAO extends StockFileDAO{
 			 
 				String filename = rs.getString("file_name");
 				
-				@SuppressWarnings("deprecation")
 				StockFile thisFile = new StockFile(
 						filename,
 						rs.getString("file_path"),

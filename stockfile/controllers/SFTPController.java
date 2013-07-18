@@ -9,16 +9,13 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -110,7 +107,7 @@ public class SFTPController {
                 
                 
             } catch (Exception e) {
-            	Class cls = e.getClass(); 
+            	Class<? extends Exception> cls = e.getClass(); 
                 System.err.println("Unable to connect to FTP server. "+cls.getName()+" | "+e.toString());
                 throw e;
             } 
@@ -121,10 +118,9 @@ public class SFTPController {
     	ch_sftp.cd(userRoot);
     }
     
-    public void send(String filename) throws Exception {
+    public void send(String filename) throws SftpException, IOException {
     	   //System.out.println("Manifest contents:"+FileList.getInstance().getManifest());
            System.out.println("Attempting to send file: "+filename);
-    	   try {
                 StockFile f = FileList.getInstance().getManifest().getFile(filename);
                 System.out.println(f);
 
@@ -133,15 +129,10 @@ public class SFTPController {
                 } else {
                 	ch_sftp.put(new FileInputStream(f), f.getFullRemotePath(), ChannelSftp.OVERWRITE);
                 }
-            } catch (Exception e) {
-                System.err.println("Storing remote file failed. "+e.toString());
-                throw e;
-            }
     }
     
-    public void get(String filename) {
+    public void get(String filename) throws SftpException, FileNotFoundException, IOException {
         
-        try {
         	System.out.println("Filename to Lookup: "+filename);
         	System.out.println(FileList.getInstance().getManifest());
         	StockFile f = FileList.getInstance().getManifest().getFile(filename);
@@ -152,15 +143,6 @@ public class SFTPController {
 
             System.out.println("Getting file "+ f.getPath());
             ch_sftp.get(f.getPath(), new FileOutputStream(f));
-
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(SFTPController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SftpException ex) {
-            Logger.getLogger(SFTPController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
 
     }
     

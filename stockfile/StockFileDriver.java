@@ -1,29 +1,9 @@
 package stockfile;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Collection;
-import java.util.Iterator;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.commons.io.filefilter.RegexFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-
-import stockfile.controllers.DirectoryWatcher;
+import stockfile.controllers.LoginController;
 import stockfile.controllers.SFTPController;
 import stockfile.controllers.StateController;
 import stockfile.controllers.SyncController;
-import stockfile.dao.FileDAO;
-import stockfile.models.FileList;
-import stockfile.models.StockFile;
-import stockfile.security.UserSession;
 
 public class StockFileDriver {
 	
@@ -31,21 +11,20 @@ public class StockFileDriver {
 	
     public StockFileDriver() throws Exception
     {
-    	
+    	LoginController.run();
     	stateTools = new StateController();
-        stateTools.loadState();
+        //stateTools.loadState();
         stateTools.loadDirectoryState();
 
     }
     
     public static void main(String[] args) throws Exception
     {
-    	
+   
     	StockFileDriver stockfileInstance = new StockFileDriver();
     	
     	//Attach shutDownhook for data persistence after shutDown
     	stockfileInstance.attachShutDownHook();
-    	System.out.println(FileList.getInstance().getManifest());
     	
     	// Make FTP connection to server.
     	SFTPController.getInstance().connect();
@@ -54,10 +33,10 @@ public class StockFileDriver {
         syncTools.syncronize();
     	
     	// Create a thread to run FileScanner class separately to update stock prices frequently.
-        Thread watcherThread = new Thread(new DirectoryWatcher());
+        // Thread watcherThread = new Thread(new DirectoryWatcher());
 
         // Start the FileScanner thread.
-        watcherThread.start();
+        // watcherThread.start();
         
     }
     
