@@ -82,14 +82,15 @@ public class UserDAO extends StockFileDAO {
 	 * @param password
 	 * @return
 	 */
-	public int createUser(User user, String password) throws CreateUserException, SQLException {
+	public void createUser(User user, String password) throws CreateUserException, SQLException {
 
 		if (!usernameTaken(user.getUserName())) {
 
 			try {
+                            
 				ps = conn.prepareStatement("INSERT INTO user"
 						+ " (username, first_name, last_name, email, date_joined, password) "
-						+ " VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+						+ " VALUES (?, ?, ?, ?, ?, ?)");
 
 				ps.setString(1, user.getUserName());
 				ps.setString(2, user.getFirstName());
@@ -98,28 +99,18 @@ public class UserDAO extends StockFileDAO {
 				ps.setString(5, user.getDateJoined().toString());
 				ps.setString(6, Security.sha(password));
 
-				ps.executeUpdate();
-				conn.commit();
-				rs = ps.getGeneratedKeys();
-
-				if (rs.next()) {
-                                    	this.psclose();
-					return 1;
-                                } else { 
-                                        this.psclose();
-                                        throw new SQLException("Creating user failed, no generated key obtained.");
-                                }
-			} catch (SQLException sqlex) {
+				ps.executeUpdate();	
+                                
+                        } catch (SQLException sqlex) {
 				Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, sqlex);
 				System.err.println("SQLException: " + sqlex.getMessage());
 				sqlex.printStackTrace();
                                 this.psclose();
-                                return 0;
-			}
-		} else {
-                    this.psclose();
+                        }
+		} else  
                     throw new CreateUserException(CreateUserError.USERNAME_TAKEN);
-                }
+                               
+                this.psclose();
                 
 	}
 
@@ -152,6 +143,7 @@ public class UserDAO extends StockFileDAO {
 		} catch (SQLException sqlex) {
 
 			System.err.println("SQLException: " + sqlex.getMessage());
+                        this.psclose();
 			throw sqlex;
 		}
 	}
@@ -167,7 +159,7 @@ public class UserDAO extends StockFileDAO {
 		User user = new User();
 
 		try {
-                        System.out.println("SELECT * FROM user WHERE " + attribute.toString().toLowerCase() + " = ?");
+               //       System.out.println("SELECT * FROM user WHERE " + attribute.toString().toLowerCase() + " = ?");
 			ps = conn.prepareStatement("SELECT * FROM user WHERE " + attribute.toString().toLowerCase() + " = ?");
 			ps.setString(1, value);
 			rs = ps.executeQuery();
