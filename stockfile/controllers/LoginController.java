@@ -55,23 +55,20 @@ public class LoginController {
                         tmp = new String(console.readPassword(arr[i] + ":"));
                     else tmp = console.readLine(arr[i] + ":");
                     */
-                    tmp = scanner.nextLine();         // Blocks for user input
+                    tmp = scanner.nextLine();
                     if (!RegexHelper.validate(tmp, reg[i]) || tmp.length() == 0) {
                     
                         throw new CreateUserException(err[i]);
 
                     } else {
                         ret[i] = tmp;
-                        i++;                          // Got valid input, stop looping
+                        i++;
                     }
                 } catch (final CreateUserException e) {
                 	
                 	System.err.println(e);
                 	
                 };
-
-            
-
         }
         scanner.close();
         userDAO.createUser(new User(ret[0], ret[2], ret[3], ret[4], new LocalDate(), System.getProperty("user.home") + "/Stockfile"), ret[1]);
