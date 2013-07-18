@@ -27,7 +27,7 @@ public class SyncController {
 
 	private FileDAO fileDAO = new FileDAO();
 	private Map<String, Operation> syncList;
-
+	private String homeDir = UserSession.getInstance().getCurrentUser().getHomeDirectory();
 	public SyncController() {
 
 	}
@@ -58,12 +58,12 @@ public class SyncController {
 					StockFile servFile = serverManifest.get(key);
 
 					if (servFile.getVersion() == clientFile.getVersion()) {
-						if (clientFile.getLastModified().isAfter(
-								servFile.getLastModified())) {
+//						if (clientFile.getLastModified().isAfter(
+//								servFile.getLastModified())) {
 							FileList.getInstance().getManifest().getFile(key)
 									.incrementVersion();
 							syncList.put(key, Operation.UPLOAD);
-						}
+//						}
 					} else {
 						if (clientManifest.get(key).getLastModified()
 								.isAfter(servFile.getLastModified())) {
@@ -77,7 +77,7 @@ public class SyncController {
 
 				for (String servkey : serverManifest.keySet()) {
 					FileList.getInstance().getManifest()
-							.insertFile(servkey, serverManifest.get(servkey));
+							.insertFile(homeDir+servkey,serverManifest.get(servkey));
 					syncList.put(servkey, Operation.DOWNLOAD);
 				}
 
@@ -98,11 +98,8 @@ public class SyncController {
 					switch (syncList.get(key)) {
 					case DOWNLOAD:
 						System.out.println("Downloading "
-								+ FileList.getInstance().getManifest()
-										.getFile(key).getPath() + "...");
-						SFTPController.getInstance().get(
-								FileList.getInstance().getManifest()
-										.getFile(key).getPath());
+								+ key + "...");
+						SFTPController.getInstance().get(key);
 						break;
 					case UPLOAD:
 						System.out.println("Uploading " + key + "...");

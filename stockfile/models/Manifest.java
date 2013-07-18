@@ -33,14 +33,18 @@ public class Manifest implements Serializable
     
     public void updateFile(String fullPath, StockFile thisFile)
     {
+    	System.out.println("Updated item in FileList "+fullPath);
+    	thisFile.setRelativePath(fullPath);
         this.manifest.put(fullPath, thisFile);
     }
 
     public void insertFile(String fullPath, StockFile thisFile)
     {
-    	System.out.println("Added dir to FileList "+thisFile);
-    	if (!this.manifest.containsKey(fullPath))
+    	if (!this.manifest.containsKey(fullPath)) {
+    		System.out.println("Added item to FileList "+fullPath);
+    		thisFile.setRelativePath(fullPath);
     		this.manifest.put(fullPath, thisFile);
+    	}
     }
     
     public void removeFile(String fullPath)
