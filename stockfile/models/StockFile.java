@@ -22,8 +22,8 @@ public class StockFile extends File {
 	private String relFilePath;
 	private float version = (float) 1.0;
 	private DateTime lastModifiedDB;
-	private String lastSyncBy;
-	private String createdBy;
+	private String lastSyncBy = UserSession.getInstance().getCurrentUser().getUserName();
+	private String createdBy = UserSession.getInstance().getCurrentUser().getUserName();
 	private boolean inSync;
 
 	public StockFile(String relativePath, String remotePath, float version,

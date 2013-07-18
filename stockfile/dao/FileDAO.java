@@ -117,9 +117,9 @@ public class FileDAO extends StockFileDAO{
 
                             ps.setFloat(1, file.getVersion());
                             ps.setString(2, file.getLastSyncBy());
-                            ps.setString(3, file.getRemoteHomePath());
+                            ps.setString(3, file.getCreatedBy());
                             ps.setString(4, file.getRelativePath());
-                            ps.setString(5, file.getCreatedBy());
+                            ps.setString(5, file.getRemoteHomePath());
 
                             ps.executeUpdate();
 

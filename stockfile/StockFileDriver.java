@@ -13,7 +13,7 @@ public class StockFileDriver {
     {
     	LoginController.run();
     	stateTools = new StateController();
-        //stateTools.loadState();
+        stateTools.loadState();
         stateTools.loadDirectoryState();
 
     }

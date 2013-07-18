@@ -95,20 +95,22 @@ public class SyncController {
 					case DOWNLOAD:
 					case DOWNLOAD_AND_OVERWRITE:
 						System.out.println("Downloading " + key + "...");
-						SFTPController.getInstance().get(key);
+						if (SFTPController.getInstance().get(key));
 						break;
 					case UPLOAD:
 						System.out.println("Uploading " + key + "...");
-						SFTPController.getInstance().send(key);
-						fileDAO.updateFile(FileList.getInstance().getManifest()
-								.getFile(key));
+						if (SFTPController.getInstance().send(key)) {
+							fileDAO.updateFile(FileList.getInstance().getManifest()
+									.getFile(key));
+						}
 						break;
 					case UPLOAD_AND_OVERWRITE:
 						System.out.println("Uploading and overwriting " + key + "...");
 						FileList.getInstance().getManifest().getFile(key).incrementVersion();
-						SFTPController.getInstance().send(key);
-						fileDAO.updateFile(FileList.getInstance().getManifest()
-								.getFile(key));
+						if (SFTPController.getInstance().send(key)) {
+							fileDAO.updateFile(FileList.getInstance().getManifest()
+									.getFile(key));
+						}
 						break;
 					case DUPLICATE:
 						System.out.println("Duplicating " + key + "...");
