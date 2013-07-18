@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Scanner;
 import org.joda.time.LocalDate;
 
-import stockfile.client.UserSession;
+import stockfile.security.UserSession;
 import stockfile.dao.UserDAO;
 import stockfile.exceptions.CreateUserException;
 import stockfile.exceptions.CreateUserException.CreateUserError;
