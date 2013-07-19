@@ -22,7 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import stockfile.dao.connection.Utils;
-import stockfile.models.FileList;
+import sandbox.gateway.models.Servers.ServerList;
 import stockfile.models.StockFile;
 import stockfile.security.UserSession;
 
@@ -124,10 +124,18 @@ public class SFTPController {
     	ch_sftp.cd(userRoot);
     }
     
+<<<<<<< HEAD
+    public void send(String filename) throws Exception {
+    	   //System.out.println("Manifest contents:"+ServerList.getInstance().getManifest());
+           System.out.println("Attempting to send file: "+filename);
+    	   try {
+                StockFile f = ServerList.getInstance().getManifest().getFile(filename);
+=======
     public boolean send(String filename) throws SftpException, IOException {
     	   if (!this.blackList.contains(filename)) {
            		System.out.println("Attempting to upload file:"+filename);
                 StockFile f = FileList.getInstance().getManifest().getFile(filename);
+>>>>>>> ada9c0ae29d1625cce2b4f224ab3fd833649735b
                 System.out.println(f);
 
                 if (f.isDirectory()) {
@@ -142,11 +150,20 @@ public class SFTPController {
     		}
     }
     
+<<<<<<< HEAD
+    public void get(String filename) {
+        
+        try {
+        	System.out.println("Filename to Lookup: "+filename);
+        	System.out.println(ServerList.getInstance().getManifest());
+        	StockFile f = ServerList.getInstance().getManifest().getFile(filename);
+=======
     public boolean get(String filename) throws SftpException, FileNotFoundException, IOException {
     	if (!this.blackList.contains(filename)) {
         	System.out.println("Attempting to download file: "+filename);
         	StockFile f = FileList.getInstance().getManifest().getFile(filename);
         	System.out.println(f);
+>>>>>>> ada9c0ae29d1625cce2b4f224ab3fd833649735b
         	
         	if (!f.exists()) {
         		f.mkdirs();

@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import stockfile.dao.FileDAO;
-import stockfile.models.FileList;
+import sandbox.gateway.models.Servers.ServerList;
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
 import stockfile.models.Manifest.Operation;
@@ -35,8 +35,12 @@ public class SyncController {
 	private void generateSyncList() {
 
 		Map<String, StockFile> serverManifest = getServerManifest().manifest;
+<<<<<<< HEAD
+		Map<String, StockFile> clientManifest = ServerList.getInstance().getManifest().manifest;
+=======
 		Map<String, StockFile> clientManifest = FileList.getInstance()
 				.getManifest().manifest;
+>>>>>>> ada9c0ae29d1625cce2b4f224ab3fd833649735b
 
 		this.syncList = new TreeMap<>();
 
@@ -60,14 +64,30 @@ public class SyncController {
 					StockFile servFile = serverManifest.get(key);
 
 					if (servFile.getVersion() == clientFile.getVersion()) {
+<<<<<<< HEAD
+//						if (clientFile.getLastModified().isAfter(
+//								servFile.getLastModified())) {
+							ServerList.getInstance().getManifest().getFile(key)
+									.incrementVersion();
+							syncList.put(key, Operation.UPLOAD);
+//						}
+=======
 						syncList.put(key, Operation.UPLOAD_AND_OVERWRITE);
 					} else if (servFile.getVersion() > clientFile.getVersion()) {
 						syncList.put(key, Operation.DOWNLOAD_AND_OVERWRITE);
+>>>>>>> ada9c0ae29d1625cce2b4f224ab3fd833649735b
 					} else {
 						syncList.put(key, Operation.UPLOAD);
 					}
 
+<<<<<<< HEAD
+				for (String servkey : serverManifest.keySet()) {
+					ServerList.getInstance().getManifest()
+							.insertFile(homeDir+servkey,serverManifest.get(servkey));
+					syncList.put(servkey, Operation.DOWNLOAD);
+=======
 					serverManifest.remove(key);
+>>>>>>> ada9c0ae29d1625cce2b4f224ab3fd833649735b
 				}
 
 			}
@@ -99,6 +119,11 @@ public class SyncController {
 						break;
 					case UPLOAD:
 						System.out.println("Uploading " + key + "...");
+<<<<<<< HEAD
+						SFTPController.getInstance().send(key);
+						fileDAO.updateFile(ServerList.getInstance().getManifest()
+								.getFile(key));
+=======
 						if (SFTPController.getInstance().send(key)) {
 							fileDAO.updateFile(FileList.getInstance().getManifest()
 									.getFile(key));
@@ -111,11 +136,12 @@ public class SyncController {
 							fileDAO.updateFile(FileList.getInstance().getManifest()
 									.getFile(key));
 						}
+>>>>>>> ada9c0ae29d1625cce2b4f224ab3fd833649735b
 						break;
 					case DUPLICATE:
 						System.out.println("Duplicating " + key + "...");
 						SFTPController.getInstance().send(key);
-						fileDAO.updateFile(FileList.getInstance().getManifest()
+						fileDAO.updateFile(ServerList.getInstance().getManifest()
 								.getFile(key));
 						break;
 					default:

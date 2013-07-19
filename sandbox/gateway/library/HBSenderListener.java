@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package sandbox.gateway;
+package sandbox.gateway.library;
 
 import java.io.IOException;
 import java.net.*;

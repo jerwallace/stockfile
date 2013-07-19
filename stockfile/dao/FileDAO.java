@@ -4,10 +4,29 @@
  */
 package stockfile.dao;
 
+import java.io.File;
+import java.util.Date;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+
+import stockfile.models.Client;
+import sandbox.gateway.models.Servers.ServerList;
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
+import stockfile.models.User;
 import stockfile.security.UserSession;
+import static stockfile.dao.StockFileDAO.ps;
 /**
  *
  * @author MrAtheist
@@ -117,9 +136,9 @@ public class FileDAO extends StockFileDAO{
 
                             ps.setFloat(1, file.getVersion());
                             ps.setString(2, file.getLastSyncBy());
-                            ps.setString(3, file.getCreatedBy());
+                            ps.setString(3, file.getRemoteHomePath());
                             ps.setString(4, file.getRelativePath());
-                            ps.setString(5, file.getRemoteHomePath());
+                            ps.setString(5, file.getCreatedBy());
 
                             ps.executeUpdate();
 
@@ -158,9 +177,9 @@ public class FileDAO extends StockFileDAO{
 			
 			ps = conn.prepareStatement("SELECT * FROM user_file "
 					+ "JOIN file ON user_file.file_path = file.file_path AND user_file.file_name = file.file_name "
-					+ "WHERE username = ?");
+					+ "WHERE username = 'testuser'");
 			
-			ps.setString(1, UserSession.getInstance().getCurrentUser().getUserName());
+			//ps.setString(1, UserSession.getInstance().getCurrentUser().getUserName());
 			
 			rs = ps.executeQuery();
 			
@@ -168,6 +187,7 @@ public class FileDAO extends StockFileDAO{
 			 
 				String filename = rs.getString("file_name");
 				
+				@SuppressWarnings("deprecation")
 				StockFile thisFile = new StockFile(
 						filename,
 						rs.getString("file_path"),

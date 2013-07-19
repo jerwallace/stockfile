@@ -22,7 +22,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
-import stockfile.models.FileList;
+import sandbox.gateway.models.Servers.ServerList;
 import stockfile.security.UserSession;
 
 /**
@@ -33,7 +33,7 @@ public class StateController
 {
 	private final String DATA_FILE_NAME = "/stockdata.pbj";
     private final String HOME_DIR = UserSession.getInstance().getCurrentUser().getHomeDirectory();
-    private Manifest currentManifest = FileList.getInstance().getManifest();
+    private Manifest currentManifest = ServerList.getInstance().getManifest();
 
     /**
      *
@@ -69,14 +69,14 @@ public class StateController
     	    		
     	    		StockFile thisFile = new StockFile(dir.toString(), null);		
 	    	        if (!thisFile.getRelativePath().equals(""))
-    	    		FileList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
+    	    		ServerList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
     	            return FileVisitResult.CONTINUE;
     	        }
 
     	        @Override
     	        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
     	        	StockFile thisFile = new StockFile(file.toString(), null);
-    	        	FileList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
+    	        	ServerList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
     	            return FileVisitResult.CONTINUE;
     	        }
 
@@ -110,11 +110,16 @@ public class StateController
                 {
                     //deserialize the List
                     currentManifest = (Manifest) input.readObject();
-                    FileList.getInstance().loadManifest(currentManifest);
+                    ServerList.getInstance().loadManifest(currentManifest);
                     
                     //display its data
+<<<<<<< HEAD
+                    System.out.println("Current Manifest Imported:");
+                    System.out.println(ServerList.getInstance());
+=======
                     //System.out.println("Current Manifest Imported:");
                     //System.out.println(FileList.getInstance());
+>>>>>>> ada9c0ae29d1625cce2b4f224ab3fd833649735b
 
                 }
             }
