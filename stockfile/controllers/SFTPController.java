@@ -143,16 +143,6 @@ public class SFTPController
         ch_sftp.cd(userRoot);
     }
 
-    public void send(String filename) throws Exception
-    {
-        //System.out.println("Manifest contents:"+ServerList.getInstance().getManifest());
-        System.out.println("Attempting to send file: " + filename);
-        try
-        {
-            StockFile f = FileList.getInstance().getManifest().getFile(filename);
-
-        }
-    }
 
     public boolean send(String filename) throws SftpException, IOException
     {
@@ -176,18 +166,6 @@ public class SFTPController
         {
             System.out.println(filename + " upload ignored.");
             return false;
-        }
-    }
-
-    public void get(String filename)
-    {
-
-        try
-        {
-            System.out.println("Filename to Lookup: " + filename);
-            System.out.println(FileList.getInstance().getManifest());
-            StockFile f = FileList.getInstance().getManifest().getFile(filename);
-
         }
     }
 

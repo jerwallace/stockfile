@@ -18,171 +18,126 @@ import stockfile.models.Manifest.Operation;
 import stockfile.security.UserSession;
 
 /**
- *
+ * 
  * @author WallaceJ
  */
-public class SyncController
-{
+public class SyncController {
 
-    private FileDAO fileDAO = new FileDAO();
-    private Map<String, Operation> syncList;
-    private String homeDir = UserSession.getInstance().getCurrentUser()
-            .getHomeDirectory();
+	private FileDAO fileDAO = new FileDAO();
+	private Map<String, Operation> syncList;
+	private String homeDir = UserSession.getInstance().getCurrentUser()
+			.getHomeDirectory();
 
-    public SyncController()
-    {
-    }
+	public SyncController() {
 
-    private void generateSyncList()
-    {
+	}
 
-        Map<String, StockFile> serverManifest = getServerManifest().manifest;
-        Map<String, StockFile> clientManifest = FileList.getInstance().getManifest().manifest;
+	private void generateSyncList() {
 
-        this.syncList = new TreeMap<>();
+		Map<String, StockFile> serverManifest = getServerManifest().manifest;
+		Map<String, StockFile> clientManifest = FileList.getInstance()
+				.getManifest().manifest;
 
-        if (clientManifest.isEmpty())
-        {
+		this.syncList = new TreeMap<>();
 
-            for (String key : serverManifest.keySet())
-            {
-                syncList.put(key, Operation.DOWNLOAD);
-            }
+		if (clientManifest.isEmpty()) {
 
-        }
-        else
-        {
+			for (String key : serverManifest.keySet()) {
+				syncList.put(key, Operation.DOWNLOAD);
+			}
 
-            for (String key : clientManifest.keySet())
-            {
+		} else {
+			
+			for (String key : clientManifest.keySet()) {
 
-                StockFile clientFile = clientManifest.get(key);
+				StockFile clientFile = clientManifest.get(key);
 
-                if (!serverManifest.containsKey(key))
-                {
-                    syncList.put(key, Operation.UPLOAD);
+				if (!serverManifest.containsKey(key)) {
+					syncList.put(key, Operation.UPLOAD);
 
-                }
-                else
-                {
+				} else {
 
-                    StockFile servFile = serverManifest.get(key);
+					StockFile servFile = serverManifest.get(key);
 
-                    if (servFile.getVersion() == clientFile.getVersion())
-                    {
-//						if (clientFile.getLastModified().isAfter(
-//								servFile.getLastModified())) {
-                        FileList.getInstance().getManifest().getFile(key)
-                                .incrementVersion();
-                        syncList.put(key, Operation.UPLOAD);
-//						}
-                        syncList.put(key, Operation.UPLOAD_AND_OVERWRITE);
-                    }
-                    else if (servFile.getVersion() > clientFile.getVersion())
-                    {
-                        syncList.put(key, Operation.DOWNLOAD_AND_OVERWRITE);
-                    }
-                    else
-                    {
-                        syncList.put(key, Operation.UPLOAD);
-                    }
+					if (servFile.getVersion() == clientFile.getVersion()) {
+						syncList.put(key, Operation.UPLOAD_AND_OVERWRITE);
+					} else if (servFile.getVersion() > clientFile.getVersion()) {
+						syncList.put(key, Operation.DOWNLOAD_AND_OVERWRITE);
+					} else {
+						syncList.put(key, Operation.UPLOAD);
+					}
 
-                    for (String servkey : serverManifest.keySet())
-                    {
-                        FileList.getInstance().getManifest()
-                                .insertFile(homeDir + servkey, serverManifest.get(servkey));
-                        syncList.put(servkey, Operation.DOWNLOAD);
-                        serverManifest.remove(key);
-                    }
+					serverManifest.remove(key);
+				}
 
-                }
+			}
 
-                for (String servkey : serverManifest.keySet())
-                {
-                    FileList.getInstance()
-                            .getManifest()
-                            .updateFile(homeDir + servkey,
-                            serverManifest.get(servkey));
-                    syncList.put(servkey, Operation.DOWNLOAD);
-                }
-            }
+			for (String servkey : serverManifest.keySet()) {
+				FileList.getInstance()
+						.getManifest()
+						.updateFile(homeDir + servkey,
+								serverManifest.get(servkey));
+				syncList.put(servkey, Operation.DOWNLOAD);
+			}
+		}
 
-        }
+	}
 
+	public void syncronize() {
 
-    }
+		generateSyncList();
+		System.out.println(syncList);
 
-    public void syncronize()
-    {
+		if (syncList != null) {
+			for (String key : this.syncList.keySet()) {
+				try {
+					switch (syncList.get(key)) {
+					case DOWNLOAD:
+					case DOWNLOAD_AND_OVERWRITE:
+						System.out.println("Downloading " + key + "...");
+						if (SFTPController.getInstance().get(key));
+						break;
+					case UPLOAD:
+						System.out.println("Uploading " + key + "...");
+						if (SFTPController.getInstance().send(key)) {
+							fileDAO.updateFile(FileList.getInstance().getManifest()
+									.getFile(key));
+						}
+						break;
+					case UPLOAD_AND_OVERWRITE:
+						System.out.println("Uploading and overwriting " + key + "...");
+						FileList.getInstance().getManifest().getFile(key).incrementVersion();
+						if (SFTPController.getInstance().send(key)) {
+							fileDAO.updateFile(FileList.getInstance().getManifest()
+									.getFile(key));
+						}
+						break;
+					case DUPLICATE:
+						System.out.println("Duplicating " + key + "...");
+						SFTPController.getInstance().send(key);
+						fileDAO.updateFile(FileList.getInstance().getManifest()
+								.getFile(key));
+						break;
+					default:
+						break;
+					}
+				} catch (Exception ex) {
+					Logger.getLogger(SyncController.class.getName()).log(
+							Level.SEVERE, null, ex);
+				}
 
-        generateSyncList();
-        System.out.println(syncList);
+			}
+		}
+	}
 
-        if (syncList != null)
-        {
-            for (String key : this.syncList.keySet())
-            {
-                try
-                {
-                    switch (syncList.get(key))
-                    {
-                        case DOWNLOAD:
-                        case DOWNLOAD_AND_OVERWRITE:
-                            System.out.println("Downloading " + key + "...");
-                            if (SFTPController.getInstance().get(key));
-                            break;
-                        case UPLOAD:
-                            System.out.println("Uploading " + key + "...");
-                            SFTPController.getInstance().send(key);
-                            fileDAO.updateFile(FileList.getInstance().getManifest()
-                                    .getFile(key));
-                            if (SFTPController.getInstance().send(key))
-                            {
-                                fileDAO.updateFile(FileList.getInstance().getManifest()
-                                        .getFile(key));
-                            }
-                            break;
-                        case UPLOAD_AND_OVERWRITE:
-                            System.out.println("Uploading and overwriting " + key + "...");
-                            FileList.getInstance().getManifest().getFile(key).incrementVersion();
-                            if (SFTPController.getInstance().send(key))
-                            {
-                                fileDAO.updateFile(FileList.getInstance().getManifest()
-                                        .getFile(key));
-                            }
-                            break;
-                        case DUPLICATE:
-                            System.out.println("Duplicating " + key + "...");
-                            SFTPController.getInstance().send(key);
-                            fileDAO.updateFile(FileList.getInstance().getManifest()
-                                    .getFile(key));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.getLogger(SyncController.class.getName()).log(
-                            Level.SEVERE, null, ex);
-                }
-
-            }
-        }
-    }
-
-    private Manifest getServerManifest()
-    {
-        try
-        {
-            Manifest serverManifest = fileDAO.generateManifest();
-            return serverManifest;
-        }
-        catch (SQLException ex)
-        {
-            Logger.getLogger(SyncController.class.getName()).log(Level.SEVERE,
-                    null, ex);
-            return null;
-        }
-    }
+	private Manifest getServerManifest() {
+		try {
+			Manifest serverManifest = fileDAO.generateManifest();
+			return serverManifest;
+		} catch (SQLException ex) {
+			Logger.getLogger(SyncController.class.getName()).log(Level.SEVERE,
+					null, ex);
+			return null;
+		}
+	}
 }
