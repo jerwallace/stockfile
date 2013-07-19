@@ -39,7 +39,8 @@ public class LoginController {
             CreateUserException.CreateUserError.PASSWORD,
             CreateUserException.CreateUserError.INVALID_FIRSTNAME,
             CreateUserException.CreateUserError.INVALID_LASTNAME,
-            CreateUserException.CreateUserError.EMAIL};
+            CreateUserException.CreateUserError.EMAIL,
+            CreateUserException.CreateUserError.INVALID_FOLDER_NAME};
         
         RegExPattern[] reg = {RegexHelper.RegExPattern.USERNAME,
             RegexHelper.RegExPattern.PASSWORD,
