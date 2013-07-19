@@ -4,53 +4,49 @@ import stockfile.controllers.LoginController;
 import stockfile.controllers.SFTPController;
 import stockfile.controllers.StateController;
 import stockfile.controllers.SyncController;
-<<<<<<< HEAD
 import stockfile.dao.FileDAO;
-import sandbox.gateway.models.Servers.ServerList;
+import stockfile.models.FileList;
 import stockfile.models.StockFile;
 import stockfile.security.UserSession;
-=======
->>>>>>> ada9c0ae29d1625cce2b4f224ab3fd833649735b
 
-public class StockFileDriver {
-	
-	StateController stateTools;
-	
+public class StockFileDriver
+{
+
+    StateController stateTools;
+
     public StockFileDriver() throws Exception
     {
-    	LoginController.run();
-    	stateTools = new StateController();
+        LoginController.run();
+        stateTools = new StateController();
         stateTools.loadState();
         stateTools.loadDirectoryState();
 
     }
-    
+
     public static void main(String[] args) throws Exception
     {
-   
-    	StockFileDriver stockfileInstance = new StockFileDriver();
-    	
-    	//Attach shutDownhook for data persistence after shutDown
-    	stockfileInstance.attachShutDownHook();
-<<<<<<< HEAD
-    	System.out.println(ServerList.getInstance().getManifest());
-=======
->>>>>>> ada9c0ae29d1625cce2b4f224ab3fd833649735b
-    	
-    	// Make FTP connection to server.
-    	SFTPController.getInstance().connect();
-    	
-    	SyncController syncTools = new SyncController();
+
+        StockFileDriver stockfileInstance = new StockFileDriver();
+
+        //Attach shutDownhook for data persistence after shutDown
+        stockfileInstance.attachShutDownHook();
+        System.out.println(FileList.getInstance().getManifest());
+
+
+        // Make FTP connection to server.
+        SFTPController.getInstance().connect();
+
+        SyncController syncTools = new SyncController();
         syncTools.syncronize();
-    	
-    	// Create a thread to run FileScanner class separately to update stock prices frequently.
+
+        // Create a thread to run FileScanner class separately to update stock prices frequently.
         // Thread watcherThread = new Thread(new DirectoryWatcher());
 
         // Start the FileScanner thread.
         // watcherThread.start();
-        
+
     }
-    
+
     /**
      * Public method that creates a Runtime ShutDownHook thread to maintain the
      * State object values in case of system shut down to allow for data

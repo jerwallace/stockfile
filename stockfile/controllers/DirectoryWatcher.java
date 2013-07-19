@@ -22,103 +22,126 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
 
-import sandbox.gateway.models.Servers.ServerList;
+import stockfile.models.FileList;
 import stockfile.models.StockFile;
 
-public class DirectoryWatcher implements Runnable {
-	
-	private final WatchService watchServ;
-    private final Map<WatchKey,Path> keys;
+public class DirectoryWatcher implements Runnable
+{
+
+    private final WatchService watchServ;
+    private final Map<WatchKey, Path> keys;
     private boolean trace = true;
-    private final String HOME_DIR = System.getProperty("user.home")+"/Stockfile";
-    
+    private final String HOME_DIR = System.getProperty("user.home") + "/Stockfile";
+
     @SuppressWarnings("unchecked")
-    static <T> WatchEvent<T> cast(WatchEvent<?> event) {
-        return (WatchEvent<T>)event;
+    static <T> WatchEvent<T> cast(WatchEvent<?> event)
+    {
+        return (WatchEvent<T>) event;
     }
-    
-    private void registerDir (Path dir) throws IOException {
+
+    private void registerDir(Path dir) throws IOException
+    {
         WatchKey key = dir.register(watchServ, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-        if (trace) {
+        if (trace)
+        {
             Path prev = keys.get(key);
-            if (prev == null) {
+            if (prev == null)
+            {
                 //System.out.format("register: %s\n", dir);
-            } else {
-                if (!dir.equals(prev)) {
+            }
+            else
+            {
+                if (!dir.equals(prev))
+                {
                     //System.out.format("update: %s -> %s\n", prev, dir);
                 }
             }
         }
         keys.put(key, dir);
     }
-    
-    private void registerHome() throws IOException {
-    	File f = new File(HOME_DIR);
-        
-    	if(!f.exists()) { 
-        	if (!(new File(HOME_DIR)).mkdirs()) {
-        		System.err.println("Home directory could not be created.");
-        	}
-        } 
-        
-    	Files.walkFileTree(Paths.get(HOME_DIR), new SimpleFileVisitor<Path>() {
-            @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
-                throws IOException
-            {
-                registerDir(dir);
-                return FileVisitResult.CONTINUE;
-            }
-        });
-    }
-    
-    private void registerAll (final Path start) throws IOException {
-        // register directory and sub-directories
-        Files.walkFileTree(start, new SimpleFileVisitor<Path>() {
-            @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
-                throws IOException
-            {
-                registerDir(dir);
-                return FileVisitResult.CONTINUE;
-            }
-        });
-    }
-    
-    public DirectoryWatcher() throws IOException {
 
-    	this.watchServ = FileSystems.getDefault().newWatchService();
-        this.keys = new HashMap<WatchKey,Path>();
+    private void registerHome() throws IOException
+    {
+        File f = new File(HOME_DIR);
+
+        if (!f.exists())
+        {
+            if (!(new File(HOME_DIR)).mkdirs())
+            {
+                System.err.println("Home directory could not be created.");
+            }
+        }
+
+        Files.walkFileTree(Paths.get(HOME_DIR), new SimpleFileVisitor<Path>()
+        {
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+                    throws IOException
+            {
+                registerDir(dir);
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
+
+    private void registerAll(final Path start) throws IOException
+    {
+        // register directory and sub-directories
+        Files.walkFileTree(start, new SimpleFileVisitor<Path>()
+        {
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+                    throws IOException
+            {
+                registerDir(dir);
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
+
+    public DirectoryWatcher() throws IOException
+    {
+
+        this.watchServ = FileSystems.getDefault().newWatchService();
+        this.keys = new HashMap<WatchKey, Path>();
         registerHome();
-        
+
         // enable trace after initial registration
         this.trace = true;
     }
-    
-    @Override
-	public void run() {
 
-    	for (;;) {
+    @Override
+    public void run()
+    {
+
+        for (;;)
+        {
 
             // wait for key to be signalled
             WatchKey key;
-            try {
+            try
+            {
                 key = watchServ.take();
-            } catch (InterruptedException x) {
+            }
+            catch (InterruptedException x)
+            {
                 return;
             }
 
             Path dir = keys.get(key);
-            if (dir == null) {
+            if (dir == null)
+            {
                 System.err.println("WatchKey not recognized!!");
                 continue;
             }
 
-            for (WatchEvent<?> event: key.pollEvents()) {
+            for (WatchEvent<?> event : key.pollEvents())
+            {
                 Kind<?> kind = event.kind();
 
                 // TBD - provide example of how OVERFLOW event is handled
-                if (kind == OVERFLOW) {
+                if (kind == OVERFLOW)
+                {
                     continue;
                 }
 
@@ -126,46 +149,54 @@ public class DirectoryWatcher implements Runnable {
                 WatchEvent<Path> ev = cast(event);
                 Path name = ev.context();
                 Path child = dir.resolve(name);
-                System.out.println(name.toString()+" "+child.toString());
-                String fileKey = ServerList.convertToRelativePath(name.toString());
+                System.out.println(name.toString() + " " + child.toString());
+                String fileKey = FileList.convertToRelativePath(name.toString());
 
-                if (kind == ENTRY_DELETE) {
-                	ServerList.getInstance().getManifest().removeFile(fileKey);
+                if (kind == ENTRY_DELETE)
+                {
+                    FileList.getInstance().getManifest().removeFile(fileKey);
                 }
-                
-                if (kind == ENTRY_MODIFY) {
-                	System.out.println(fileKey);
-                	ServerList.getInstance().getManifest().getFile(fileKey).incrementVersion();
+
+                if (kind == ENTRY_MODIFY)
+                {
+                    System.out.println(fileKey);
+                    FileList.getInstance().getManifest().getFile(fileKey).incrementVersion();
                 }
 
                 // if directory is created, and watching recursively, then
                 // register it and its sub-directories
-                if ((kind == ENTRY_CREATE)) {
-                	StockFile thisFile = new StockFile(name.toString(), null, 1, null, "", "");
-    	        	ServerList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
-                    try {
-                        if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
+                if ((kind == ENTRY_CREATE))
+                {
+                    StockFile thisFile = new StockFile(name.toString(), null, 1, null, "", "");
+                    FileList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
+                    try
+                    {
+                        if (Files.isDirectory(child, NOFOLLOW_LINKS))
+                        {
                             registerAll(child);
                         }
-                    } catch (IOException x) {
+                    }
+                    catch (IOException x)
+                    {
                         // ignore to keep sample readbale
                     }
                 }
             }
-            
-            System.out.println(ServerList.getInstance().getManifest());
-            
+
+            System.out.println(FileList.getInstance().getManifest());
+
             // reset key and remove from set if directory no longer accessible
             boolean valid = key.reset();
-            if (!valid) {
+            if (!valid)
+            {
                 keys.remove(key);
 
                 // all directories are inaccessible
-                if (keys.isEmpty()) {
+                if (keys.isEmpty())
+                {
                     break;
                 }
             }
         }
     }
-    
 }

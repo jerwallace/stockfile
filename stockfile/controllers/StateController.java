@@ -22,7 +22,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
-import sandbox.gateway.models.Servers.ServerList;
+import stockfile.models.FileList;
 import stockfile.security.UserSession;
 
 /**
@@ -31,9 +31,10 @@ import stockfile.security.UserSession;
  */
 public class StateController
 {
-	private final String DATA_FILE_NAME = "/stockdata.pbj";
+
+    private final String DATA_FILE_NAME = "/stockdata.pbj";
     private final String HOME_DIR = UserSession.getInstance().getCurrentUser().getHomeDirectory();
-    private Manifest currentManifest = ServerList.getInstance().getManifest();
+    private Manifest currentManifest = FileList.getInstance().getManifest();
 
     /**
      *
@@ -55,40 +56,47 @@ public class StateController
             i.printStackTrace();
         }
     }
-    
-    
-    public void loadDirectoryState() {
-    	
-    	try {
-    	    
-    		Path startPath = Paths.get(UserSession.getInstance().getCurrentUser().getHomeDirectory());
-    	    Files.walkFileTree(startPath, new SimpleFileVisitor<Path>() {
-    	        
-    	    	@Override
-    	        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-    	    		
-    	    		StockFile thisFile = new StockFile(dir.toString(), null);		
-	    	        if (!thisFile.getRelativePath().equals(""))
-    	    		ServerList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
-    	            return FileVisitResult.CONTINUE;
-    	        }
 
-    	        @Override
-    	        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-    	        	StockFile thisFile = new StockFile(file.toString(), null);
-    	        	ServerList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
-    	            return FileVisitResult.CONTINUE;
-    	        }
+    public void loadDirectoryState()
+    {
 
-    	        @Override
-    	        public FileVisitResult visitFileFailed(Path file, IOException e) {
-    	            return FileVisitResult.CONTINUE;
-    	        }
-    	        
-    	    });
-    	} catch (IOException e) {
-    	    e.printStackTrace();
-    	}
+        try
+        {
+
+            Path startPath = Paths.get(UserSession.getInstance().getCurrentUser().getHomeDirectory());
+            Files.walkFileTree(startPath, new SimpleFileVisitor<Path>()
+            {
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+                {
+
+                    StockFile thisFile = new StockFile(dir.toString(), null);
+                    if (!thisFile.getRelativePath().equals(""))
+                    {
+                        FileList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+                {
+                    StockFile thisFile = new StockFile(file.toString(), null);
+                    FileList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException e)
+                {
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -97,30 +105,27 @@ public class StateController
     public void loadState()
     {
 
-        File f = new File(this.HOME_DIR+DATA_FILE_NAME);
+        File f = new File(this.HOME_DIR + DATA_FILE_NAME);
 
         if (f.exists())
         {
             try
             {
                 //use buffering
-                InputStream file = new FileInputStream(this.HOME_DIR+DATA_FILE_NAME);
+                InputStream file = new FileInputStream(this.HOME_DIR + DATA_FILE_NAME);
                 InputStream buffer = new BufferedInputStream(file);
                 try (ObjectInput input = new ObjectInputStream(buffer))
                 {
                     //deserialize the List
                     currentManifest = (Manifest) input.readObject();
-                    ServerList.getInstance().loadManifest(currentManifest);
-                    
+                    FileList.getInstance().loadManifest(currentManifest);
+
                     //display its data
-<<<<<<< HEAD
+
                     System.out.println("Current Manifest Imported:");
-                    System.out.println(ServerList.getInstance());
-=======
+                    System.out.println(FileList.getInstance());
                     //System.out.println("Current Manifest Imported:");
                     //System.out.println(FileList.getInstance());
->>>>>>> ada9c0ae29d1625cce2b4f224ab3fd833649735b
-
                 }
             }
             catch (ClassNotFoundException ex)
@@ -129,7 +134,7 @@ public class StateController
             }
             catch (IOException ex)
             {
-                System.err.println("Cannot perform input."+ex);
+                System.err.println("Cannot perform input." + ex);
             }
         }
         else

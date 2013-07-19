@@ -47,16 +47,6 @@ public class ServerList
         return currentServerList;
     }
 
-    public static ServerList getCurrentServerList()
-    {
-        return currentServerList;
-    }
-
-    public static void setCurrentServerList(ServerList currentServerList)
-    {
-        ServerList.currentServerList = currentServerList;
-    }
-
     public HashMap<String, Server> getServerMap()
     {
         return serverMap;
