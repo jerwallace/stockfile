@@ -7,6 +7,7 @@ package stockfile.controllers;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
@@ -17,10 +18,9 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import stockfile.dao.connection.Utils;
+import stockfile.exceptions.ApplicationFailedException;
 import stockfile.models.FileList;
 import stockfile.models.StockFile;
 import stockfile.security.UserSession;
@@ -44,6 +44,14 @@ public class SFTPController
         this.blackList.add("\\stockdata.pbj");
         this.blackList.add("/.DS_Store");
         this.blackList.add(UserSession.getInstance().getCurrentUser().getHomeDirectory());
+        
+        try {
+			loadConfiguration();
+		} catch (ApplicationFailedException e) {
+			System.err.println(e);
+		}
+        
+        this.userRoot = props.getProperty("ftpRootDir") + UserSession.getInstance().getCurrentUser().getUserName();
     }
 
     /**
@@ -59,89 +67,109 @@ public class SFTPController
         }
         return sftp_connection;
     }
+    
+    public void connectSSH() throws JSchException {
+    	System.out.println("Connection to FTP.");
+        //Create a session sending through our username and password
+        session = jsch.getSession(
+                props.getProperty("username"),
+                props.getProperty("ftpMaster"),
+                new Integer(props.getProperty("ftpPort")));
 
-    public void connect() throws Exception
-    {
+        System.out.println("Session created.");
+        session.setPassword(props.getProperty("password"));
+        //Security.addProvider(new com.sun.crypto.provider.SunJCE());
 
-        try
+
+        //Setup Strict HostKeyChecking to no so we dont get the
+        //unknown host key exception
+        //
+        Properties config = new Properties();
+        config.put("StrictHostKeyChecking", "no");
+        session.setConfig(config);
+        session.connect();
+        System.out.println("Session connected.");
+    }
+    
+    public void openSFTPChannel() throws JSchException {
+    	//
+        //Open the SFTP channel
+        //
+        System.out.println("Opening Channel.");
+        channel = session.openChannel("sftp");
+        channel.connect();
+        ch_sftp = (ChannelSftp) channel;
+    }
+    
+    public void loadConfiguration() throws ApplicationFailedException {
+    	try
         {
             props = Utils.readProperties("/stockfile/config/stockfile_ftp.properties");
         }
         catch (IOException ex)
         {
-            Logger.getLogger(SFTPController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        userRoot = props.getProperty("ftpRootDir") + UserSession.getInstance().getCurrentUser().getUserName();
-
-        //
-        //Now connect and SFTP to the SFTP Server
-        //
-        try
-        {
-
-            System.out.println("Connection to FTP.");
-            //Create a session sending through our username and password
-            session = jsch.getSession(
-                    props.getProperty("username"),
-                    props.getProperty("ftpMaster"),
-                    new Integer(props.getProperty("ftpPort")));
-
-            System.out.println("Session created.");
-            session.setPassword(props.getProperty("password"));
-            //Security.addProvider(new com.sun.crypto.provider.SunJCE());
-
-
-            //Setup Strict HostKeyChecking to no so we dont get the
-            //unknown host key exception
-            //
-            Properties config = new Properties();
-            config.put("StrictHostKeyChecking", "no");
-            session.setConfig(config);
-            session.connect();
-            System.out.println("Session connected.");
-
-            //
-            //Open the SFTP channel
-            //
-            System.out.println("Opening Channel.");
-            channel = session.openChannel("sftp");
-            channel.connect();
-            ch_sftp = (ChannelSftp) channel;
-
-            try
-            {
-                goToHomeDir();
-            }
-            catch (SftpException e)
-            {
-                if (e.id == 2)
-                {
-                    System.out.println("Creating remote directory: " + userRoot);
-                    ch_sftp.mkdir(userRoot);
-                    goToHomeDir();
-                }
-                else
-                {
-                    System.err.println(e);
-                }
-            }
-
-
-
-        }
-        catch (Exception e)
-        {
-            Class<? extends Exception> cls = e.getClass();
-            System.err.println("Unable to connect to FTP server. " + cls.getName() + " | " + e.toString());
-            throw e;
+            throw new ApplicationFailedException("No connection properties could be found.");
         }
     }
+    
+    public void cycleServers() {
+    	// TODO: Add server implementation.
+    }
 
+    public void connect() throws JSchException, SftpException
+    {
+    	
+        	connectSSH();
+
+            openSFTPChannel();
+
+            goToHomeDir();
+            
+    }
+    
+    public void close() {
+    	if (ch_sftp.isConnected()) {
+    		ch_sftp.disconnect();
+    	}
+    	if (channel.isConnected()) {
+    		channel.disconnect();
+    	}
+    	if (session.isConnected()) {
+    		session.disconnect();
+    	}
+    }
+    
+    public void reconnect() throws InterruptedException, SftpException {
+
+    	try {
+    		close();
+    		cycleServers();
+    		connect();
+    	} catch (JSchException ex) {
+    		System.err.println("Unable to connect to FTP server. ");
+    		System.out.println("Attempting reconnect in 10 seconds.");
+    		Thread.sleep(1000);
+    		reconnect();
+    	}
+    	
+    }
+    
     public void goToHomeDir() throws SftpException
     {
+    	try {
         System.out.println("Changing to FTP remote dir: " + userRoot);
         ch_sftp.cd(userRoot);
+    	} catch (SftpException e) {
+    		if (e.id == 2)
+            {
+                System.out.println("Creating remote directory: " + userRoot);
+                ch_sftp.mkdir(userRoot);
+                goToHomeDir();
+            } else {
+            	System.err.println("Problem getting remote folder.");
+            	throw new ApplicationFailedException("Problem getting remote folder.");
+            }
+    	}
     }
 
 
@@ -196,6 +224,8 @@ public class SFTPController
             return false;
         }
     }
+    
+    
 //    public void duplicate(String filename) {
 //
 //        try {

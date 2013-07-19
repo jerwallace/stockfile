@@ -36,6 +36,8 @@ public class CreateUserException extends Exception {
 			case USERNAME_TAKEN:
 				msg = msg + "Username is already taken.\n";
                                 break;
+		default:
+			break;
 		
 		}
                 
