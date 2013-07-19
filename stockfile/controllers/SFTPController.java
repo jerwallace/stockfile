@@ -42,6 +42,7 @@ public class SFTPController
         this.blackList = new HashSet<>();
         this.blackList.add("/stockdata.pbj");
         this.blackList.add("\\stockdata.pbj");
+        this.blackList.add("/.DS_Store");
         this.blackList.add(UserSession.getInstance().getCurrentUser().getHomeDirectory());
     }
 

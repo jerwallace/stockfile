@@ -55,7 +55,6 @@ public class FileList
     }
     
     public Manifest getManifest() {
-    	System.out.println("test");
         return this.manifest;
     }
     

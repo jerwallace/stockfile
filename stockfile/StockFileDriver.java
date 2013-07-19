@@ -4,10 +4,7 @@ import stockfile.controllers.LoginController;
 import stockfile.controllers.SFTPController;
 import stockfile.controllers.StateController;
 import stockfile.controllers.SyncController;
-import stockfile.dao.FileDAO;
 import stockfile.models.FileList;
-import stockfile.models.StockFile;
-import stockfile.security.UserSession;
 
 public class StockFileDriver
 {
