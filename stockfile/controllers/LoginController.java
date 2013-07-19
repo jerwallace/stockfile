@@ -7,6 +7,7 @@ package stockfile.controllers;
 import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+
 import org.joda.time.LocalDate;
 
 import stockfile.dao.UserDAO;
@@ -17,14 +18,17 @@ import stockfile.models.User;
 import stockfile.security.AuthenticateService;
 import stockfile.security.RegexHelper;
 import stockfile.security.RegexHelper.RegExPattern;
+import stockfile.security.UserSession;
 
 /**
  *
  * @author MrAtheist
  */
 public class LoginController {
+	
+	private final static AuthenticateService as = new AuthenticateService();
 
-    private static void createUser() throws SQLException, CreateUserException {
+    private static void createUser() throws SQLException, CreateUserException, InvalidAuthenticationException {
 
         Scanner scanner = new Scanner(System.in);
         UserDAO userDAO = new UserDAO();
@@ -71,14 +75,16 @@ public class LoginController {
                 };
         }
         scanner.close();
-        userDAO.createUser(new User(ret[0], ret[2], ret[3], ret[4], new LocalDate(), System.getProperty("user.home") + "/Stockfile"), ret[1]);
+        User newUser = new User(ret[0], ret[2], ret[3], ret[4], new LocalDate(), System.getProperty("user.home") + "/Stockfile");
+        userDAO.createUser(newUser,ret[1]);
+        UserSession.getInstance().setCurrentUser(newUser);
             
     }
 
     private static void login() {
 
         Scanner scanner = new Scanner(System.in);
-        final AuthenticateService as = new AuthenticateService();
+        
         String username, password;
         
         do {
@@ -148,11 +154,9 @@ public class LoginController {
 	            case 2:
 	            	try {
 	                	createUser();
-					} catch (CreateUserException ex) {
+					} catch (Exception ex) {
 						System.err.println(ex.getMessage());
-					} catch (SQLException ex) {
-						System.err.println(ex.getMessage());
-					}
+					} 
 	                break;
 	        }
 	        
