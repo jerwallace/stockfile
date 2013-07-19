@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package sandbox.gateway.Gateway.Controller;
+package sandbox.gateway.GatewayController;
 
 import java.io.BufferedReader;
 import java.io.IOException;

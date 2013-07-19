@@ -49,11 +49,6 @@ public class ServerList
 
     public HashMap<String, Server> getServerMap()
     {
-        return serverMap;
-    }
-
-    public void setServerMap(HashMap<String, Server> serverMap)
-    {
-        this.serverMap = serverMap;
+        return this.serverMap;
     }
 }

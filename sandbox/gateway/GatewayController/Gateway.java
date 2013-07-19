@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package sandbox.gateway.Gateway.Controller;
+package sandbox.gateway.GatewayController;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -18,7 +18,6 @@ public class Gateway
 {
 
     private int numServers;
-    private ServerList serverList;
 
     public Gateway(int numberOfServers)
     {
@@ -72,7 +71,7 @@ public class Gateway
             }
 
             Server newServer = new Server(serverName, myAddress, masterName, portNumber++, portNumber++, "START");
-//            serverList.getInstance().getServerMap(newServer.getServerName(), newServer);
+            ServerList.getInstance().getServerMap().put(newServer.getServerName(), newServer);
 //
 //                System.out.println("Server" + i + " HeartBeat send port number: ");
 //                input = bufRead.readLine();
@@ -99,12 +98,12 @@ public class Gateway
 
     public HashMap<String, Server> getServerMap()
     {
-        return this.serverList.getServerMap();
+        return ServerList.getInstance().getServerMap();
     }
 
     public void printServersInfo()
     {
-        HashMap<String, Server> map = getServerMap();
+        HashMap<String, Server> map = ServerList.getInstance().getServerMap();
         for (Map.Entry<String, Server> entry : map.entrySet())
         {
             System.out.println("Server Name = " + entry.getKey() + ", IP Address = " + entry.getValue().getMyIpAddress().toString()
