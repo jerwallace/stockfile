@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package sandbox.gateway;
+package sandbox.gateway.models.Servers;
 
 import java.net.InetAddress;
 
@@ -14,16 +14,16 @@ public class Server
 
     private String serverName;
     private InetAddress myIpAddress;
-    private InetAddress mySlaveIpAddress;
+    private String masterName;
     private int hbSendPort;
     private int hbReceivePort;
     private String status;
 
-    public Server(String name, InetAddress myAddress, InetAddress slaveAddress, int hbSendPortNum, int hbReceivePortNum, String serverStatus)
+    public Server(String name, InetAddress myAddress, String MasterName, int hbSendPortNum, int hbReceivePortNum, String serverStatus)
     {
         this.serverName = name;
         this.myIpAddress = myAddress;
-        this.mySlaveIpAddress = slaveAddress;
+        this.masterName = MasterName;
         this.hbReceivePort = hbReceivePortNum;
         this.hbSendPort = hbSendPortNum;
         this.status = serverStatus;
@@ -34,9 +34,9 @@ public class Server
         return this.myIpAddress;
     }
 
-    public InetAddress getMySlaveIpAddress()
+    public String getMyMastersName()
     {
-        return this.mySlaveIpAddress;
+        return this.masterName;
     }
 
     public int getHbSendPort()
@@ -69,9 +69,9 @@ public class Server
         this.myIpAddress = myIpAddress;
     }
 
-    public void setMySlaveIpAddress(InetAddress mySlaveIpAddress)
+    public void setMyMastersName(String MasterName)
     {
-        this.mySlaveIpAddress = mySlaveIpAddress;
+        this.masterName = MasterName;
     }
 
     public void setHbSendPort(int hbSendPort)

@@ -21,7 +21,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import stockfile.models.Client;
-import stockfile.models.FileList;
+import sandbox.gateway.models.Servers.ServerList;
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
 import stockfile.models.User;

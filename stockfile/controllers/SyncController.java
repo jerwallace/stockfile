@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import stockfile.dao.FileDAO;
-import stockfile.models.FileList;
+import sandbox.gateway.models.Servers.ServerList;
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
 import stockfile.models.Manifest.Operation;
@@ -35,7 +35,7 @@ public class SyncController {
 	private void generateSyncList() {
 
 		Map<String, StockFile> serverManifest = getServerManifest().manifest;
-		Map<String, StockFile> clientManifest = FileList.getInstance().getManifest().manifest;
+		Map<String, StockFile> clientManifest = ServerList.getInstance().getManifest().manifest;
 
 		this.syncList = new TreeMap<>();
 
@@ -60,7 +60,7 @@ public class SyncController {
 					if (servFile.getVersion() == clientFile.getVersion()) {
 //						if (clientFile.getLastModified().isAfter(
 //								servFile.getLastModified())) {
-							FileList.getInstance().getManifest().getFile(key)
+							ServerList.getInstance().getManifest().getFile(key)
 									.incrementVersion();
 							syncList.put(key, Operation.UPLOAD);
 //						}
@@ -76,7 +76,7 @@ public class SyncController {
 				}
 
 				for (String servkey : serverManifest.keySet()) {
-					FileList.getInstance().getManifest()
+					ServerList.getInstance().getManifest()
 							.insertFile(homeDir+servkey,serverManifest.get(servkey));
 					syncList.put(servkey, Operation.DOWNLOAD);
 				}
@@ -104,13 +104,13 @@ public class SyncController {
 					case UPLOAD:
 						System.out.println("Uploading " + key + "...");
 						SFTPController.getInstance().send(key);
-						fileDAO.updateFile(FileList.getInstance().getManifest()
+						fileDAO.updateFile(ServerList.getInstance().getManifest()
 								.getFile(key));
 						break;
 					case DUPLICATE:
 						System.out.println("Duplicating " + key + "...");
 						SFTPController.getInstance().send(key);
-						fileDAO.updateFile(FileList.getInstance().getManifest()
+						fileDAO.updateFile(ServerList.getInstance().getManifest()
 								.getFile(key));
 						break;
 					default:

@@ -21,7 +21,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
 
-import stockfile.models.FileList;
+import sandbox.gateway.models.Servers.ServerList;
 import stockfile.models.StockFile;
 
 public class DirectoryWatcher implements Runnable {
@@ -125,22 +125,22 @@ public class DirectoryWatcher implements Runnable {
                 Path name = ev.context();
                 Path child = dir.resolve(name);
                 System.out.println(name.toString()+" "+child.toString());
-                String fileKey = FileList.convertToRelativePath(name.toString());
+                String fileKey = ServerList.convertToRelativePath(name.toString());
 
                 if (kind == ENTRY_DELETE) {
-                	FileList.getInstance().getManifest().removeFile(fileKey);
+                	ServerList.getInstance().getManifest().removeFile(fileKey);
                 }
                 
                 if (kind == ENTRY_MODIFY) {
                 	System.out.println(fileKey);
-                	FileList.getInstance().getManifest().getFile(fileKey).incrementVersion();
+                	ServerList.getInstance().getManifest().getFile(fileKey).incrementVersion();
                 }
 
                 // if directory is created, and watching recursively, then
                 // register it and its sub-directories
                 if ((kind == ENTRY_CREATE)) {
                 	StockFile thisFile = new StockFile(name.toString(), null, 1, null, "", "");
-    	        	FileList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
+    	        	ServerList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
                     try {
                         if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
                             registerAll(child);
@@ -151,7 +151,7 @@ public class DirectoryWatcher implements Runnable {
                 }
             }
             
-            System.out.println(FileList.getInstance().getManifest());
+            System.out.println(ServerList.getInstance().getManifest());
             
             // reset key and remove from set if directory no longer accessible
             boolean valid = key.reset();

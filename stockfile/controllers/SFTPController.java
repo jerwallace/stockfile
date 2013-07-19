@@ -23,7 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import stockfile.dao.connection.Utils;
-import stockfile.models.FileList;
+import sandbox.gateway.models.Servers.ServerList;
 import stockfile.models.StockFile;
 import stockfile.security.UserSession;
 
@@ -122,10 +122,10 @@ public class SFTPController {
     }
     
     public void send(String filename) throws Exception {
-    	   //System.out.println("Manifest contents:"+FileList.getInstance().getManifest());
+    	   //System.out.println("Manifest contents:"+ServerList.getInstance().getManifest());
            System.out.println("Attempting to send file: "+filename);
     	   try {
-                StockFile f = FileList.getInstance().getManifest().getFile(filename);
+                StockFile f = ServerList.getInstance().getManifest().getFile(filename);
                 System.out.println(f);
 
                 if (f.isDirectory()) {
@@ -143,8 +143,8 @@ public class SFTPController {
         
         try {
         	System.out.println("Filename to Lookup: "+filename);
-        	System.out.println(FileList.getInstance().getManifest());
-        	StockFile f = FileList.getInstance().getManifest().getFile(filename);
+        	System.out.println(ServerList.getInstance().getManifest());
+        	StockFile f = ServerList.getInstance().getManifest().getFile(filename);
         	
         	if (!f.exists()) {
         		f.mkdirs();

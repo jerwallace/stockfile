@@ -21,7 +21,7 @@ import stockfile.controllers.SFTPController;
 import stockfile.controllers.StateController;
 import stockfile.controllers.SyncController;
 import stockfile.dao.FileDAO;
-import stockfile.models.FileList;
+import sandbox.gateway.models.Servers.ServerList;
 import stockfile.models.StockFile;
 import stockfile.security.UserSession;
 
@@ -45,7 +45,7 @@ public class StockFileDriver {
     	
     	//Attach shutDownhook for data persistence after shutDown
     	stockfileInstance.attachShutDownHook();
-    	System.out.println(FileList.getInstance().getManifest());
+    	System.out.println(ServerList.getInstance().getManifest());
     	
     	// Make FTP connection to server.
     	SFTPController.getInstance().connect();
