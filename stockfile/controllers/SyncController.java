@@ -75,7 +75,7 @@ public class SyncController {
 			for (String servkey : serverManifest.keySet()) {
 				FileList.getInstance()
 						.getManifest()
-						.insertFile(homeDir + servkey,
+						.updateFile(homeDir + servkey,
 								serverManifest.get(servkey));
 				syncList.put(servkey, Operation.DOWNLOAD);
 			}
