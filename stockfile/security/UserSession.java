@@ -1,6 +1,5 @@
 package stockfile.security;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.HashMap;
 
@@ -10,7 +9,8 @@ import stockfile.models.User;
 /**
  * Class definition for the Singleton User type client session
  */
-public class UserSession implements Serializable
+
+public class UserSession
 {
 
     private static UserSession userSession = null;
@@ -21,11 +21,7 @@ public class UserSession implements Serializable
 
     protected UserSession()
     {
-//    	System.out.println("Starting user session...");
     	
-    	currentUser = new User("testuser");
-    	
- //   	System.out.println("User "+currentUser.getUserName()+" session started...");
     }
 
     //Default constructor for the singleton instance of the UserSession

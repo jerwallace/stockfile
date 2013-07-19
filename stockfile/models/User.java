@@ -1,8 +1,6 @@
 package stockfile.models;
 
 import java.io.Serializable;
-import java.net.UnknownHostException;
-import java.sql.SQLException;
 import java.util.HashMap;
 
 import org.joda.time.LocalDate;

@@ -5,7 +5,6 @@
 package stockfile.controllers;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -16,7 +15,6 @@ import sandbox.gateway.models.Servers.ServerList;
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
 import stockfile.models.Manifest.Operation;
-import stockfile.models.User;
 import stockfile.security.UserSession;
 
 /**
@@ -27,7 +25,9 @@ public class SyncController {
 
 	private FileDAO fileDAO = new FileDAO();
 	private Map<String, Operation> syncList;
-	private String homeDir = UserSession.getInstance().getCurrentUser().getHomeDirectory();
+	private String homeDir = UserSession.getInstance().getCurrentUser()
+			.getHomeDirectory();
+
 	public SyncController() {
 
 	}
@@ -35,7 +35,12 @@ public class SyncController {
 	private void generateSyncList() {
 
 		Map<String, StockFile> serverManifest = getServerManifest().manifest;
+<<<<<<< HEAD
 		Map<String, StockFile> clientManifest = ServerList.getInstance().getManifest().manifest;
+=======
+		Map<String, StockFile> clientManifest = FileList.getInstance()
+				.getManifest().manifest;
+>>>>>>> ada9c0ae29d1625cce2b4f224ab3fd833649735b
 
 		this.syncList = new TreeMap<>();
 
@@ -46,8 +51,9 @@ public class SyncController {
 			}
 
 		} else {
-
+			
 			for (String key : clientManifest.keySet()) {
+
 				StockFile clientFile = clientManifest.get(key);
 
 				if (!serverManifest.containsKey(key)) {
@@ -58,31 +64,41 @@ public class SyncController {
 					StockFile servFile = serverManifest.get(key);
 
 					if (servFile.getVersion() == clientFile.getVersion()) {
+<<<<<<< HEAD
 //						if (clientFile.getLastModified().isAfter(
 //								servFile.getLastModified())) {
 							ServerList.getInstance().getManifest().getFile(key)
 									.incrementVersion();
 							syncList.put(key, Operation.UPLOAD);
 //						}
+=======
+						syncList.put(key, Operation.UPLOAD_AND_OVERWRITE);
+					} else if (servFile.getVersion() > clientFile.getVersion()) {
+						syncList.put(key, Operation.DOWNLOAD_AND_OVERWRITE);
+>>>>>>> ada9c0ae29d1625cce2b4f224ab3fd833649735b
 					} else {
-						if (clientManifest.get(key).getLastModified()
-								.isAfter(servFile.getLastModified())) {
-							syncList.put(key, Operation.DUPLICATE);
-						} else {
-							syncList.put(key, Operation.DOWNLOAD);
-						}
+						syncList.put(key, Operation.UPLOAD);
 					}
-					serverManifest.remove(key);
-				}
 
+<<<<<<< HEAD
 				for (String servkey : serverManifest.keySet()) {
 					ServerList.getInstance().getManifest()
 							.insertFile(homeDir+servkey,serverManifest.get(servkey));
 					syncList.put(servkey, Operation.DOWNLOAD);
+=======
+					serverManifest.remove(key);
+>>>>>>> ada9c0ae29d1625cce2b4f224ab3fd833649735b
 				}
 
 			}
 
+			for (String servkey : serverManifest.keySet()) {
+				FileList.getInstance()
+						.getManifest()
+						.updateFile(homeDir + servkey,
+								serverManifest.get(servkey));
+				syncList.put(servkey, Operation.DOWNLOAD);
+			}
 		}
 
 	}
@@ -97,15 +113,30 @@ public class SyncController {
 				try {
 					switch (syncList.get(key)) {
 					case DOWNLOAD:
-						System.out.println("Downloading "
-								+ key + "...");
-						SFTPController.getInstance().get(key);
+					case DOWNLOAD_AND_OVERWRITE:
+						System.out.println("Downloading " + key + "...");
+						if (SFTPController.getInstance().get(key));
 						break;
 					case UPLOAD:
 						System.out.println("Uploading " + key + "...");
+<<<<<<< HEAD
 						SFTPController.getInstance().send(key);
 						fileDAO.updateFile(ServerList.getInstance().getManifest()
 								.getFile(key));
+=======
+						if (SFTPController.getInstance().send(key)) {
+							fileDAO.updateFile(FileList.getInstance().getManifest()
+									.getFile(key));
+						}
+						break;
+					case UPLOAD_AND_OVERWRITE:
+						System.out.println("Uploading and overwriting " + key + "...");
+						FileList.getInstance().getManifest().getFile(key).incrementVersion();
+						if (SFTPController.getInstance().send(key)) {
+							fileDAO.updateFile(FileList.getInstance().getManifest()
+									.getFile(key));
+						}
+>>>>>>> ada9c0ae29d1625cce2b4f224ab3fd833649735b
 						break;
 					case DUPLICATE:
 						System.out.println("Duplicating " + key + "...");

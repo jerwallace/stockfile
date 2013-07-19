@@ -4,15 +4,12 @@
  */
 package stockfile.controllers;
 
-import java.io.Console;
 import java.sql.SQLException;
 import java.util.InputMismatchException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Scanner;
+
 import org.joda.time.LocalDate;
 
-import stockfile.security.UserSession;
 import stockfile.dao.UserDAO;
 import stockfile.exceptions.CreateUserException;
 import stockfile.exceptions.CreateUserException.CreateUserError;
@@ -21,17 +18,19 @@ import stockfile.models.User;
 import stockfile.security.AuthenticateService;
 import stockfile.security.RegexHelper;
 import stockfile.security.RegexHelper.RegExPattern;
+import stockfile.security.UserSession;
 
 /**
  *
  * @author MrAtheist
  */
 public class LoginController {
+	
+	private final static AuthenticateService as = new AuthenticateService();
 
-    private static void createUser() throws CreateUserException, SQLException {
+    private static void createUser() throws SQLException, CreateUserException, InvalidAuthenticationException {
 
         Scanner scanner = new Scanner(System.in);
-        Console console = System.console();
         UserDAO userDAO = new UserDAO();
 
         String[] arr = {"Username", "Password", "First name", "Last name", "Email"};
@@ -40,7 +39,8 @@ public class LoginController {
             CreateUserException.CreateUserError.PASSWORD,
             CreateUserException.CreateUserError.INVALID_FIRSTNAME,
             CreateUserException.CreateUserError.INVALID_LASTNAME,
-            CreateUserException.CreateUserError.EMAIL};
+            CreateUserException.CreateUserError.EMAIL,
+            CreateUserException.CreateUserError.INVALID_FOLDER_NAME};
         
         RegExPattern[] reg = {RegexHelper.RegExPattern.USERNAME,
             RegexHelper.RegExPattern.PASSWORD,
@@ -60,34 +60,32 @@ public class LoginController {
                         tmp = new String(console.readPassword(arr[i] + ":"));
                     else tmp = console.readLine(arr[i] + ":");
                     */
-                    tmp = scanner.nextLine();         // Blocks for user input
+                    tmp = scanner.nextLine();
                     if (!RegexHelper.validate(tmp, reg[i]) || tmp.length() == 0) {
                     
                         throw new CreateUserException(err[i]);
 
                     } else {
                         ret[i] = tmp;
-                        i++;                          // Got valid input, stop looping
+                        i++;
                     }
                 } catch (final CreateUserException e) {
                 	
                 	System.err.println(e);
                 	
                 };
-
-            
-
         }
-        
-        userDAO.createUser(new User(ret[0], ret[2], ret[3], ret[4], new LocalDate(), System.getProperty("user.home") + "/Stockfile"), ret[1]);
+        scanner.close();
+        User newUser = new User(ret[0], ret[2], ret[3], ret[4], new LocalDate(), System.getProperty("user.home") + "/Stockfile");
+        userDAO.createUser(newUser,ret[1]);
+        UserSession.getInstance().setCurrentUser(newUser);
             
     }
 
-    private static void login() throws InvalidAuthenticationException {
+    private static void login() {
 
         Scanner scanner = new Scanner(System.in);
-        Console console = System.console();
-        final AuthenticateService as = new AuthenticateService();
+        
         String username, password;
         
         do {
@@ -109,15 +107,18 @@ public class LoginController {
                 as.authenticate(username, password);
 
                 break;
+                
             } catch (InvalidAuthenticationException ex) {
                 System.err.println(ex.getMessage());
                 continue;
             }
+            
         } while (true);
+        scanner.close();
 
     }
 
-    public static void main(String[] args) throws InvalidAuthenticationException, CreateUserException, SQLException {
+    public static void run() {
 
         Scanner scanner = new Scanner(System.in);
 
@@ -147,13 +148,20 @@ public class LoginController {
             }
         } while (true);
 
-        switch (choice) {
-            case 1:
-                login();
-                break;
-            case 2:
-                createUser();
-                break;
-        }
+	        switch (choice) {
+	            case 1:
+	            	login();
+	                break;
+	            case 2:
+	            	try {
+	                	createUser();
+					} catch (Exception ex) {
+						System.err.println(ex.getMessage());
+					} 
+	                break;
+	        }
+	        
+	        scanner.close();
+        
     }
 }

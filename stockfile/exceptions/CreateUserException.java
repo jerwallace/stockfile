@@ -6,7 +6,7 @@ public class CreateUserException extends Exception {
 	String msg = ""; 
 	
 	public enum CreateUserError {
-		PASSWORD,EMAIL, INVALID_USERNAME, INVALID_FIRSTNAME,INVALID_LASTNAME,USERNAME_TAKEN
+		PASSWORD,EMAIL, INVALID_USERNAME, INVALID_FIRSTNAME,INVALID_LASTNAME,USERNAME_TAKEN, INVALID_FOLDER_NAME
 	}
 	
 	public CreateUserException (CreateUserError error) {
@@ -44,6 +44,7 @@ public class CreateUserException extends Exception {
 		
 	}
 	
+	@Override
 	public String toString() {
 		return msg;
 	}

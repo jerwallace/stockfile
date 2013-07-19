@@ -1,13 +1,10 @@
 package stockfile.models;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-
-import stockfile.security.UserSession;
 
 /**
  *
@@ -23,7 +20,7 @@ public class Manifest implements Serializable
 	public Map<String, StockFile> manifest;
     
     public enum Operation {
-        DOWNLOAD,UPLOAD,DUPLICATE
+        DOWNLOAD,UPLOAD,DUPLICATE,UPLOAD_AND_OVERWRITE,DOWNLOAD_AND_OVERWRITE
     }
     
     public Manifest()

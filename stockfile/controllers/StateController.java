@@ -113,8 +113,13 @@ public class StateController
                     ServerList.getInstance().loadManifest(currentManifest);
                     
                     //display its data
+<<<<<<< HEAD
                     System.out.println("Current Manifest Imported:");
                     System.out.println(ServerList.getInstance());
+=======
+                    //System.out.println("Current Manifest Imported:");
+                    //System.out.println(FileList.getInstance());
+>>>>>>> ada9c0ae29d1625cce2b4f224ab3fd833649735b
 
                 }
             }

@@ -9,16 +9,15 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Properties;
-import java.util.Vector;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,9 +35,11 @@ public class SFTPController {
     private Channel channel = null;
     private ChannelSftp ch_sftp = null;
     private String userRoot = null;
+    private Set<String> blackList;
     
     public SFTPController() {
-            
+    		this.blackList = new HashSet<>();
+            this.blackList.add("/stockdata.pbj");
     }
         /**
      * Static method returns a single instance of MySQLConnection.
@@ -110,7 +111,7 @@ public class SFTPController {
                 
                 
             } catch (Exception e) {
-            	Class cls = e.getClass(); 
+            	Class<? extends Exception> cls = e.getClass(); 
                 System.err.println("Unable to connect to FTP server. "+cls.getName()+" | "+e.toString());
                 throw e;
             } 
@@ -121,11 +122,18 @@ public class SFTPController {
     	ch_sftp.cd(userRoot);
     }
     
+<<<<<<< HEAD
     public void send(String filename) throws Exception {
     	   //System.out.println("Manifest contents:"+ServerList.getInstance().getManifest());
            System.out.println("Attempting to send file: "+filename);
     	   try {
                 StockFile f = ServerList.getInstance().getManifest().getFile(filename);
+=======
+    public boolean send(String filename) throws SftpException, IOException {
+    	   if (!this.blackList.contains(filename)) {
+           		System.out.println("Attempting to upload file:"+filename);
+                StockFile f = FileList.getInstance().getManifest().getFile(filename);
+>>>>>>> ada9c0ae29d1625cce2b4f224ab3fd833649735b
                 System.out.println(f);
 
                 if (f.isDirectory()) {
@@ -133,35 +141,40 @@ public class SFTPController {
                 } else {
                 	ch_sftp.put(new FileInputStream(f), f.getFullRemotePath(), ChannelSftp.OVERWRITE);
                 }
-            } catch (Exception e) {
-                System.err.println("Storing remote file failed. "+e.toString());
-                throw e;
-            }
+                return true;
+    		} else {
+    			System.out.println(filename+" upload ignored.");
+    			return false;
+    		}
     }
     
+<<<<<<< HEAD
     public void get(String filename) {
         
         try {
         	System.out.println("Filename to Lookup: "+filename);
         	System.out.println(ServerList.getInstance().getManifest());
         	StockFile f = ServerList.getInstance().getManifest().getFile(filename);
+=======
+    public boolean get(String filename) throws SftpException, FileNotFoundException, IOException {
+    	if (!this.blackList.contains(filename)) {
+        	System.out.println("Attempting to download file: "+filename);
+        	StockFile f = FileList.getInstance().getManifest().getFile(filename);
+        	System.out.println(f);
+>>>>>>> ada9c0ae29d1625cce2b4f224ab3fd833649735b
         	
         	if (!f.exists()) {
         		f.mkdirs();
         	}
 
-            System.out.println("Getting file "+ f.getPath());
-            ch_sftp.get(f.getPath(), new FileOutputStream(f));
-
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(SFTPController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SftpException ex) {
-            Logger.getLogger(SFTPController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-
+            System.out.println("Getting file "+ f.getFullRemotePath());
+            ch_sftp.get(f.getFullRemotePath(), new FileOutputStream(f));
+            return true;
+    	} else {
+    		
+    		System.out.println(filename+" download ignored.");
+    		return false;
+    	}
     }
     
 //    public void duplicate(String filename) {
