@@ -63,7 +63,7 @@ public class SyncController {
 					StockFile servFile = serverManifest.get(key);
 
 					if (servFile.getVersion() == clientFile.getVersion()) {
-						syncList.put(key, Operation.UPLOAD_AND_OVERWRITE);
+						syncList.put(key, Operation.NO_ACTION);
 					} else if (servFile.getVersion() > clientFile.getVersion()) {
 						syncList.put(key, Operation.DOWNLOAD_AND_OVERWRITE);
 					} else {
@@ -123,7 +123,6 @@ public class SyncController {
 							break;
 						case UPLOAD_AND_OVERWRITE:
 							System.out.println("Uploading and overwriting " + key + "...");
-							FileList.getInstance().getManifest().getFile(key).incrementVersion();
 								if (SFTPController.getInstance().send(key)) {
 									fileDAO.updateFile(FileList.getInstance().getManifest()
 											.getFile(key));
@@ -135,10 +134,12 @@ public class SyncController {
 							fileDAO.updateFile(FileList.getInstance().getManifest()
 									.getFile(key));
 							break;
+						case NO_ACTION:
+							System.out.println("No action is being performed on " + key + "...");
+							break;
 						default:
 							break;
 						}
-						
 						success = true;
 						
 					} catch (SftpException ex) {
