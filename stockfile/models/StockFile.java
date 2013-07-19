@@ -59,12 +59,19 @@ public class StockFile extends File {
 	public static String fixAbsPath(String relativePath) {
 		return HOME_PATH+relativePath.replace(HOME_PATH, "");
 	}
+	
+	public String filterPathForWindows(String path) {
+		if (System.getProperty("os.name").toLowerCase().equals("win")) {
+			path.replace("/", "\\");
+		}
+		return path;
+	}
 
 	/**
 	 * @return the fileName
 	 */
 	public String getRelativePath() {
-		return relFilePath;
+		return filterPathForWindows(relFilePath);
 	}
 
 	/**
