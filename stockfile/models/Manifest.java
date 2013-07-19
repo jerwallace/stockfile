@@ -55,7 +55,7 @@ public class Manifest implements Serializable
     }
 
     public StockFile getFile(String fullPath)
-    {
+    {  
         return this.manifest.get(fullPath);
     }
     

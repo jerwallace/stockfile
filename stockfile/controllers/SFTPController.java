@@ -40,6 +40,8 @@ public class SFTPController {
     public SFTPController() {
     		this.blackList = new HashSet<>();
             this.blackList.add("/stockdata.pbj");
+            this.blackList.add("\\stockdata.pbj");
+            this.blackList.add(UserSession.getInstance().getCurrentUser().getHomeDirectory());
     }
         /**
      * Static method returns a single instance of MySQLConnection.
@@ -151,7 +153,9 @@ public class SFTPController {
         	}
 
             System.out.println("Getting file "+ f.getFullRemotePath());
+            
             ch_sftp.get(f.getFullRemotePath(), new FileOutputStream(f));
+            
             return true;
     	} else {
     		
