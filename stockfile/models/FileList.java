@@ -18,7 +18,7 @@ public class FileList
     protected FileList()
     {
         //fileList = new HashMap<String, StockFile>();
-        this.manifest = new Manifest();
+        this.manifest = new Manifest("Local PBJ File List Manifest");
     }
 
     public static String convertToRelativePath(String fullPath) {

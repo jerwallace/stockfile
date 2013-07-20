@@ -40,7 +40,7 @@ public class SFTPController
     private String userRoot = null;
     private Set<String> blackList;
 
-    public SFTPController()
+    private SFTPController()
     {
         this.blackList = new HashSet<>();
         this.blackList.add("stockdata.pbj");

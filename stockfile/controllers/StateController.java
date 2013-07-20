@@ -20,9 +20,11 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.Stack;
 
 import stockfile.dao.FileDAO;
+import stockfile.exceptions.ApplicationFailedException;
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
 import stockfile.models.FileList;
@@ -39,7 +41,27 @@ public class StateController
     private final String HOME_DIR = UserSession.getInstance().getCurrentUser().getHomeDirectory();
     private Manifest currentManifest = FileList.getInstance().getManifest();
     private FileDAO fileDAO = new FileDAO();
-
+    private static StateController sc = null;
+    
+    private StateController()
+    {
+       
+    }
+    
+    /**
+     * Static method returns a single instance of MySQLConnection.
+     * <p/>
+     * @return a single instance of MySQLConnection
+     */
+    public static StateController getInstance()
+    {
+        if (sc == null)
+        {
+           sc = new StateController();
+        }
+        return sc;
+    }
+    
     /**
      *
      */
@@ -126,9 +148,6 @@ public class StateController
                     FileList.getInstance().loadManifest(currentManifest);
 
                     //display its data
-
-                    System.out.println("Current Manifest Imported:");
-                    System.out.println(FileList.getInstance());
                     
                     System.out.println("Checking for any deleted items on the server...");
                     
@@ -137,8 +156,11 @@ public class StateController
                     for (String key : FileList.getInstance().getManifest().manifest.keySet()) {
                     	StockFile thisFile = FileList.getInstance().getManifest().manifest.get(key);
                     	if (!fileDAO.inDatabase(thisFile)) {
-                    		thisFile.delete();
-                    		removeList.add(key);
+                    		if (!SFTPController.getInstance().inBlackList(thisFile.getName())) {
+                    			System.out.println("File"+thisFile.getAbsolutePath()+" was deleted on the server.");
+                    			thisFile.delete();
+                    			removeList.add(key);
+                    		}
                     	}
                     }
                     
@@ -146,8 +168,8 @@ public class StateController
                     	FileList.getInstance().getManifest().removeFile(removeList.pop());
                     }
                     
-                    //System.out.println("Current Manifest Imported:");
-                    //System.out.println(FileList.getInstance());
+                    System.out.println("Local Manifest:");
+                    System.out.println(FileList.getInstance().getManifest());
                 }
             }
             catch (ClassNotFoundException ex)

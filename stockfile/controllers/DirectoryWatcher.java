@@ -39,7 +39,7 @@ public class DirectoryWatcher implements Runnable
         return (WatchEvent<T>) event;
     }
 
-    private void registerDir(Path dir) throws IOException
+    private synchronized void registerDir(Path dir) throws IOException
     {
         WatchKey key = dir.register(watchServ, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
         if (trace)
@@ -60,7 +60,7 @@ public class DirectoryWatcher implements Runnable
         keys.put(key, dir);
     }
 
-    private void registerHome() throws IOException
+    private synchronized void registerHome() throws IOException
     {
         File f = new File(HOME_DIR);
 
@@ -84,7 +84,7 @@ public class DirectoryWatcher implements Runnable
         });
     }
 
-    private void registerAll(final Path start) throws IOException
+    private synchronized void registerAll(final Path start) throws IOException
     {
         // register directory and sub-directories
         Files.walkFileTree(start, new SimpleFileVisitor<Path>()
@@ -109,12 +109,9 @@ public class DirectoryWatcher implements Runnable
         // enable trace after initial registration
         this.trace = true;
     }
-
-    @Override
-    public void run()
-    {
-
-        for (;;)
+    
+    public synchronized void monitorDirectories() {
+    	for (;;)
         {
 
             // wait for key to be signalled
@@ -152,7 +149,8 @@ public class DirectoryWatcher implements Runnable
                 
                 StockFile thisFile = new StockFile(filePath.toString(), null);
                 String fileKey = thisFile.getRelativePath();
-                System.out.println("filekey:"+fileKey);
+
+                
                 if (kind == ENTRY_DELETE)
                 {
                 	System.out.println(fileKey+" was deleted from the directory.");
@@ -200,5 +198,11 @@ public class DirectoryWatcher implements Runnable
                 }
             }
         }
+    }
+
+    @Override
+    public void run()
+    {
+    	monitorDirectories();
     }
 }

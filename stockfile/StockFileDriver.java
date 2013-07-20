@@ -5,15 +5,14 @@ import stockfile.controllers.StateController;
 
 public class StockFileDriver
 {
-	private static final int SYNC_DELAY = 6000;
+	private static final int SYNC_DELAY = 10000;
     StateController stateTools;
 
     public StockFileDriver() throws Exception
     {
         LoginController.run();
-        stateTools = new StateController();
-        stateTools.loadState();
-        stateTools.loadDirectoryState();
+        StateController.getInstance().loadState();
+        StateController.getInstance().loadDirectoryState();
 
     }
 
