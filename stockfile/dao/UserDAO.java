@@ -115,9 +115,8 @@ public class UserDAO extends StockFileDAO {
      */
     public boolean usernameTaken(String username) throws SQLException {
 
-        if (username == null) {
+        if (username.isEmpty() || username == null)
             return true;
-        }
 
         try {
 
