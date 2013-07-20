@@ -42,10 +42,9 @@ public class LoginController {
 
     private final static AuthenticateService as = new AuthenticateService();
 
-    private static void createUser() throws SQLException, CreateUserException, 
+    private static void createUser(Scanner scanner) throws SQLException, CreateUserException, 
                 InvalidAuthenticationException, CreateClientException, UnknownHostException, SocketException {
 
-        Scanner scanner = new Scanner(System.in);
         UserDAO userDAO = new UserDAO();
 
         String[] arr = {"Username", "Password", "First name", "Last name", "Email"};
@@ -85,20 +84,19 @@ public class LoginController {
                 }
             } catch (final CreateUserException e) {
                 Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, e);
-                System.err.println(e);
+                System.err.println(e.getMessage());
 
             };
         }
-        scanner.close();
+
         User newUser = new User(ret[0], ret[2], ret[3], ret[4], new LocalDate(), System.getProperty("user.home") + "/Stockfile");
         userDAO.createUser(newUser, ret[1]);
         UserSession.getInstance().setCurrentUser(newUser);
 
     }
 
-    private static void createClient() throws CreateClientException, UnknownHostException, SocketException, SQLException {
+    private static void createClient(Scanner scanner) throws CreateClientException, UnknownHostException, SocketException, SQLException {
 
-        Scanner scanner = new Scanner(System.in);
         ClientDAO clientDAO = new ClientDAO();
 
         String[] arr = {"Type", "Description", "Manufacturer", "Model Number", "Home Directory"};
@@ -140,28 +138,26 @@ public class LoginController {
                 
             } catch (final CreateClientException e) {
 
-                System.err.println(e);
+                System.err.println(e.getMessage());
             };
         }
-        scanner.close();
 
         File dir = new File(homeDir + ret[4]);
         if (!dir.exists()) {
-            System.out.println("The specified directory does not exist. System will now create it.");
-            dir.mkdirs();
+            System.out.println("The specified directory does not exist. System will now create it...");
+            if (!dir.mkdirs())
+                    System.out.println("The specified directory could not be created.");
         }
         
         Client newClient = new Client(ret[0], ret[1], ret[2], ret[3]);
         clientDAO.addClient(newClient);
         clientDAO.addUserClient(newClient);
-        
+   
     //    String user = UserSession.getInstance().getCurrentUser().getUserName();
 
     }
 
-    private static void login() {
-
-        Scanner scanner = new Scanner(System.in);
+    private static void login(Scanner scanner) {
 
         String username, password;
 
@@ -185,13 +181,12 @@ public class LoginController {
 
                 break;
 
-            } catch (InvalidAuthenticationException ex) {
-                System.err.println(ex.getMessage());
+            } catch (InvalidAuthenticationException e) {
+                System.err.println(e.getMessage());
                 continue;
             }
 
         } while (true);
-        scanner.close();
 
     }
 
@@ -227,14 +222,14 @@ public class LoginController {
 
         switch (choice) {
             case 1:
-                login();
+                login(scanner);
                 break;
             case 2:
                 try {
-                    createUser();
-                    createClient();
-                } catch (CreateUserException ex) {
-                    System.err.println(ex.getMessage());
+                    createUser(scanner);
+                    createClient(scanner);
+                } catch (CreateUserException e) {
+                    System.err.println(e.getMessage());
                 } catch (Exception e) {
                     System.err.println(e.getStackTrace());
                     Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, e);
