@@ -82,34 +82,26 @@ public class UserDAO extends StockFileDAO {
 
         try {
 
-            if (!usernameTaken(user.getUserName())) {
+            ps = conn.prepareStatement("INSERT INTO user"
+                    + " (username, first_name, last_name, email, date_joined, password) "
+                    + " VALUES (?, ?, ?, ?, ?, ?)");
 
+            ps.setString(1, user.getUserName());
+            ps.setString(2, user.getFirstName());
+            ps.setString(3, user.getLastName());
+            ps.setString(4, user.getEmail());
+            ps.setString(5, user.getDateJoined().toString());
+            ps.setString(6, Security.sha(password));
 
-                ps = conn.prepareStatement("INSERT INTO user"
-                        + " (username, first_name, last_name, email, date_joined, password) "
-                        + " VALUES (?, ?, ?, ?, ?, ?)");
+            ps.executeUpdate();
 
-                ps.setString(1, user.getUserName());
-                ps.setString(2, user.getFirstName());
-                ps.setString(3, user.getLastName());
-                ps.setString(4, user.getEmail());
-                ps.setString(5, user.getDateJoined().toString());
-                ps.setString(6, Security.sha(password));
-
-                ps.executeUpdate();
-
-            } else {
-                throw new CreateUserException(CreateUserError.USERNAME_TAKEN);
-            }
-            
         } catch (SQLException sqlex) {
             Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, sqlex);
             System.err.println("SQLException: " + sqlex.getMessage());
             sqlex.printStackTrace();
             this.psclose();
-        } catch (CreateUserException cue) {
-            System.err.println(cue);
         }
+
         this.psclose();
 
     }

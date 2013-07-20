@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import org.apache.commons.io.FilenameUtils;
 
 import org.joda.time.LocalDate;
 import stockfile.dao.ClientDAO;
@@ -83,11 +84,16 @@ public class LoginController {
                  else tmp = console.readLine(arr[i] + ":");
                  */
                 tmp = scanner.nextLine();
+                
                 if (!RegexHelper.validate(tmp, reg[i]) || tmp.length() == 0) {
 
                     throw new CreateUserException(err[i]);
 
-                } else {
+                } else if (arr[i].equals("Username") && userDAO.usernameTaken(tmp))
+                    
+                    throw new CreateUserException(CreateUserError.USERNAME_TAKEN);
+               
+                else {
                     ret[i] = tmp;
                     i++;
                 }
@@ -97,7 +103,8 @@ public class LoginController {
             };
         }
 
-        User newUser = new User(ret[0], ret[2], ret[3], ret[4], new LocalDate(), System.getProperty("user.home") + "/Stockfile");
+        User newUser = new User(ret[0], ret[2], ret[3], ret[4], new LocalDate(), 
+            FilenameUtils.separatorsToSystem(System.getProperty("user.home") + "/Stockfile"));
         userDAO.createUser(newUser, ret[1]);
         UserSession.getInstance().setCurrentUser(newUser);
     }
@@ -128,7 +135,7 @@ public class LoginController {
             RegexHelper.RegExPattern.TEXT,
             RegexHelper.RegExPattern.FOLDERPATH};
 
-        String homeDir = System.getProperty("user.home") + (System.getProperty("os.name").toLowerCase().indexOf("windows") >= 0 ? "\\" : "/");
+        String homeDir = FilenameUtils.separatorsToSystem(System.getProperty("user.home") +  "/");
         String[] ret = new String[arr.length];
         String tmp;
 
@@ -167,13 +174,11 @@ public class LoginController {
         Client newClient = new Client(ret[0], ret[1], ret[2], ret[3]);
         clientDAO.addClient(newClient);
         clientDAO.addUserClient(newClient);
-   
-    //    String user = UserSession.getInstance().getCurrentUser().getUserName();
 
     }
 
     /**
-     * Prompts a user for login credentials and creates populate UserSession object accordinly
+     * Prompts a user for login credentials and populates UserSession object accordingly
      * @param scanner 
      */
     private static void login(Scanner scanner) {
