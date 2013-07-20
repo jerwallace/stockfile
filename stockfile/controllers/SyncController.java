@@ -42,10 +42,7 @@ public class SyncController {
 
 		serverManifest = getServerManifest();
 		clientManifest = FileList.getInstance().getManifest();
-		System.out.println(serverManifest);
-		System.out.println(clientManifest);
 
-		System.out.println(serverManifest);
 		this.syncList = new TreeMap<>();
 
 		if (clientManifest.manifest.isEmpty()) {

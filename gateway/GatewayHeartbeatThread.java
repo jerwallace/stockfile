@@ -2,7 +2,7 @@ package gateway;
 
 import java.io.*;
 import java.net.*;
-import Gateway.models.InstanceList;
+import gateway.models.InstanceList;
 
 public class GatewayHeartbeatThread extends Thread
 {

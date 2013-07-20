@@ -1,7 +1,7 @@
 package gateway;
 
-import Gateway.models.InstanceList;
-import Gateway.models.ServerInstance;
+import gateway.models.InstanceList;
+import gateway.models.ServerInstance;
 import java.util.Map;
 
 public class InstanceFailCheckThread extends Thread

@@ -1,8 +1,8 @@
 package gateway;
 
-import Gateway.models.InstanceList;
-import Gateway.models.Properties;
-import Gateway.models.ServerInstance;
+import gateway.models.InstanceList;
+import gateway.models.Properties;
+import gateway.models.ServerInstance;
 import java.net.InetAddress;
 import java.io.IOException;
 import java.util.ArrayList;

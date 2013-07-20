@@ -206,8 +206,8 @@ public class SFTPController
 	            }
 	            return true;
             } else {
-            	System.err.println("Upload Error: file does not exist. Removing file from file list.");
-            	FileList.getInstance().getManifest().removeFile(filename);
+            	System.err.println("Upload Error: File does not exist. Removing file from file list.");
+            	FileList.getInstance().getManifest().removeFile(FilenameUtils.separatorsToSystem(filename));
             	return false;
             	
             }
@@ -249,10 +249,10 @@ public class SFTPController
     }
     
     public void delete(String filename) throws SftpException {
-    	filename = FilenameUtils.separatorsToUnix(filename);
-    	StockFile f = FileList.getInstance().getManifest().getFile(filename);
     	
-    	System.out.println("Attempting to delete the file: " + filename);
+    	StockFile f = FileList.getInstance().getManifest().getFile(filename);
+
+    	System.out.println("Attempting to delete the file: " + f.getFullRemotePath());
     	ch_sftp.rm("-r "+f.getFullRemotePath());
     	
     }
