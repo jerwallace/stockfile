@@ -41,6 +41,16 @@ public class LoginController {
 
     private final static AuthenticateService as = new AuthenticateService();
 
+    /**
+     * Creates a user and adds it to the user table
+     * @param scanner
+     * @throws SQLException
+     * @throws CreateUserException
+     * @throws InvalidAuthenticationException
+     * @throws CreateClientException
+     * @throws UnknownHostException
+     * @throws SocketException 
+     */
     private static void createUser(Scanner scanner) throws SQLException, CreateUserException, 
                 InvalidAuthenticationException, CreateClientException, UnknownHostException, SocketException {
 
@@ -82,8 +92,7 @@ public class LoginController {
                     i++;
                 }
             } catch (final CreateUserException e) {
-                Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, e);
-                System.err.println(e.getMessage());
+                System.err.println(e);
 
             };
         }
@@ -91,9 +100,16 @@ public class LoginController {
         User newUser = new User(ret[0], ret[2], ret[3], ret[4], new LocalDate(), System.getProperty("user.home") + "/Stockfile");
         userDAO.createUser(newUser, ret[1]);
         UserSession.getInstance().setCurrentUser(newUser);
-
     }
 
+    /**
+     * Creates a client and adds it to the client table along with a link that relates to the user to user_client table
+     * @param scanner
+     * @throws CreateClientException
+     * @throws UnknownHostException
+     * @throws SocketException
+     * @throws SQLException 
+     */
     private static void createClient(Scanner scanner) throws CreateClientException, UnknownHostException, SocketException, SQLException {
 
         ClientDAO clientDAO = new ClientDAO();
@@ -126,7 +142,7 @@ public class LoginController {
                 if (arr[i].equals("Home Directory"))
                     System.out.print(homeDir);
  
-                tmp = scanner.next();
+                tmp = scanner.nextLine();
                 if (!RegexHelper.validate(tmp, reg[i])) {
                     
                     throw new CreateClientException(err[i]);
@@ -137,7 +153,7 @@ public class LoginController {
                 
             } catch (final CreateClientException e) {
 
-                System.err.println(e.getMessage());
+                System.err.println(e);
             };
         }
 
@@ -145,7 +161,7 @@ public class LoginController {
         if (!dir.exists()) {
             System.out.println("The specified directory does not exist. System will now create it...");
             if (!dir.mkdirs())
-                    System.out.println("The specified directory could not be created.");
+                    System.err.println("The specified directory could not be created.");
         }
         
         Client newClient = new Client(ret[0], ret[1], ret[2], ret[3]);
@@ -156,6 +172,10 @@ public class LoginController {
 
     }
 
+    /**
+     * Prompts a user for login credentials and creates populate UserSession object accordinly
+     * @param scanner 
+     */
     private static void login(Scanner scanner) {
 
         String username, password;
@@ -181,7 +201,7 @@ public class LoginController {
                 break;
 
             } catch (InvalidAuthenticationException e) {
-                System.err.println(e.getMessage());
+                System.err.println(e);
                 continue;
             }
 
@@ -228,7 +248,7 @@ public class LoginController {
                     createUser(scanner);
                     createClient(scanner);
                 } catch (CreateUserException e) {
-                    System.err.println(e.getMessage());
+                    System.err.println(e);
                 } catch (Exception e) {
                     System.err.println(e.getStackTrace());
                     Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, e);
