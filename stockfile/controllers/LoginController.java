@@ -4,13 +4,22 @@
  */
 package stockfile.controllers;
 
+import java.awt.Graphics;
+import java.io.File;
 import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import org.joda.time.LocalDate;
+import stockfile.controllers.LoginController.ChooseFile;
+import stockfile.dao.ClientDAO;
 
 import stockfile.dao.UserDAO;
+import stockfile.exceptions.CreateClientException;
+import stockfile.exceptions.CreateClientException.CreateClientError;
 import stockfile.exceptions.CreateUserException;
 import stockfile.exceptions.CreateUserException.CreateUserError;
 import stockfile.exceptions.InvalidAuthenticationException;
@@ -25,23 +34,22 @@ import stockfile.security.UserSession;
  * @author MrAtheist
  */
 public class LoginController {
-	
-	private final static AuthenticateService as = new AuthenticateService();
 
-    private static void createUser() throws SQLException, CreateUserException, InvalidAuthenticationException {
+    private final static AuthenticateService as = new AuthenticateService();
+
+    private static void createUser() throws SQLException, CreateUserException, InvalidAuthenticationException, CreateClientException {
 
         Scanner scanner = new Scanner(System.in);
         UserDAO userDAO = new UserDAO();
 
         String[] arr = {"Username", "Password", "First name", "Last name", "Email"};
-        
+
         CreateUserError[] err = {CreateUserException.CreateUserError.INVALID_USERNAME,
             CreateUserException.CreateUserError.PASSWORD,
             CreateUserException.CreateUserError.INVALID_FIRSTNAME,
             CreateUserException.CreateUserError.INVALID_LASTNAME,
-            CreateUserException.CreateUserError.EMAIL,
-            CreateUserException.CreateUserError.INVALID_FOLDER_NAME};
-        
+            CreateUserException.CreateUserError.EMAIL};
+
         RegExPattern[] reg = {RegexHelper.RegExPattern.USERNAME,
             RegexHelper.RegExPattern.PASSWORD,
             RegexHelper.RegExPattern.ALPHABETS,
@@ -52,73 +60,140 @@ public class LoginController {
         String tmp;
 
         for (int i = 0; i < arr.length;) {
-            
-                System.out.print(arr[i] + ": ");
+
+            System.out.print(arr[i] + ": ");
+
+            try {
+                /* if (arr[i].equals("Password"))
+                 tmp = new String(console.readPassword(arr[i] + ":"));
+                 else tmp = console.readLine(arr[i] + ":");
+                 */
+                tmp = scanner.nextLine();
+                if (!RegexHelper.validate(tmp, reg[i]) || tmp.length() == 0) {
+
+                    throw new CreateUserException(err[i]);
+
+                } else {
+                    ret[i] = tmp;
+                    i++;
+                }
+            } catch (final CreateUserException e) {
+
+                System.err.println(e);
+
+            };
+        }
+        scanner.close();
+        User newUser = new User(ret[0], ret[2], ret[3], ret[4], new LocalDate(), System.getProperty("user.home") + "/Stockfile");
+        userDAO.createUser(newUser, ret[1]);
+        UserSession.getInstance().setCurrentUser(newUser);
+  //      createClient();
+
+    }
+
+    private static void createClient() throws CreateClientException {
+
+        Scanner scanner = new Scanner(System.in);
+        ClientDAO clientDAO = new ClientDAO();
+
+        String[] arr = {"Type", "Description", "Manufacturer", "Model Number", "Home Directory"};
+
+        CreateClientError[] err = {CreateClientException.CreateClientError.EMPTY,
+            CreateClientException.CreateClientError.EMPTY,
+            CreateClientException.CreateClientError.EMPTY,
+            CreateClientException.CreateClientError.EMPTY,
+            CreateClientException.CreateClientError.INVALID_FOLDERPATH};
+
+        RegExPattern[] reg = {RegexHelper.RegExPattern.TEXT,
+            RegexHelper.RegExPattern.TEXT,
+            RegexHelper.RegExPattern.TEXT,
+            RegexHelper.RegExPattern.TEXT,
+            RegexHelper.RegExPattern.FOLDERPATH};
+
+        String[] ret = new String[5];
+        String tmp;
+
+        System.out.println("Please supply the following information for your client.");
+
+        for (int i = 0; i < arr.length;) {
+
+            System.out.print(arr[i] + ": ");
 
                 try {
+                     if (arr[i].equals("Home Directory"))
+                         System.out.print(System.getProperty("user.home"));
+                     
                     /* if (arr[i].equals("Password"))
-                        tmp = new String(console.readPassword(arr[i] + ":"));
-                    else tmp = console.readLine(arr[i] + ":");
-                    */
+                     tmp = new String(console.readPassword(arr[i] + ":"));
+                     else tmp = console.readLine(arr[i] + ":");
+                     */
                     tmp = scanner.nextLine();
-                    if (!RegexHelper.validate(tmp, reg[i]) || tmp.length() == 0) {
-                    
-                        throw new CreateUserException(err[i]);
+                    if (!RegexHelper.validate(tmp, reg[i])) {
+                System.out.println("ERRRRR");
+
+                        throw new CreateClientException(err[i]);
 
                     } else {
                         ret[i] = tmp;
                         i++;
                     }
-                } catch (final CreateUserException e) {
-                	
-                	System.err.println(e);
-                	
+                } catch (final CreateClientException e) {
+                        
+                    System.err.println(e);
+
                 };
-        }
-        scanner.close();
-        User newUser = new User(ret[0], ret[2], ret[3], ret[4], new LocalDate(), System.getProperty("user.home") + "/Stockfile");
-        userDAO.createUser(newUser,ret[1]);
-        UserSession.getInstance().setCurrentUser(newUser);
+
+            scanner.close();
             
+            File homeDir = new File(ret[4]);
+            if (!homeDir.exists()) {
+                
+            
+            } 
+            
+            String user = UserSession.getInstance().getCurrentUser().getUserName();
+
+        }
+
     }
 
     private static void login() {
 
         Scanner scanner = new Scanner(System.in);
-        
+
         String username, password;
-        
+
         do {
             try {
-                
-              /*  once migrate to ec2, uncomment the next block
-                username = console.readLine("Username:");
-                password = new String(console.readPassword("Password"));
+
+                /*  once migrate to ec2, uncomment the next block
+                 username = console.readLine("Username:");
+                 password = new String(console.readPassword("Password"));
         
-                System.out.println(new String(password));
-                */
-                
+                 System.out.println(new String(password));
+                 */
+
                 System.out.print("Username: ");
                 username = scanner.nextLine();
-                
+
                 System.out.print("Password: ");
                 password = scanner.nextLine();
-                
+
                 as.authenticate(username, password);
 
                 break;
-                
+
             } catch (InvalidAuthenticationException ex) {
                 System.err.println(ex.getMessage());
                 continue;
             }
-            
+
         } while (true);
         scanner.close();
 
     }
 
-    public static void run() {
+    public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
 
@@ -126,7 +201,7 @@ public class LoginController {
 
         int choice = 0;
         do {
-            
+
             System.out.println("Please select one of the following...");
             System.out.println("Login .........> 1");
             System.out.println("New user ......> 2");
@@ -148,20 +223,50 @@ public class LoginController {
             }
         } while (true);
 
-	        switch (choice) {
-	            case 1:
-	            	login();
-	                break;
-	            case 2:
-	            	try {
-	                	createUser();
-					} catch (Exception ex) {
-						System.err.println(ex.getMessage());
-					} 
-	                break;
-	        }
-	        
-	        scanner.close();
-        
+        switch (choice) {
+            case 1:
+                login();
+                break;
+            case 2:
+                try {
+                    createUser();
+                } catch (Exception ex) {
+                    System.err.println(ex.getMessage());
+                }
+                break;
+        }
+
+        scanner.close();
+
+    }
+
+    class ChooseFile {
+
+        private JFrame frame;
+
+        public ChooseFile() {
+            frame = new JFrame();
+
+            frame.setVisible(true);
+            BringToFront();
+        }
+
+        public File getFile() {
+            JFileChooser fc = new JFileChooser();
+            if (JFileChooser.APPROVE_OPTION == fc.showOpenDialog(null)) {
+                frame.setVisible(false);
+                return fc.getSelectedFile();
+            } else {
+                System.out.println("Next time select a file.");
+                System.exit(1);
+            }
+            return null;
+        }
+
+        private void BringToFront() {
+            frame.setExtendedState(JFrame.ICONIFIED);
+            frame.setExtendedState(JFrame.NORMAL);
+
+        }
     }
 }

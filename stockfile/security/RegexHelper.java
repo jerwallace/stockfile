@@ -13,21 +13,15 @@ public class RegexHelper {
 
     public enum RegExPattern {
 
-        POSTAL_CODE, PHONE_NUMBER, EMAIL, FLOAT, INT, USERNAME, PASSWORD,
-		ALPHABETS, COURSE_NUMBER, LETTER_DIGIT, UPPSERCASE_LETTER, NAME
+        EMAIL, USERNAME, PASSWORD, ALPHABETS, NAME, TEXT, FOLDERPATH;
     }
     private static final String RGX_USERNAME = "^[a-z0-9_-]{5,30}$";
-    private static final String RGX_PASSWORD = ".{8,30}";
     private static final String RGX_EMAIL = "^([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})$";
-    private static final String RGX_POSTAL_CODE = "[A-Za-z0-9\\-]+$";
-    private static final String RGX_FLOAT = "^(?=.+)(?:[1-9]\\d*|0)?(?:\\.\\d+)?$";
-    private static final String RGX_INT = "^[1-9]\\d*$";
-    private static final String RGX_PHONE_NUMBER = "^\\(?([0-9]{3})\\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$";
-    private static final String RGX_COURSE_NUMBER = "^\\d{1,11}";
     private static final String RGX_ALPHABETS = "^^[a-zA-Z ]{1,50}$";
-    private static final String RGX_LETTER_DIGIT = "\\w" ;
-    private static final String RGX_UPPERCASE_LETTER = "^[A-Z]*$" ;
+    private static final String RGX_PASSWORD = "\\w{8,30}";
+    private static final String RGX_TEXT = "\\w{0,30}";
     private static final String RGX_NAME = "[A-Za-z0-9_~\\-'\\$%\\&]+$";
+    private static final String RGX_FOLDERPATH = "^((([a-zA-Z]:)(\\\\{2}[a-zA-Z]+)(\\\\{2}\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}))(?=(\\\\(\\w[\\w ]*)))(\\\\\\w[\\w ]*)*)$";
     private static RegexHelper regex = null;
 
     protected RegexHelper() {
@@ -62,35 +56,20 @@ public class RegexHelper {
             case PASSWORD:
                 patternToUse = RGX_PASSWORD;
                 break;
-            case POSTAL_CODE:
-                patternToUse = RGX_POSTAL_CODE;
-                break;
-            case PHONE_NUMBER:
-                patternToUse = RGX_PHONE_NUMBER;
-                break;
-            case FLOAT:
-                patternToUse = RGX_FLOAT;
-                break;
-            case INT:
-                patternToUse = RGX_INT;
-                break;
             case EMAIL:
                 patternToUse = RGX_EMAIL;
-                break;
-            case COURSE_NUMBER:
-                patternToUse = RGX_COURSE_NUMBER;
                 break;
             case ALPHABETS:
                 patternToUse = RGX_ALPHABETS;
                 break;
-            case LETTER_DIGIT:
-                patternToUse = RGX_LETTER_DIGIT;
-                break;          
-            case UPPSERCASE_LETTER:
-                patternToUse = RGX_UPPERCASE_LETTER;
-                break;
             case NAME:
                 patternToUse = RGX_NAME;
+                break;
+            case TEXT:
+                patternToUse = RGX_TEXT;
+                break;
+            case FOLDERPATH:
+                patternToUse = RGX_FOLDERPATH;
                 break;
             default:
                 patternToUse = null;
