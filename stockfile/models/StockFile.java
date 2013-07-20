@@ -61,6 +61,8 @@ public class StockFile extends File {
 	}
 	
 	public String filterPathForWindows(String path) {
+		System.out.println(System.getProperty("os.name"));
+		System.out.println(path);
 		if (System.getProperty("os.name").toLowerCase().equals("win")) {
 			path.replace("/", "\\");
 		}

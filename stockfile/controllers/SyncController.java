@@ -10,7 +10,10 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.jcraft.jsch.SftpException;
+
 import stockfile.dao.FileDAO;
+import stockfile.exceptions.ApplicationFailedException;
 import stockfile.models.FileList;
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
@@ -60,7 +63,7 @@ public class SyncController {
 					StockFile servFile = serverManifest.get(key);
 
 					if (servFile.getVersion() == clientFile.getVersion()) {
-						syncList.put(key, Operation.UPLOAD_AND_OVERWRITE);
+						syncList.put(key, Operation.NO_ACTION);
 					} else if (servFile.getVersion() > clientFile.getVersion()) {
 						syncList.put(key, Operation.DOWNLOAD_AND_OVERWRITE);
 					} else {
@@ -83,50 +86,96 @@ public class SyncController {
 
 	}
 
-	public void syncronize() {
+	public void syncronize() throws Exception {
 
 		generateSyncList();
 		System.out.println(syncList);
-
+		
+		// Start at the first attempt and assume it failed.
+		boolean success = false;
+		int attempts = 1;
+		
 		if (syncList != null) {
+			
 			for (String key : this.syncList.keySet()) {
-				try {
-					switch (syncList.get(key)) {
-					case DOWNLOAD:
-					case DOWNLOAD_AND_OVERWRITE:
-						System.out.println("Downloading " + key + "...");
-						if (SFTPController.getInstance().get(key));
-						break;
-					case UPLOAD:
-						System.out.println("Uploading " + key + "...");
-						if (SFTPController.getInstance().send(key)) {
+				
+				Operation operation = syncList.get(key);
+				
+				// Reset attempts and success flag.
+				attempts = 1;
+				success = false;
+				
+				while (!success) {
+					
+					try {
+						switch (operation) {
+						case DOWNLOAD:
+						case DOWNLOAD_AND_OVERWRITE:
+							System.out.println("Downloading " + key + "...");
+							SFTPController.getInstance().get(key);
+							break;
+						case UPLOAD:
+							System.out.println("Uploading " + key + "...");
+							if (SFTPController.getInstance().send(key)) {
+								fileDAO.updateFile(FileList.getInstance().getManifest()
+										.getFile(key));
+							}
+							break;
+						case UPLOAD_AND_OVERWRITE:
+							System.out.println("Uploading and overwriting " + key + "...");
+								if (SFTPController.getInstance().send(key)) {
+									fileDAO.updateFile(FileList.getInstance().getManifest()
+											.getFile(key));
+								}
+							break;
+						case DUPLICATE:
+							System.out.println("Duplicating " + key + "...");
+							SFTPController.getInstance().send(key);
 							fileDAO.updateFile(FileList.getInstance().getManifest()
 									.getFile(key));
+							break;
+						case NO_ACTION:
+							System.out.println("No action is being performed on " + key + "...");
+							break;
+						default:
+							break;
 						}
-						break;
-					case UPLOAD_AND_OVERWRITE:
-						System.out.println("Uploading and overwriting " + key + "...");
-						FileList.getInstance().getManifest().getFile(key).incrementVersion();
-						if (SFTPController.getInstance().send(key)) {
-							fileDAO.updateFile(FileList.getInstance().getManifest()
-									.getFile(key));
+						success = true;
+						
+					} catch (SftpException ex) {
+						if (ex.id == 2) {
+							if (attempts < 3) {
+								System.err.println("File not found. Flipping operation...");
+								System.err.println("Attempt #"+attempts+"...");
+								operation = flipOperation(operation);
+							} else {
+								throw ex;
+							}
+						} else {
+							if (attempts < 3) {
+								SFTPController.getInstance().reconnect();
+							} else {
+								throw new ApplicationFailedException("No valid servers.");
+							}
 						}
-						break;
-					case DUPLICATE:
-						System.out.println("Duplicating " + key + "...");
-						SFTPController.getInstance().send(key);
-						fileDAO.updateFile(FileList.getInstance().getManifest()
-								.getFile(key));
-						break;
-					default:
-						break;
+						continue;
 					}
-				} catch (Exception ex) {
-					Logger.getLogger(SyncController.class.getName()).log(
-							Level.SEVERE, null, ex);
 				}
 
 			}
+		}
+	}
+	
+	private Operation flipOperation(Operation thisOp) {
+		switch(thisOp) {
+			case DOWNLOAD_AND_OVERWRITE:
+			case DOWNLOAD:
+				return Operation.UPLOAD;
+			case UPLOAD_AND_OVERWRITE:
+			case UPLOAD:
+				return Operation.DOWNLOAD;
+			default:
+				return Operation.DUPLICATE;
 		}
 	}
 
