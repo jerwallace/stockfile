@@ -125,6 +125,18 @@ public class FileDAO extends StockFileDAO{
                             ps.setString(5, FilenameUtils.separatorsToUnix(file.getRemoteHomePath()));
 
                             ps.executeUpdate();
+                            
+                            ps = conn.prepareStatement("UPDATE user_file "
+                                    + "SET version = ?, last_sync_by = ?,created_by = ? "
+                                    + "WHERE file_name = ? AND file_path = ? ");
+
+		                    ps.setFloat(1, file.getVersion());
+		                    ps.setString(2, file.getLastSyncBy());
+		                    ps.setString(3, file.getCreatedBy());
+		                    ps.setString(4, FilenameUtils.separatorsToUnix(file.getRelativePath()));
+		                    ps.setString(5, FilenameUtils.separatorsToUnix(file.getRemoteHomePath()));
+		
+		                    ps.executeUpdate();
 
                     } catch (SQLException sqlex) {
                             throw sqlex;
