@@ -12,7 +12,7 @@ public class CreateUserException extends Exception {
 	
 	public CreateUserException (CreateUserError error) {
 
-		msg = "Invalid input. Allowed pattern:\n";
+		msg = "Invalid input:\n";
             
 		switch (error) {
 		
