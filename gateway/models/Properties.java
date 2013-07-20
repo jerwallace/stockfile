@@ -3,6 +3,10 @@ package gateway.models;
 import java.util.ArrayList;
 
 /**
+ * Public class that describes the overall properties of the Gateway and is
+ * access by gateway driver when starting the gateway to create threads, assign
+ * ports and addresses all contained in this class.
+ * <p/>
  * @author Bahman
  */
 public final class Properties
@@ -15,15 +19,38 @@ public final class Properties
     private int heartbeatInterval;
     private int failCheckInterval;
 
-    public Properties(int gatewayPortNumber, int ipResolverPortNumber, int heartbeatCheckInterval, int failCheckTimeInterval)
+    /**
+     * Public main class constructor.
+     * <p/>
+     * @param gatewayStartPortNumber - Starting port number for the gateway to
+     *                               incrementally assign to each heartbeat
+     *                               thread
+     * @param ipResolverPortNumber   - Port number for thread that listens and
+     *                               resolves DNS requests from the client
+     * @param heartbeatSendInterval  - Interval time between transmitting
+     *                               heartbeats
+     * @param failCheckTimeInterval  - Period which if times out, means a server
+     *                               instance is DOWN
+     */
+    public Properties(int gatewayStartPortNumber, int ipResolverPortNumber, int heartbeatSendInterval, int failCheckTimeInterval)
     {
         this.privateIpList = new ArrayList<>();
         this.publicIpList = new ArrayList<>();
-        this.gatewayHeartBeatPort = gatewayPortNumber;
+        this.gatewayHeartBeatPort = gatewayStartPortNumber;
         this.gatewayIpResolverPort = ipResolverPortNumber;
-        this.heartbeatInterval = heartbeatCheckInterval;
+        this.heartbeatInterval = heartbeatSendInterval;
         this.failCheckInterval = failCheckTimeInterval;
         initialize();
+    }
+
+    /**
+     * Adds the private and public DNS of the three default EC2 instances
+     */
+    public void initialize()
+    {
+        addIpAddress("ec2-50-16-42-197.compute-1.amazonaws.com", "sf1.stockfile.ca");
+        addIpAddress("ec2-107-22-40-185.compute-1.amazonaws.com", "sf2.stockfile.ca");
+        addIpAddress("ec2-54-234-182-56.compute-1.amazonaws.com", "sf3.stockfile.ca");
     }
 
     public void addIpAddress(String privateDNS, String publicDNS)
@@ -32,31 +59,14 @@ public final class Properties
         this.publicIpList.add(publicDNS);
     }
 
-    public void removeIpAddress(String ip)
-    {
-        this.privateIpList.remove(ip);
-    }
-
     public int getNumberofIps()
     {
         return this.privateIpList.size();
     }
 
-    public void initialize()
-    {
-        addIpAddress("ec2-50-16-42-197.compute-1.amazonaws.com", "sf1.stockfile.ca");
-        addIpAddress("ec2-107-22-40-185.compute-1.amazonaws.com", "sf2.stockfile.ca");
-        addIpAddress("ec2-54-234-182-56.compute-1.amazonaws.com", "sf3.stockfile.ca");
-    }
-
     public int getGatewayPort()
     {
         return gatewayHeartBeatPort;
-    }
-
-    public void setGatewayPort(int gatewayPort)
-    {
-        this.gatewayHeartBeatPort = gatewayPort;
     }
 
     public String getPrivateDnsAddress(int index)
@@ -69,24 +79,9 @@ public final class Properties
         return this.publicIpList.get(index);
     }
 
-    public void setGatewayIpResolverPort(int gatewayIpResolverPort)
-    {
-        this.gatewayIpResolverPort = gatewayIpResolverPort;
-    }
-
-    public int getGatewayHeartBeatPort()
-    {
-        return gatewayHeartBeatPort;
-    }
-
     public int getGatewayIpResolverPort()
     {
         return gatewayIpResolverPort;
-    }
-
-    public void setGatewayHeartBeatPort(int gatewayHeartBeatPort)
-    {
-        this.gatewayHeartBeatPort = gatewayHeartBeatPort;
     }
 
     public int getHeartbeatInterval()
@@ -97,15 +92,5 @@ public final class Properties
     public int getFailCheckInterval()
     {
         return failCheckInterval;
-    }
-
-    public void setHeartbeatInterval(int heartbeatInterval)
-    {
-        this.heartbeatInterval = heartbeatInterval;
-    }
-
-    public void setFailCheckInterval(int failCheckInterval)
-    {
-        this.failCheckInterval = failCheckInterval;
     }
 }

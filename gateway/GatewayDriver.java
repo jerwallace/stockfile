@@ -8,6 +8,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
+ *
+ * Class GatewayDriver is the driver class for the Gateway application. Creates
+ * and starts all of the following threads: Heartbeat Monitors, Client DNS
+ * Resolver, Instance Fail Check. Uses "models.Properties" file to retrieve the
+ * public and private DNS names of servers also the all of the communication
+ * port numbers.
+ * <p/>
  * @author Bahman
  */
 public class GatewayDriver
