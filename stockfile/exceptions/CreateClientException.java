@@ -15,13 +15,18 @@ public class CreateClientException extends Exception {
     
     public enum CreateClientError {
     
-        EMPTY, INVALID_FOLDERPATH;
+        TYPE, EMPTY, INVALID_FOLDERPATH;
     }
     
     public CreateClientException(CreateClientError error) {
 
         switch (error) {
             
+            case TYPE:
+                
+                msg += "Type can not be empty; please try again.\n";
+                break;
+                
             case INVALID_FOLDERPATH:
                 
                 msg = msg + "Invalid folder path; please try again.\n";

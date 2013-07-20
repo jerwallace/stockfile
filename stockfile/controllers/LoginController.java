@@ -6,6 +6,7 @@ package stockfile.controllers;
 
 import java.awt.Graphics;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
@@ -117,19 +118,20 @@ public class LoginController {
      * @throws SocketException
      * @throws SQLException 
      */
-    private static void createClient(Scanner scanner) throws CreateClientException, UnknownHostException, SocketException, SQLException {
+    private static void createClient(Scanner scanner) throws CreateClientException, UnknownHostException, SocketException, SQLException, UnsupportedEncodingException {
 
         ClientDAO clientDAO = new ClientDAO();
+        Client newClient = new Client();
 
         String[] arr = {"Type", "Description", "Manufacturer", "Model Number", "Home Directory"};
 
-        CreateClientError[] err = {CreateClientException.CreateClientError.EMPTY,
+        CreateClientError[] err = {CreateClientException.CreateClientError.TYPE,
             CreateClientException.CreateClientError.EMPTY,
             CreateClientException.CreateClientError.EMPTY,
             CreateClientException.CreateClientError.EMPTY,
             CreateClientException.CreateClientError.INVALID_FOLDERPATH};
 
-        RegExPattern[] reg = {RegexHelper.RegExPattern.TEXT,
+        RegExPattern[] reg = {RegexHelper.RegExPattern.TYPE,
             RegexHelper.RegExPattern.TEXT,
             RegexHelper.RegExPattern.TEXT,
             RegexHelper.RegExPattern.TEXT,
@@ -150,9 +152,16 @@ public class LoginController {
                     System.out.print(homeDir);
  
                 tmp = scanner.nextLine();
-                if (!RegexHelper.validate(tmp, reg[i])) {
+                
+                if (arr[i].equals("Type") && clientDAO.typeExists(tmp)) {
+                    
+                    newClient = clientDAO.getClientByType(tmp);
+                    i = arr.length - 1;
+                    
+                } else if (!RegexHelper.validate(tmp, reg[i])) {
                     
                     throw new CreateClientException(err[i]);
+                
                 } else {
                     ret[i] = tmp;
                     i++;
@@ -171,8 +180,17 @@ public class LoginController {
                     System.err.println("The specified directory could not be created.");
         }
         
-        Client newClient = new Client(ret[0], ret[1], ret[2], ret[3]);
-        clientDAO.addClient(newClient);
+        if (newClient.getType() == null){
+            newClient = new Client(ret[0], ret[1], ret[2], ret[3], ret[4]);
+            clientDAO.addClient(newClient);
+        } else {
+            newClient = new Client(newClient.getType(),
+                                   newClient.getDescription(),
+                                   newClient.getManufacturer(),
+                                   newClient.getModelNo(),
+                                   ret[4]);
+        }
+        
         clientDAO.addUserClient(newClient);
         UserSession.getInstance().setCurrentClient(newClient);
     }
