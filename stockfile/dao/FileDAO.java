@@ -22,37 +22,40 @@ public class FileDAO extends StockFileDAO{
 	}
 	
 	public int createFile(StockFile file) throws SQLException {
-		
-		try {
-			
-			ps = conn.prepareStatement("INSERT INTO "
-					+ "file (version,last_sync_by,created_by,file_name,file_path) "
-					+ "VALUES (?,?,?,?,?);");
-			
-			ps.setFloat(1, file.getVersion());
-			ps.setString(2, file.getLastSyncBy());
-			ps.setString(3, file.getCreatedBy());
-			ps.setString(4, FilenameUtils.separatorsToUnix(file.getRelativePath()));
-			ps.setString(5, FilenameUtils.separatorsToUnix(file.getRemoteHomePath()));
-			
-			ps.executeUpdate();
-			System.out.println("Added file to database.");
-			
-            ps = conn.prepareStatement("INSERT INTO "
-					+ "user_file (username,file_name,file_path,current_version) "
-					+ "VALUES (?,?,?,?);");
-			
-			
-			ps.setString(1, UserSession.getInstance().getCurrentUser().getUserName());
-			ps.setString(2, FilenameUtils.separatorsToUnix(file.getRelativePath()));
-			ps.setString(3, FilenameUtils.separatorsToUnix(file.getRemoteHomePath()));			
-			ps.setFloat(4, file.getVersion());
-
-			ps.executeUpdate();
-			System.out.println("Connected user to file in database.");
-			
-		} catch (SQLException sqlex) {
-			throw sqlex;
+		if (!inDatabase(file)) {
+			try {
+				
+				ps = conn.prepareStatement("INSERT INTO "
+						+ "file (version,last_sync_by,created_by,file_name,file_path) "
+						+ "VALUES (?,?,?,?,?);");
+				
+				ps.setFloat(1, file.getVersion());
+				ps.setString(2, file.getLastSyncBy());
+				ps.setString(3, file.getCreatedBy());
+				ps.setString(4, FilenameUtils.separatorsToUnix(file.getRelativePath()));
+				ps.setString(5, FilenameUtils.separatorsToUnix(file.getRemoteHomePath()));
+				
+				ps.executeUpdate();
+				System.out.println("Added file to database.");
+				
+	            ps = conn.prepareStatement("INSERT INTO "
+						+ "user_file (username,file_name,file_path,current_version) "
+						+ "VALUES (?,?,?,?);");
+				
+				
+				ps.setString(1, UserSession.getInstance().getCurrentUser().getUserName());
+				ps.setString(2, FilenameUtils.separatorsToUnix(file.getRelativePath()));
+				ps.setString(3, FilenameUtils.separatorsToUnix(file.getRemoteHomePath()));			
+				ps.setFloat(4, file.getVersion());
+	
+				ps.executeUpdate();
+				System.out.println("Connected user to file in database.");
+				
+			} catch (SQLException sqlex) {
+				throw sqlex;
+			}
+		} else {
+			updateFile(file);
 		}
 		
 		this.psclose();

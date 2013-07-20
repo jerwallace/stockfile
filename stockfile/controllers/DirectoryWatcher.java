@@ -39,7 +39,7 @@ public class DirectoryWatcher implements Runnable
         return (WatchEvent<T>) event;
     }
 
-    private synchronized void registerDir(Path dir) throws IOException
+    private void registerDir(Path dir) throws IOException
     {
         WatchKey key = dir.register(watchServ, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
         if (trace)
@@ -60,7 +60,7 @@ public class DirectoryWatcher implements Runnable
         keys.put(key, dir);
     }
 
-    private synchronized void registerHome() throws IOException
+    private void registerHome() throws IOException
     {
         File f = new File(HOME_DIR);
 
@@ -84,7 +84,7 @@ public class DirectoryWatcher implements Runnable
         });
     }
 
-    private synchronized void registerAll(final Path start) throws IOException
+    private void registerAll(final Path start) throws IOException
     {
         // register directory and sub-directories
         Files.walkFileTree(start, new SimpleFileVisitor<Path>()
@@ -110,7 +110,7 @@ public class DirectoryWatcher implements Runnable
         this.trace = true;
     }
     
-    public synchronized void monitorDirectories() {
+    public void monitorDirectories() {
     	for (;;)
         {
 

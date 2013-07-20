@@ -6,6 +6,7 @@ package stockfile.controllers;
  */
 
 import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -248,12 +249,17 @@ public class SFTPController
         }
     }
     
-    public void delete(String filename) throws SftpException {
+    
+    public final void delete(String filename) throws SftpException, JSchException {
     	
     	StockFile f = FileList.getInstance().getManifest().getFile(filename);
 
-    	System.out.println("Attempting to delete the file: " + f.getFullRemotePath());
-    	ch_sftp.rm("-r "+f.getFullRemotePath());
+    	System.out.println("Attempting to delete the file or folder: " + f.getFullRemotePath());
+    	
+    	ChannelExec chanExec = (ChannelExec) session.openChannel("exec");
+    	chanExec.setCommand("/bin/rm -rf " + f.getFullRemotePath());
+    	chanExec.connect();
+    	chanExec.disconnect();
     	
     }
     

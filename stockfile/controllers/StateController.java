@@ -23,6 +23,8 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Stack;
 
+import org.apache.commons.io.FileUtils;
+
 import stockfile.dao.FileDAO;
 import stockfile.exceptions.ApplicationFailedException;
 import stockfile.models.Manifest;
@@ -158,13 +160,18 @@ public class StateController
                     	if (!fileDAO.inDatabase(thisFile)) {
                     		if (!SFTPController.getInstance().inBlackList(thisFile.getName())) {
                     			System.out.println("File"+thisFile.getAbsolutePath()+" was deleted on the server.");
-                    			thisFile.delete();
+                    			if (thisFile.isDirectory()) {
+                    				FileUtils.deleteDirectory(thisFile);
+                    			} else if (thisFile.exists()) {
+                    				thisFile.delete();
+                    			}
                     			removeList.add(key);
                     		}
                     	}
                     }
                     
                     while (!removeList.empty()) {
+                    	
                     	FileList.getInstance().getManifest().removeFile(removeList.pop());
                     }
                     
