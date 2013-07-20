@@ -87,7 +87,7 @@ public class LoginController {
         User newUser = new User(ret[0], ret[2], ret[3], ret[4], new LocalDate(), System.getProperty("user.home") + "/Stockfile");
         userDAO.createUser(newUser, ret[1]);
         UserSession.getInstance().setCurrentUser(newUser);
-  //      createClient();
+        //      createClient();
 
     }
 
@@ -110,6 +110,7 @@ public class LoginController {
             RegexHelper.RegExPattern.TEXT,
             RegexHelper.RegExPattern.FOLDERPATH};
 
+        String homeDir = System.getProperty("user.home") + (System.getProperty("os.name").toLowerCase().indexOf("windows") >= 0 ? "\\" : "/");
         String[] ret = new String[5];
         String tmp;
 
@@ -119,41 +120,31 @@ public class LoginController {
 
             System.out.print(arr[i] + ": ");
 
-                try {
-                     if (arr[i].equals("Home Directory"))
-                         System.out.print(System.getProperty("user.home"));
-                     
-                    /* if (arr[i].equals("Password"))
-                     tmp = new String(console.readPassword(arr[i] + ":"));
-                     else tmp = console.readLine(arr[i] + ":");
-                     */
-                    tmp = scanner.nextLine();
-                    if (!RegexHelper.validate(tmp, reg[i])) {
-                System.out.println("ERRRRR");
+            try {
+                if (arr[i].equals("Home Directory"))
+                    System.out.print(homeDir);
+ 
+                tmp = scanner.nextLine();
+                if (!RegexHelper.validate(tmp, reg[i])) {
+                    throw new CreateClientException(err[i]);
+                } else {
+                    ret[i] = tmp;
+                    i++;
+                }
+            } catch (final CreateClientException e) {
 
-                        throw new CreateClientException(err[i]);
-
-                    } else {
-                        ret[i] = tmp;
-                        i++;
-                    }
-                } catch (final CreateClientException e) {
-                        
-                    System.err.println(e);
-
-                };
-
-            scanner.close();
-            
-            File homeDir = new File(ret[4]);
-            if (!homeDir.exists()) {
-                
-            
-            } 
-            
-            String user = UserSession.getInstance().getCurrentUser().getUserName();
-
+                System.err.println(e);
+            };
         }
+        scanner.close();
+
+        File dir = new File(homeDir + ret[4]);
+        if (!dir.exists()) {
+            System.out.println("The specified directory does not exist. System will now create it.");
+            dir.mkdirs();
+        }
+
+    //    String user = UserSession.getInstance().getCurrentUser().getUserName();
 
     }
 
@@ -229,7 +220,7 @@ public class LoginController {
                 break;
             case 2:
                 try {
-                    createUser();
+                    createClient();
                 } catch (Exception ex) {
                     System.err.println(ex.getMessage());
                 }

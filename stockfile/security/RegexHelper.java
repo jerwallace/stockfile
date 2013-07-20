@@ -17,11 +17,14 @@ public class RegexHelper {
     }
     private static final String RGX_USERNAME = "^[a-z0-9_-]{5,30}$";
     private static final String RGX_EMAIL = "^([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})$";
-    private static final String RGX_ALPHABETS = "^^[a-zA-Z ]{1,50}$";
+    private static final String RGX_ALPHABETS = "^[a-zA-Z ]{1,50}$";
     private static final String RGX_PASSWORD = "\\w{8,30}";
     private static final String RGX_TEXT = "\\w{0,30}";
     private static final String RGX_NAME = "[A-Za-z0-9_~\\-'\\$%\\&]+$";
-    private static final String RGX_FOLDERPATH = "^((([a-zA-Z]:)(\\\\{2}[a-zA-Z]+)(\\\\{2}\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}))(?=(\\\\(\\w[\\w ]*)))(\\\\\\w[\\w ]*)*)$";
+//    private static final String RGX_FOLDERPATH = "^((([a-zA-Z]:)(\\\\{2}[a-zA-Z]+)(\\\\{2}\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}))(?=(\\\\(\\w[\\w ]*)))(\\\\\\w[\\w ]*)*)$";
+//    private static final String RGX_FOLDERPATH = "^(?:[a-zA-Z]\\:|\\\\\\\\[\\w\\.]+\\\\[\\w.$]+)\\\\(?:[\\w]+\\\\)*\\w([\\w.])+$";
+//    private static final String RGX_FOLDERPATH = "^[^\\\\/?%*:|\"<>\\.]+$";
+    private static final String RGX_FOLDERPATH = "^[^(\\/)?%*:|\"<>\\.]+$";
     private static RegexHelper regex = null;
 
     protected RegexHelper() {
