@@ -1,29 +1,25 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package sandbox.gateway.models.Servers;
+package Gateway.models;
 
 import java.net.InetAddress;
 
 /**
  * @author Bahman
  */
-public class Server
+public class ServerInstance
 {
 
     private String serverName;
     private InetAddress myIpAddress;
-    private String masterName;
+    private String publiDnsAddress;
     private int hbSendPort;
     private int hbReceivePort;
     private String status;
 
-    public Server(String name, InetAddress myAddress, String MasterName, int hbSendPortNum, int hbReceivePortNum, String serverStatus)
+    public ServerInstance(String name, InetAddress myAddress, String publicDNSAddress, int hbSendPortNum, int hbReceivePortNum, String serverStatus)
     {
         this.serverName = name;
         this.myIpAddress = myAddress;
-        this.masterName = MasterName;
+        this.publiDnsAddress = publicDNSAddress;
         this.hbReceivePort = hbReceivePortNum;
         this.hbSendPort = hbSendPortNum;
         this.status = serverStatus;
@@ -32,11 +28,6 @@ public class Server
     public InetAddress getMyIpAddress()
     {
         return this.myIpAddress;
-    }
-
-    public String getMyMastersName()
-    {
-        return this.masterName;
     }
 
     public int getHbSendPort()
@@ -69,11 +60,6 @@ public class Server
         this.myIpAddress = myIpAddress;
     }
 
-    public void setMyMastersName(String MasterName)
-    {
-        this.masterName = MasterName;
-    }
-
     public void setHbSendPort(int hbSendPort)
     {
         this.hbSendPort = hbSendPort;
@@ -87,5 +73,15 @@ public class Server
     public void setStatus(String status)
     {
         this.status = status;
+    }
+
+    public String getPubliDnsAddress()
+    {
+        return this.publiDnsAddress;
+    }
+
+    public void setPubliDnsAddress(String publiDnsAddress)
+    {
+        this.publiDnsAddress = publiDnsAddress;
     }
 }

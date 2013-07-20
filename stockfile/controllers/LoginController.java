@@ -174,7 +174,7 @@ public class LoginController {
         Client newClient = new Client(ret[0], ret[1], ret[2], ret[3]);
         clientDAO.addClient(newClient);
         clientDAO.addUserClient(newClient);
-
+        UserSession.getInstance().setCurrentClient(newClient);
     }
 
     /**

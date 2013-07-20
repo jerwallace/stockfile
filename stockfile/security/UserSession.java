@@ -15,6 +15,7 @@ public class UserSession
 
     private static UserSession userSession = null;
     private User currentUser;
+    private Client currentClient;
     private boolean validSession = false;
     private Timestamp last_sync;
     private HashMap<byte[], Client> userClientHashMap;
@@ -25,21 +26,18 @@ public class UserSession
     }
 
     //Default constructor for the singleton instance of the UserSession
-    public static UserSession getInstance()
-    {
+    public static UserSession getInstance() {
 
-        if (userSession == null)
-        {
+        if (userSession == null) {
         	
-            synchronized (UserSession.class)
-            {
+            synchronized (UserSession.class) {
+                
                 UserSession inst = userSession;
 
-                if (inst == null)
-                {
+                if (inst == null) {
 
-                    synchronized (UserSession.class)
-                    {
+                    synchronized (UserSession.class) {
+                        
                         userSession = new UserSession();
                     }
                 }
@@ -105,6 +103,20 @@ public class UserSession
     public void setUserClientHashMap(HashMap<byte[], Client> userClientHashMap)
     {
         this.userClientHashMap = userClientHashMap;
+    }
+
+    /**
+     * @return the currentClient
+     */
+    public Client getCurrentClient() {
+        return currentClient;
+    }
+
+    /**
+     * @param currentClient the currentClient to set
+     */
+    public void setCurrentClient(Client currentClient) {
+        this.currentClient = currentClient;
     }
 
 }

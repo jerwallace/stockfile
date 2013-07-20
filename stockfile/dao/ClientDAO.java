@@ -35,8 +35,8 @@ public class ClientDAO extends StockFileDAO
         {
 
             ps = conn.prepareStatement("INSERT INTO "
-                    + "user_client (username,client_type,last_sync,ip_address,mac_address) "
-                    + "VALUES (?,?,?,?,?);");
+                    + "user_client (username,client_type,last_sync,ip_address,mac_address,home_directory) "
+                    + "VALUES (?,?,?,?,?,?);");
 
             ps.setString(1, UserSession.getInstance().getCurrentUser().getUserName());
             ps.setString(2, client.getType());
