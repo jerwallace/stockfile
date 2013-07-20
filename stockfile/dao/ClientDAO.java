@@ -26,6 +26,20 @@ public class ClientDAO extends StockFileDAO
         super();
     }
 
+    public static String convertByteArrayString(byte[] byteArray) {
+
+        if (byteArray == null)
+            return null;
+
+        StringBuilder sb = new StringBuilder(18);
+        for (byte b : byteArray) {
+            if (sb.length() > 0)
+                sb.append(':');
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+    
     public void addUserClient(Client client) throws SQLException, SocketException, UnknownHostException, UnsupportedEncodingException
     {
 
@@ -42,8 +56,8 @@ public class ClientDAO extends StockFileDAO
             ps.setString(1, UserSession.getInstance().getCurrentUser().getUserName());
             ps.setString(2, client.getType());
             ps.setTimestamp(3, UserSession.getInstance().getLastSync());
-            ps.setString(4, client.getIpAddress().toString());
-            ps.setString(5, client.getMacAddress().toString());
+            ps.setString(4, convertByteArrayString(client.getIpAddress()));
+            ps.setString(5, convertByteArrayString(client.getMacAddress()));
             ps.setString(6, client.getHomeDir());
             System.out.println(ps.toString());
             ps.executeUpdate();
@@ -65,7 +79,7 @@ public class ClientDAO extends StockFileDAO
             ps = conn.prepareStatement("DELETE FROM user_client WHERE username = ? AND mac_address = ?");
 
             ps.setString(1, UserSession.getInstance().getCurrentUser().getUserName());
-            ps.setString(2, client.getMacAddress().toString());
+            ps.setString(2, convertByteArrayString(client.getMacAddress()));
 
             ps.executeUpdate();
         }
@@ -87,10 +101,10 @@ public class ClientDAO extends StockFileDAO
 
             ps.setString(1, client.getType());
             ps.setTimestamp(2, UserSession.getInstance().getLastSync());
-            ps.setString(3, client.getIpAddress().toString());
+            ps.setString(3, convertByteArrayString(client.getIpAddress()));
             ps.setString(4, client.getHomeDir());
             ps.setString(5, UserSession.getInstance().getCurrentUser().getUserName());
-            ps.setString(6, client.getMacAddress().toString());
+            ps.setString(6, convertByteArrayString(client.getMacAddress()));
 
             ps.executeUpdate();
 
@@ -118,8 +132,8 @@ public class ClientDAO extends StockFileDAO
 
             ps.executeUpdate();
 
-            System.out.println("Client with IP Address: " + client.getIpAddress().toString()
-                    + " and MAC Address: " + client.getMacAddress().toString() + " were added! " + ps.toString());
+            System.out.println("Client with IP Address: " + convertByteArrayString(client.getIpAddress())
+                    + " and MAC Address: " + convertByteArrayString(client.getMacAddress()) + " were added! " + ps.toString());
         }
         catch (SQLException sqlex)
         {
