@@ -131,8 +131,8 @@ public class FileDAO extends StockFileDAO{
                                     + "WHERE file_name = ? AND file_path = ? ");
 
 		                    ps.setFloat(1, file.getVersion());
-		                    ps.setString(4, FilenameUtils.separatorsToUnix(file.getRelativePath()));
-		                    ps.setString(5, FilenameUtils.separatorsToUnix(file.getRemoteHomePath()));
+		                    ps.setString(2, FilenameUtils.separatorsToUnix(file.getRelativePath()));
+		                    ps.setString(3, FilenameUtils.separatorsToUnix(file.getRemoteHomePath()));
 		
 		                    ps.executeUpdate();
 
@@ -165,7 +165,7 @@ public class FileDAO extends StockFileDAO{
 	
 	public Manifest generateManifest() throws SQLException {
 		
-		Manifest manifest = new Manifest();
+		Manifest manifest = new Manifest("Server Manifest");
 
 		try {
 			

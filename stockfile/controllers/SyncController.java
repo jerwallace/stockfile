@@ -33,13 +33,28 @@ public class SyncController {
 	private Manifest clientManifest;
 	private String homeDir = UserSession.getInstance().getCurrentUser()
 			.getHomeDirectory();
+	private static SyncController syncController = null;
 
-	public SyncController() {
+	private SyncController() {
 
 	}
+	
+	/**
+     * Static method returns a single instance of MySQLConnection.
+     * <p/>
+     * @return a single instance of MySQLConnection
+     */
+    public static SyncController getInstance()
+    {
+        if (syncController == null)
+        {
+        	syncController = new SyncController();
+        }
+        return syncController;
+    }
 
 	private void generateSyncList() {
-
+		
 		serverManifest = getServerManifest();
 		clientManifest = FileList.getInstance().getManifest();
 
@@ -90,9 +105,10 @@ public class SyncController {
 
 	}
 
-	public void syncronize() throws Exception {
+	public synchronized void syncronize() throws Exception {
 
 		generateSyncList();
+		
 		System.out.println(syncList);
 		
 		// Start at the first attempt and assume it failed.
