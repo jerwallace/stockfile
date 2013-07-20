@@ -53,13 +53,13 @@ public class FileList
         return currentFileList;
         
     }
-    
+
     public Manifest getManifest() {
-    	System.out.println("test");
         return this.manifest;
     }
     
     public void loadManifest(Manifest manifest) {
     	this.manifest = manifest;
     }
+    
 }

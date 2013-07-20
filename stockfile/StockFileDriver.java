@@ -1,17 +1,11 @@
 package stockfile;
 
 import stockfile.controllers.LoginController;
-import stockfile.controllers.SFTPController;
 import stockfile.controllers.StateController;
-import stockfile.controllers.SyncController;
-import stockfile.dao.FileDAO;
-import stockfile.models.FileList;
-import stockfile.models.StockFile;
-import stockfile.security.UserSession;
 
 public class StockFileDriver
 {
-
+	private static final int SYNC_DELAY = 6000;
     StateController stateTools;
 
     public StockFileDriver() throws Exception
@@ -30,21 +24,11 @@ public class StockFileDriver
 
         //Attach shutDownhook for data persistence after shutDown
         stockfileInstance.attachShutDownHook();
-        System.out.println(FileList.getInstance().getManifest());
-
-
-        // Make FTP connection to server.
-        SFTPController.getInstance().connect();
-
-        SyncController syncTools = new SyncController();
-        syncTools.syncronize();
-
-        // Create a thread to run FileScanner class separately to update stock prices frequently.
-        // Thread watcherThread = new Thread(new DirectoryWatcher());
-
-        // Start the FileScanner thread.
-        // watcherThread.start();
-
+        
+        System.out.println("Initializing periodic sync...");
+        Thread periodicSync = new Thread(new PeriodicSync(SYNC_DELAY));
+        periodicSync.start();
+        
     }
 
     /**

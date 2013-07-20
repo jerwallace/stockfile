@@ -148,18 +148,20 @@ public class DirectoryWatcher implements Runnable
                 // Context for directory entry event is the file name of entry
                 WatchEvent<Path> ev = cast(event);
                 Path name = ev.context();
-                Path child = dir.resolve(name);
-                System.out.println(name.toString() + " " + child.toString());
-                String fileKey = FileList.convertToRelativePath(name.toString());
-
+                Path filePath = dir.resolve(name);
+                
+                StockFile thisFile = new StockFile(filePath.toString(), null);
+                String fileKey = thisFile.getRelativePath();
+                System.out.println("filekey:"+fileKey);
                 if (kind == ENTRY_DELETE)
                 {
-                    FileList.getInstance().getManifest().removeFile(fileKey);
+                	System.out.println(fileKey+" was deleted from the directory.");
+                    FileList.getInstance().getManifest().getFile(fileKey).setRemoveMarker(true);
                 }
 
                 if (kind == ENTRY_MODIFY)
                 {
-                    System.out.println(fileKey);
+                	System.out.println(fileKey+" was modified.");
                     FileList.getInstance().getManifest().getFile(fileKey).incrementVersion();
                 }
 
@@ -167,13 +169,13 @@ public class DirectoryWatcher implements Runnable
                 // register it and its sub-directories
                 if ((kind == ENTRY_CREATE))
                 {
-                    StockFile thisFile = new StockFile(name.toString(), null, 1, null, "", "");
+                	System.out.println(thisFile.getRelativePath()+" was created.");
                     FileList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
                     try
                     {
-                        if (Files.isDirectory(child, NOFOLLOW_LINKS))
+                        if (Files.isDirectory(filePath, NOFOLLOW_LINKS))
                         {
-                            registerAll(child);
+                            registerAll(filePath);
                         }
                     }
                     catch (IOException x)

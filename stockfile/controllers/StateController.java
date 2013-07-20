@@ -19,7 +19,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.SQLException;
+import java.util.Stack;
 
+import stockfile.dao.FileDAO;
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
 import stockfile.models.FileList;
@@ -35,13 +38,13 @@ public class StateController
     private final String DATA_FILE_NAME = "/stockdata.pbj";
     private final String HOME_DIR = UserSession.getInstance().getCurrentUser().getHomeDirectory();
     private Manifest currentManifest = FileList.getInstance().getManifest();
+    private FileDAO fileDAO = new FileDAO();
 
     /**
      *
      */
     public void saveState()
     {
-
         try
         {
             try (
@@ -82,6 +85,7 @@ public class StateController
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
                 {
                     StockFile thisFile = new StockFile(file.toString(), null);
+                    System.out.println("Visited file"+file.toString());
                     FileList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
                     return FileVisitResult.CONTINUE;
                 }
@@ -89,6 +93,7 @@ public class StateController
                 @Override
                 public FileVisitResult visitFileFailed(Path file, IOException e)
                 {
+                	System.err.println("Visiting file "+file.toString()+" failed.");
                     return FileVisitResult.CONTINUE;
                 }
             });
@@ -124,6 +129,23 @@ public class StateController
 
                     System.out.println("Current Manifest Imported:");
                     System.out.println(FileList.getInstance());
+                    
+                    System.out.println("Checking for any deleted items on the server...");
+                    
+                    Stack<String> removeList = new Stack<String>();
+                    
+                    for (String key : FileList.getInstance().getManifest().manifest.keySet()) {
+                    	StockFile thisFile = FileList.getInstance().getManifest().manifest.get(key);
+                    	if (!fileDAO.inDatabase(thisFile)) {
+                    		thisFile.delete();
+                    		removeList.add(key);
+                    	}
+                    }
+                    
+                    while (!removeList.empty()) {
+                    	FileList.getInstance().getManifest().removeFile(removeList.pop());
+                    }
+                    
                     //System.out.println("Current Manifest Imported:");
                     //System.out.println(FileList.getInstance());
                 }
@@ -135,6 +157,8 @@ public class StateController
             catch (IOException ex)
             {
                 System.err.println("Cannot perform input." + ex);
+            } catch (SQLException ex) {
+            	System.err.println("Problem with database connection." + ex);
             }
         }
         else

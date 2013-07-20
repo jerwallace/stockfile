@@ -4,6 +4,7 @@ import java.io.File;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import org.apache.commons.io.FilenameUtils;
 import org.joda.time.DateTime;
 
 import stockfile.security.UserSession;
@@ -25,6 +26,7 @@ public class StockFile extends File {
 	private String lastSyncBy = UserSession.getInstance().getCurrentUser().getUserName();
 	private String createdBy = UserSession.getInstance().getCurrentUser().getUserName();
 	private boolean inSync;
+	private boolean removeMarker;
 
 	public StockFile(String relativePath, String remotePath, float version,
 			Timestamp lastMod, String lastSyncBy, String createdBy) {
@@ -57,21 +59,18 @@ public class StockFile extends File {
 	// }
 
 	public static String fixAbsPath(String relativePath) {
-		return HOME_PATH+relativePath.replace(HOME_PATH, "");
+		return HOME_PATH+(filterPathForWindows(relativePath).replace(HOME_PATH, ""));
 	}
 	
-	public String filterPathForWindows(String path) {
-		if (System.getProperty("os.name").toLowerCase().equals("win")) {
-			path.replace("/", "\\");
-		}
-		return path;
+	public static String filterPathForWindows(String path) {
+		return FilenameUtils.separatorsToSystem(path);
 	}
 
 	/**
 	 * @return the fileName
 	 */
 	public String getRelativePath() {
-		return filterPathForWindows(relFilePath);
+		return relFilePath;
 	}
 
 	/**
@@ -79,7 +78,7 @@ public class StockFile extends File {
 	 *            the relative path to set
 	 */
 	public void setRelativePath(String relativePath) {
-		this.relFilePath = relativePath.replace(HOME_PATH, "");
+		this.relFilePath = filterPathForWindows(relativePath).replace(HOME_PATH, "");
 	}
 
 	/**
@@ -159,6 +158,8 @@ public class StockFile extends File {
 		output += "Remote Path: "+getFullRemotePath()+"\n";
 		output += "Absolute Path: "+getAbsolutePath()+"\n";
 		output += "Version: "+getVersion()+"\n";
+		output += "Is Directory: "+isDirectory()+"\n";
+		output += "Exists: "+exists()+"\n";
 		output += "============";
 		return output;
 
@@ -177,10 +178,18 @@ public class StockFile extends File {
 	}
 	
 	public String getFullRemotePath() {
-		return getRemoteHomePath()+getRelativePath();
+		return FilenameUtils.separatorsToUnix(getRemoteHomePath()+getRelativePath());
 	}
 
 	public void setRemoteHomePath(String remotePath) {
 		this.remoteHomePath = remotePath;
+	}
+
+	public boolean hasRemoveMarker() {
+		return removeMarker;
+	}
+
+	public void setRemoveMarker(boolean removeMarker) {
+		this.removeMarker = removeMarker;
 	}
 }

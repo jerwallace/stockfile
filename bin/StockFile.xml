@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project StockFileApp">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="/Users/jeremywallace/StockfileSrc/bin/StockFile.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="stockfile.Testing.WatchDir"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="/Users/jeremywallace/Documents/workspace/StockFileApp/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/jeremywallace/StockfileSrc/libraries/commons-io-2.4-javadoc.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/jeremywallace/StockfileSrc/libraries/commons-io-2.4-sources.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/jeremywallace/StockfileSrc/libraries/commons-io-2.4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/jeremywallace/StockfileSrc/libraries/joda-time-2.2-javadoc.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/jeremywallace/StockfileSrc/libraries/joda-time-2.2-sources.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/jeremywallace/StockfileSrc/libraries/joda-time-2.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/jeremywallace/StockfileSrc/libraries/jsch-0.1.50.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/jeremywallace/StockfileSrc/libraries/mysql-connector-java-5.1.25-bin.jar"/>
+        </jar>
+    </target>
+</project>

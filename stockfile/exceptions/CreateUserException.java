@@ -6,12 +6,13 @@ public class CreateUserException extends Exception {
 	String msg = ""; 
 	
 	public enum CreateUserError {
-		PASSWORD,EMAIL, INVALID_USERNAME, INVALID_FIRSTNAME,INVALID_LASTNAME,USERNAME_TAKEN, INVALID_FOLDER_NAME
+		PASSWORD, EMAIL, INVALID_USERNAME, INVALID_FIRSTNAME, INVALID_LASTNAME, USERNAME_TAKEN, INVALID_FOLDER_NAME,
+                NO_ERROR
 	}
 	
 	public CreateUserException (CreateUserError error) {
 
-		msg = "Invalid input. Allowed pattern:\n";
+		msg = "Invalid input:\n";
             
 		switch (error) {
 		
@@ -36,11 +37,15 @@ public class CreateUserException extends Exception {
 			case USERNAME_TAKEN:
 				msg = msg + "Username is already taken.\n";
                                 break;
-		
+                        case INVALID_FOLDER_NAME:
+                                msg = msg + "INVALID FOLDER NAME.\n";
+                                break;
+                        default: 
+                                msg = "";
+                                break;
 		}
                 
                 msg = msg + "Please try again.\n";
-
 		
 	}
 	

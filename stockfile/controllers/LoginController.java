@@ -4,16 +4,30 @@
  */
 package stockfile.controllers;
 
+import java.awt.Graphics;
+import java.io.File;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import org.apache.commons.io.FilenameUtils;
 
 import org.joda.time.LocalDate;
+import stockfile.dao.ClientDAO;
 
 import stockfile.dao.UserDAO;
+import stockfile.exceptions.CreateClientException;
+import stockfile.exceptions.CreateClientException.CreateClientError;
 import stockfile.exceptions.CreateUserException;
 import stockfile.exceptions.CreateUserException.CreateUserError;
 import stockfile.exceptions.InvalidAuthenticationException;
+import stockfile.models.Client;
 import stockfile.models.User;
 import stockfile.security.AuthenticateService;
 import stockfile.security.RegexHelper;
@@ -25,96 +39,178 @@ import stockfile.security.UserSession;
  * @author MrAtheist
  */
 public class LoginController {
-	
-	private final static AuthenticateService as = new AuthenticateService();
 
-    private static void createUser() throws SQLException, CreateUserException, InvalidAuthenticationException {
+    private final static AuthenticateService as = new AuthenticateService();
 
-        Scanner scanner = new Scanner(System.in);
+    /**
+     * Creates a user and adds it to the user table
+     * @param scanner
+     * @throws SQLException
+     * @throws CreateUserException
+     * @throws InvalidAuthenticationException
+     * @throws CreateClientException
+     * @throws UnknownHostException
+     * @throws SocketException 
+     */
+    private static void createUser(Scanner scanner) throws SQLException, CreateUserException, 
+                InvalidAuthenticationException, CreateClientException, UnknownHostException, SocketException {
+
         UserDAO userDAO = new UserDAO();
 
         String[] arr = {"Username", "Password", "First name", "Last name", "Email"};
-        
+
         CreateUserError[] err = {CreateUserException.CreateUserError.INVALID_USERNAME,
             CreateUserException.CreateUserError.PASSWORD,
             CreateUserException.CreateUserError.INVALID_FIRSTNAME,
             CreateUserException.CreateUserError.INVALID_LASTNAME,
-            CreateUserException.CreateUserError.EMAIL,
-            CreateUserException.CreateUserError.INVALID_FOLDER_NAME};
-        
+            CreateUserException.CreateUserError.EMAIL};
+
         RegExPattern[] reg = {RegexHelper.RegExPattern.USERNAME,
             RegexHelper.RegExPattern.PASSWORD,
             RegexHelper.RegExPattern.ALPHABETS,
             RegexHelper.RegExPattern.ALPHABETS,
             RegexHelper.RegExPattern.EMAIL};
 
-        String[] ret = new String[5];
+        String[] ret = new String[arr.length];
         String tmp;
 
         for (int i = 0; i < arr.length;) {
-            
-                System.out.print(arr[i] + ": ");
 
-                try {
-                    /* if (arr[i].equals("Password"))
-                        tmp = new String(console.readPassword(arr[i] + ":"));
-                    else tmp = console.readLine(arr[i] + ":");
-                    */
-                    tmp = scanner.nextLine();
-                    if (!RegexHelper.validate(tmp, reg[i]) || tmp.length() == 0) {
+            System.out.print(arr[i] + ": ");
+
+            try {
+                /* if (arr[i].equals("Password"))
+                 tmp = new String(console.readPassword(arr[i] + ":"));
+                 else tmp = console.readLine(arr[i] + ":");
+                 */
+                tmp = scanner.nextLine();
+                
+                if (!RegexHelper.validate(tmp, reg[i]) || tmp.length() == 0) {
+
+                    throw new CreateUserException(err[i]);
+
+                } else if (arr[i].equals("Username") && userDAO.usernameTaken(tmp))
                     
-                        throw new CreateUserException(err[i]);
+                    throw new CreateUserException(CreateUserError.USERNAME_TAKEN);
+               
+                else {
+                    ret[i] = tmp;
+                    i++;
+                }
+            } catch (final CreateUserException e) {
+                System.err.println(e);
 
-                    } else {
-                        ret[i] = tmp;
-                        i++;
-                    }
-                } catch (final CreateUserException e) {
-                	
-                	System.err.println(e);
-                	
-                };
+            };
         }
-        scanner.close();
-        User newUser = new User(ret[0], ret[2], ret[3], ret[4], new LocalDate(), System.getProperty("user.home") + "/Stockfile");
-        userDAO.createUser(newUser,ret[1]);
+
+        User newUser = new User(ret[0], ret[2], ret[3], ret[4], new LocalDate(), 
+            FilenameUtils.separatorsToSystem(System.getProperty("user.home") + "/Stockfile"));
+        userDAO.createUser(newUser, ret[1]);
         UserSession.getInstance().setCurrentUser(newUser);
-            
     }
 
-    private static void login() {
+    /**
+     * Creates a client and adds it to the client table along with a link that relates to the user to user_client table
+     * @param scanner
+     * @throws CreateClientException
+     * @throws UnknownHostException
+     * @throws SocketException
+     * @throws SQLException 
+     */
+    private static void createClient(Scanner scanner) throws CreateClientException, UnknownHostException, SocketException, SQLException {
 
-        Scanner scanner = new Scanner(System.in);
+        ClientDAO clientDAO = new ClientDAO();
+
+        String[] arr = {"Type", "Description", "Manufacturer", "Model Number", "Home Directory"};
+
+        CreateClientError[] err = {CreateClientException.CreateClientError.EMPTY,
+            CreateClientException.CreateClientError.EMPTY,
+            CreateClientException.CreateClientError.EMPTY,
+            CreateClientException.CreateClientError.EMPTY,
+            CreateClientException.CreateClientError.INVALID_FOLDERPATH};
+
+        RegExPattern[] reg = {RegexHelper.RegExPattern.TEXT,
+            RegexHelper.RegExPattern.TEXT,
+            RegexHelper.RegExPattern.TEXT,
+            RegexHelper.RegExPattern.TEXT,
+            RegexHelper.RegExPattern.FOLDERPATH};
+
+        String homeDir = FilenameUtils.separatorsToSystem(System.getProperty("user.home") +  "/");
+        String[] ret = new String[arr.length];
+        String tmp;
+
+        System.out.println("Please supply the following information for your client.");
+
+        for (int i = 0; i < arr.length;) {
+
+            System.out.print(arr[i] + ": ");
+
+            try {
+                if (arr[i].equals("Home Directory"))
+                    System.out.print(homeDir);
+ 
+                tmp = scanner.nextLine();
+                if (!RegexHelper.validate(tmp, reg[i])) {
+                    
+                    throw new CreateClientException(err[i]);
+                } else {
+                    ret[i] = tmp;
+                    i++;
+                }
+                
+            } catch (final CreateClientException e) {
+
+                System.err.println(e);
+            };
+        }
+
+        File dir = new File(homeDir + ret[4]);
+        if (!dir.exists()) {
+            System.out.println("The specified directory does not exist. System will now create it...");
+            if (!dir.mkdirs())
+                    System.err.println("The specified directory could not be created.");
+        }
         
+        Client newClient = new Client(ret[0], ret[1], ret[2], ret[3]);
+        clientDAO.addClient(newClient);
+        clientDAO.addUserClient(newClient);
+        UserSession.getInstance().setCurrentClient(newClient);
+    }
+
+    /**
+     * Prompts a user for login credentials and populates UserSession object accordingly
+     * @param scanner 
+     */
+    private static void login(Scanner scanner) {
+
         String username, password;
-        
+
         do {
             try {
-                
-              /*  once migrate to ec2, uncomment the next block
-                username = console.readLine("Username:");
-                password = new String(console.readPassword("Password"));
+
+                /*  once migrate to ec2, uncomment the next block
+                 username = console.readLine("Username:");
+                 password = new String(console.readPassword("Password"));
         
-                System.out.println(new String(password));
-                */
-                
+                 System.out.println(new String(password));
+                 */
+
                 System.out.print("Username: ");
                 username = scanner.nextLine();
-                
+
                 System.out.print("Password: ");
                 password = scanner.nextLine();
-                
+
                 as.authenticate(username, password);
 
                 break;
-                
-            } catch (InvalidAuthenticationException ex) {
-                System.err.println(ex.getMessage());
+
+            } catch (InvalidAuthenticationException e) {
+                System.err.println(e);
                 continue;
             }
-            
+
         } while (true);
-        scanner.close();
 
     }
 
@@ -126,7 +222,7 @@ public class LoginController {
 
         int choice = 0;
         do {
-            
+
             System.out.println("Please select one of the following...");
             System.out.println("Login .........> 1");
             System.out.println("New user ......> 2");
@@ -148,20 +244,54 @@ public class LoginController {
             }
         } while (true);
 
-	        switch (choice) {
-	            case 1:
-	            	login();
-	                break;
-	            case 2:
-	            	try {
-	                	createUser();
-					} catch (Exception ex) {
-						System.err.println(ex.getMessage());
-					} 
-	                break;
-	        }
-	        
-	        scanner.close();
-        
+        switch (choice) {
+            case 1:
+                login(scanner);
+                break;
+            case 2:
+                try {
+                    createUser(scanner);
+                    createClient(scanner);
+                } catch (CreateUserException e) {
+                    System.err.println(e);
+                } catch (Exception e) {
+                    System.err.println(e.getStackTrace());
+                    Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, e);
+                }
+                break;
+        }
+
+        scanner.close();
+
+    }
+
+    class ChooseFile {
+
+        private JFrame frame;
+
+        public ChooseFile() {
+            frame = new JFrame();
+
+            frame.setVisible(true);
+            BringToFront();
+        }
+
+        public File getFile() {
+            JFileChooser fc = new JFileChooser();
+            if (JFileChooser.APPROVE_OPTION == fc.showOpenDialog(null)) {
+                frame.setVisible(false);
+                return fc.getSelectedFile();
+            } else {
+                System.out.println("Next time select a file.");
+                System.exit(1);
+            }
+            return null;
+        }
+
+        private void BringToFront() {
+            frame.setExtendedState(JFrame.ICONIFIED);
+            frame.setExtendedState(JFrame.NORMAL);
+
+        }
     }
 }
