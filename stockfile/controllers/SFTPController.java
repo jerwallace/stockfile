@@ -4,6 +4,7 @@ package stockfile.controllers;
  * To change this template, choose Tools | Templates and open the template in
  * the editor.
  */
+
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
@@ -18,6 +19,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
+
+import org.apache.commons.io.FilenameUtils;
 
 import stockfile.dao.connection.Utils;
 import stockfile.exceptions.ApplicationFailedException;
@@ -40,10 +43,9 @@ public class SFTPController
     public SFTPController()
     {
         this.blackList = new HashSet<>();
-        this.blackList.add("/stockdata.pbj");
-        this.blackList.add("\\stockdata.pbj");
-        this.blackList.add("/.DS_Store");
-        this.blackList.add(UserSession.getInstance().getCurrentUser().getHomeDirectory());
+        this.blackList.add("stockdata.pbj");
+        this.blackList.add(".DS_Store");
+        //this.blackList.add(UserSession.getInstance().getCurrentUser().getHomeDirectory());
         
         try {
 			loadConfiguration();
@@ -54,6 +56,14 @@ public class SFTPController
         this.userRoot = props.getProperty("ftpRootDir") + UserSession.getInstance().getCurrentUser().getUserName();
     }
 
+    public boolean inBlackList(String filename) {
+    	for (String blackListWord : this.blackList) {
+    		if (filename.matches("(?i).*"+blackListWord+".*")) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
     /**
      * Static method returns a single instance of MySQLConnection.
      * <p/>
@@ -175,7 +185,8 @@ public class SFTPController
 
     public boolean send(String filename) throws SftpException, IOException
     {
-        if (!this.blackList.contains(filename))
+    	filename = FilenameUtils.separatorsToUnix(filename);
+        if (!inBlackList(filename))
         {
             System.out.println("Attempting to upload file:" + filename);
             StockFile f = FileList.getInstance().getManifest().getFile(filename);
@@ -186,12 +197,12 @@ public class SFTPController
 	            	try {
 	            		ch_sftp.mkdir(f.getFullRemotePath());
 	            	} catch (SftpException ex) {
-	            		System.err.println("Directory already exists."+ex.id+":"+ex);
+	            		System.out.println("Directory already exists. Skipping entry.");
 	            	}
 	            }
 	            else
 	            {
-	                ch_sftp.put(new FileInputStream(f), f.getFullRemotePath(), ChannelSftp.OVERWRITE);
+	                ch_sftp.put(new FileInputStream(f), f.getFullRemotePath());
 	            }
 	            return true;
             } else {
@@ -211,21 +222,22 @@ public class SFTPController
 
     public boolean get(String filename) throws SftpException, FileNotFoundException, IOException
     {
-        if (!this.blackList.contains(filename))
+    	
+        if (!inBlackList(filename))
         {
-            System.out.println("Attempting to download file: " + filename);
-            StockFile f = FileList.getInstance().getManifest().getFile(filename);
-            System.out.println(f);
-
-            if (!f.exists())
-            {
-                f.mkdirs();
-                if (f.isDirectory()) {
-                	return true;
-                }
-            } 
+        	System.out.println("Looking up: "+filename);
+            StockFile f = new StockFile(filename,null);
             
-            ch_sftp.get(f.getFullRemotePath(), new FileOutputStream(f));
+            System.out.println("Attempting to download file: " + f.getFullRemotePath());
+            System.out.println(f);
+            
+            if (!filename.matches("(.*)\\.[A-Za-z0-9]{2,12}")) {
+            	f.mkdirs();
+            } else {
+            	f.getParentFile().mkdirs();
+            	ch_sftp.get(f.getFullRemotePath(), new FileOutputStream(f));
+            }
+
             return true;
         }
         else
@@ -237,6 +249,7 @@ public class SFTPController
     }
     
     public void delete(String filename) throws SftpException {
+    	filename = FilenameUtils.separatorsToUnix(filename);
     	StockFile f = FileList.getInstance().getManifest().getFile(filename);
     	
     	System.out.println("Attempting to delete the file: " + filename);

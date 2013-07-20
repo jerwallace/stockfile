@@ -4,6 +4,7 @@ import java.io.File;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import org.apache.commons.io.FilenameUtils;
 import org.joda.time.DateTime;
 
 import stockfile.security.UserSession;
@@ -58,22 +59,18 @@ public class StockFile extends File {
 	// }
 
 	public static String fixAbsPath(String relativePath) {
-		return HOME_PATH+relativePath.replace(HOME_PATH, "");
+		return HOME_PATH+(filterPathForWindows(relativePath).replace(HOME_PATH, ""));
 	}
 	
-	public String filterPathForWindows(String path) {
-		System.out.println(System.getProperty("os.name").toLowerCase());
-		if (System.getProperty("os.name").toLowerCase().equals("win")) {
-			path.replace("/", "\\");
-		}
-		return path;
+	public static String filterPathForWindows(String path) {
+		return FilenameUtils.separatorsToSystem(path);
 	}
 
 	/**
 	 * @return the fileName
 	 */
 	public String getRelativePath() {
-		return filterPathForWindows(relFilePath);
+		return relFilePath;
 	}
 
 	/**
@@ -81,7 +78,7 @@ public class StockFile extends File {
 	 *            the relative path to set
 	 */
 	public void setRelativePath(String relativePath) {
-		this.relFilePath = relativePath.replace(HOME_PATH, "");
+		this.relFilePath = filterPathForWindows(relativePath).replace(HOME_PATH, "");
 	}
 
 	/**
@@ -162,6 +159,7 @@ public class StockFile extends File {
 		output += "Absolute Path: "+getAbsolutePath()+"\n";
 		output += "Version: "+getVersion()+"\n";
 		output += "Is Directory: "+isDirectory()+"\n";
+		output += "Exists: "+exists()+"\n";
 		output += "============";
 		return output;
 
@@ -180,7 +178,7 @@ public class StockFile extends File {
 	}
 	
 	public String getFullRemotePath() {
-		return getRemoteHomePath()+getRelativePath();
+		return FilenameUtils.separatorsToUnix(getRemoteHomePath()+getRelativePath());
 	}
 
 	public void setRemoteHomePath(String remotePath) {
