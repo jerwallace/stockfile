@@ -46,7 +46,6 @@ public class CreateUserException extends Exception {
 		}
                 
                 msg = msg + "Please try again.\n";
-
 		
 	}
 	

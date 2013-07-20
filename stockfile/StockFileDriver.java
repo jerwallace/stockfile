@@ -10,7 +10,7 @@ public class StockFileDriver
 
     public StockFileDriver() throws Exception
     {
-        LoginController.run();
+    //    LoginController.run();
         stateTools = new StateController();
         stateTools.loadState();
         stateTools.loadDirectoryState();

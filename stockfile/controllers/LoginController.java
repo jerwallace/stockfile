@@ -6,9 +6,13 @@ package stockfile.controllers;
 
 import java.awt.Graphics;
 import java.io.File;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -23,6 +27,7 @@ import stockfile.exceptions.CreateClientException.CreateClientError;
 import stockfile.exceptions.CreateUserException;
 import stockfile.exceptions.CreateUserException.CreateUserError;
 import stockfile.exceptions.InvalidAuthenticationException;
+import stockfile.models.Client;
 import stockfile.models.User;
 import stockfile.security.AuthenticateService;
 import stockfile.security.RegexHelper;
@@ -37,7 +42,8 @@ public class LoginController {
 
     private final static AuthenticateService as = new AuthenticateService();
 
-    private static void createUser() throws SQLException, CreateUserException, InvalidAuthenticationException, CreateClientException {
+    private static void createUser() throws SQLException, CreateUserException, 
+                InvalidAuthenticationException, CreateClientException, UnknownHostException, SocketException {
 
         Scanner scanner = new Scanner(System.in);
         UserDAO userDAO = new UserDAO();
@@ -78,7 +84,7 @@ public class LoginController {
                     i++;
                 }
             } catch (final CreateUserException e) {
-
+                Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, e);
                 System.err.println(e);
 
             };
@@ -87,11 +93,10 @@ public class LoginController {
         User newUser = new User(ret[0], ret[2], ret[3], ret[4], new LocalDate(), System.getProperty("user.home") + "/Stockfile");
         userDAO.createUser(newUser, ret[1]);
         UserSession.getInstance().setCurrentUser(newUser);
-        //      createClient();
 
     }
 
-    private static void createClient() throws CreateClientException {
+    private static void createClient() throws CreateClientException, UnknownHostException, SocketException, SQLException {
 
         Scanner scanner = new Scanner(System.in);
         ClientDAO clientDAO = new ClientDAO();
@@ -124,13 +129,15 @@ public class LoginController {
                 if (arr[i].equals("Home Directory"))
                     System.out.print(homeDir);
  
-                tmp = scanner.nextLine();
+                tmp = scanner.next();
                 if (!RegexHelper.validate(tmp, reg[i])) {
+                    
                     throw new CreateClientException(err[i]);
                 } else {
                     ret[i] = tmp;
                     i++;
                 }
+                
             } catch (final CreateClientException e) {
 
                 System.err.println(e);
@@ -143,7 +150,11 @@ public class LoginController {
             System.out.println("The specified directory does not exist. System will now create it.");
             dir.mkdirs();
         }
-
+        
+        Client newClient = new Client(ret[0], ret[1], ret[2], ret[3]);
+        clientDAO.addClient(newClient);
+        clientDAO.addUserClient(newClient);
+        
     //    String user = UserSession.getInstance().getCurrentUser().getUserName();
 
     }
@@ -220,9 +231,13 @@ public class LoginController {
                 break;
             case 2:
                 try {
+                    createUser();
                     createClient();
-                } catch (Exception ex) {
+                } catch (CreateUserException ex) {
                     System.err.println(ex.getMessage());
+                } catch (Exception e) {
+                    System.err.println(e.getStackTrace());
+                    Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, e);
                 }
                 break;
         }
