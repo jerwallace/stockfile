@@ -102,9 +102,9 @@ public class UserDAO extends StockFileDAO {
 				sqlex.printStackTrace();
                                 this.psclose();
                         }
-		} else  
+		} else { 
                     throw new CreateUserException(CreateUserError.USERNAME_TAKEN);
-                               
+                }
                 this.psclose();
                 
 	}
