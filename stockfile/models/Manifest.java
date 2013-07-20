@@ -21,7 +21,7 @@ public class Manifest implements Serializable
 	public Map<String, StockFile> manifest;
     
     public enum Operation {
-        DOWNLOAD,UPLOAD,DUPLICATE,UPLOAD_AND_OVERWRITE,DOWNLOAD_AND_OVERWRITE, NO_ACTION
+        DOWNLOAD,UPLOAD,DUPLICATE,UPLOAD_AND_OVERWRITE,DOWNLOAD_AND_OVERWRITE, NO_ACTION,DELETE
     }
     
     public Manifest()

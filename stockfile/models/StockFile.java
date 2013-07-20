@@ -62,8 +62,7 @@ public class StockFile extends File {
 	}
 	
 	public String filterPathForWindows(String path) {
-		System.out.println(System.getProperty("os.name"));
-		System.out.println(path);
+		System.out.println(System.getProperty("os.name").toLowerCase());
 		if (System.getProperty("os.name").toLowerCase().equals("win")) {
 			path.replace("/", "\\");
 		}
@@ -162,6 +161,7 @@ public class StockFile extends File {
 		output += "Remote Path: "+getFullRemotePath()+"\n";
 		output += "Absolute Path: "+getAbsolutePath()+"\n";
 		output += "Version: "+getVersion()+"\n";
+		output += "Is Directory: "+isDirectory()+"\n";
 		output += "============";
 		return output;
 

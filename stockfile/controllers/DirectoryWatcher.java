@@ -148,9 +148,9 @@ public class DirectoryWatcher implements Runnable
                 // Context for directory entry event is the file name of entry
                 WatchEvent<Path> ev = cast(event);
                 Path name = ev.context();
-                Path child = dir.resolve(name);
-                System.out.println(name.toString() + " " + child.toString());
-                StockFile thisFile = new StockFile(name.toString(), null);
+                Path filePath = dir.resolve(name);
+                
+                StockFile thisFile = new StockFile(filePath.toString(), null);
                 String fileKey = thisFile.getRelativePath();
                 System.out.println("filekey:"+fileKey);
                 if (kind == ENTRY_DELETE)
@@ -173,9 +173,9 @@ public class DirectoryWatcher implements Runnable
                     FileList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
                     try
                     {
-                        if (Files.isDirectory(child, NOFOLLOW_LINKS))
+                        if (Files.isDirectory(filePath, NOFOLLOW_LINKS))
                         {
-                            registerAll(child);
+                            registerAll(filePath);
                         }
                     }
                     catch (IOException x)

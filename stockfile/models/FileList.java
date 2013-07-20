@@ -53,7 +53,7 @@ public class FileList
         return currentFileList;
         
     }
-    
+
     public Manifest getManifest() {
         return this.manifest;
     }

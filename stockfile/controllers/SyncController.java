@@ -63,7 +63,9 @@ public class SyncController {
 
 					StockFile servFile = serverManifest.get(key);
 
-					if (servFile.getVersion() == clientFile.getVersion()) {
+					if (clientFile.hasRemoveMarker()) {
+						syncList.put(key, Operation.DELETE);
+					} else if (servFile.getVersion() == clientFile.getVersion()) {
 						syncList.put(key, Operation.NO_ACTION);
 					} else if (servFile.getVersion() > clientFile.getVersion()) {
 						syncList.put(key, Operation.DOWNLOAD_AND_OVERWRITE);
@@ -135,6 +137,13 @@ public class SyncController {
 							fileDAO.updateFile(FileList.getInstance().getManifest()
 									.getFile(key));
 							break;
+						case DELETE:
+							System.out.println("Deleting file " + key + "...");
+							SFTPController.getInstance().delete(key);
+							fileDAO.removeFile(FileList.getInstance().getManifest()
+									.getFile(key));
+							FileList.getInstance().getManifest().removeFile(key);
+							break;
 						case NO_ACTION:
 							System.out.println("No action is being performed on " + key + "...");
 							break;
@@ -149,17 +158,19 @@ public class SyncController {
 								System.err.println("File not found. Flipping operation...");
 								System.err.println("Attempt #"+attempts+"...");
 								operation = flipOperation(operation);
+								continue;
 							} else {
 								throw ex;
 							}
 						} else {
 							if (attempts < 3) {
+								System.err.println(ex.getCause());
 								SFTPController.getInstance().reconnect();
+								continue;
 							} else {
 								throw new ApplicationFailedException("No valid servers.");
 							}
 						}
-						continue;
 					}
 				}
 

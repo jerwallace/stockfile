@@ -183,7 +183,11 @@ public class SFTPController
             if (f.exists()) {
 	            if (f.isDirectory())
 	            {
-	                ch_sftp.mkdir(f.getFullRemotePath());
+	            	try {
+	            		ch_sftp.mkdir(f.getFullRemotePath());
+	            	} catch (SftpException ex) {
+	            		System.err.println("Directory already exists."+ex.id+":"+ex);
+	            	}
 	            }
 	            else
 	            {
@@ -194,6 +198,7 @@ public class SFTPController
             	System.err.println("Upload Error: file does not exist. Removing file from file list.");
             	FileList.getInstance().getManifest().removeFile(filename);
             	return false;
+            	
             }
             
         }
@@ -215,12 +220,12 @@ public class SFTPController
             if (!f.exists())
             {
                 f.mkdirs();
-            }
-
-            System.out.println("Getting file " + f.getFullRemotePath());
-
+                if (f.isDirectory()) {
+                	return true;
+                }
+            } 
+            
             ch_sftp.get(f.getFullRemotePath(), new FileOutputStream(f));
-
             return true;
         }
         else
@@ -229,6 +234,14 @@ public class SFTPController
             System.out.println(filename + " download ignored.");
             return false;
         }
+    }
+    
+    public void delete(String filename) throws SftpException {
+    	StockFile f = FileList.getInstance().getManifest().getFile(filename);
+    	
+    	System.out.println("Attempting to delete the file: " + filename);
+    	ch_sftp.rm("-r "+f.getFullRemotePath());
+    	
     }
     
     

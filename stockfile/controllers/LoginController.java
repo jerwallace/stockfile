@@ -195,7 +195,7 @@ public class LoginController {
 
     }
 
-    public static void main(String[] args) {
+    public static void run() {
 
         Scanner scanner = new Scanner(System.in);
 
