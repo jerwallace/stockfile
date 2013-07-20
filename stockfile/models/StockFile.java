@@ -25,6 +25,7 @@ public class StockFile extends File {
 	private String lastSyncBy = UserSession.getInstance().getCurrentUser().getUserName();
 	private String createdBy = UserSession.getInstance().getCurrentUser().getUserName();
 	private boolean inSync;
+	private boolean removeMarker;
 
 	public StockFile(String relativePath, String remotePath, float version,
 			Timestamp lastMod, String lastSyncBy, String createdBy) {
@@ -184,5 +185,13 @@ public class StockFile extends File {
 
 	public void setRemoteHomePath(String remotePath) {
 		this.remoteHomePath = remotePath;
+	}
+
+	public boolean hasRemoveMarker() {
+		return removeMarker;
+	}
+
+	public void setRemoveMarker(boolean removeMarker) {
+		this.removeMarker = removeMarker;
 	}
 }

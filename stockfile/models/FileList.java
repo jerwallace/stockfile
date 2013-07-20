@@ -61,4 +61,5 @@ public class FileList
     public void loadManifest(Manifest manifest) {
     	this.manifest = manifest;
     }
+    
 }

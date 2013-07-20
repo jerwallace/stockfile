@@ -4,6 +4,7 @@
  */
 package stockfile.controllers;
 
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.TreeMap;
@@ -76,7 +77,7 @@ public class SyncController {
 			}
 
 			for (String servkey : serverManifest.keySet()) {
-				FileList.getInstance()
+					FileList.getInstance()
 						.getManifest()
 						.updateFile(homeDir + servkey,
 								serverManifest.get(servkey));

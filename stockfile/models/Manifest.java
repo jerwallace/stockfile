@@ -1,5 +1,6 @@
 package stockfile.models;
 
+import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Map;
@@ -28,14 +29,16 @@ public class Manifest implements Serializable
         manifest = new TreeMap<>();
     }
     
-    public void updateFile(String fullPath, StockFile thisFile)
+    public void updateFile(String fullPath, StockFile thisFile) 
     {
-    	System.out.println("Updated item in FileList "+fullPath);
-    	thisFile.setRelativePath(fullPath);
-        this.manifest.put(fullPath, thisFile);
+    	
+    		System.out.println("Updated item in FileList "+fullPath);
+	    	thisFile.setRelativePath(fullPath);
+	        this.manifest.put(fullPath, thisFile);
+    	
     }
 
-    public void insertFile(String fullPath, StockFile thisFile)
+    public void insertFile(String fullPath, StockFile thisFile) 
     {
     	if (!this.manifest.containsKey(fullPath)) {
     		System.out.println("Added item to FileList "+fullPath);

@@ -180,16 +180,22 @@ public class SFTPController
             System.out.println("Attempting to upload file:" + filename);
             StockFile f = FileList.getInstance().getManifest().getFile(filename);
             System.out.println(f);
-
-            if (f.isDirectory())
-            {
-                ch_sftp.mkdir(f.getFullRemotePath());
+            if (f.exists()) {
+	            if (f.isDirectory())
+	            {
+	                ch_sftp.mkdir(f.getFullRemotePath());
+	            }
+	            else
+	            {
+	                ch_sftp.put(new FileInputStream(f), f.getFullRemotePath(), ChannelSftp.OVERWRITE);
+	            }
+	            return true;
+            } else {
+            	System.err.println("Upload Error: file does not exist. Removing file from file list.");
+            	FileList.getInstance().getManifest().removeFile(filename);
+            	return false;
             }
-            else
-            {
-                ch_sftp.put(new FileInputStream(f), f.getFullRemotePath(), ChannelSftp.OVERWRITE);
-            }
-            return true;
+            
         }
         else
         {
