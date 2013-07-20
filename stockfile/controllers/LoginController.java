@@ -154,7 +154,6 @@ public class LoginController {
                 tmp = scanner.nextLine();
                 
                 if (arr[i].equals("Type") && clientDAO.typeExists(tmp)) {
-                    
                     newClient = clientDAO.getClientByType(tmp);
                     i = arr.length - 1;
                     

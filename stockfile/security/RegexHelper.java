@@ -25,7 +25,7 @@ public class RegexHelper {
 //    private static final String RGX_FOLDERPATH = "^((([a-zA-Z]:)(\\\\{2}[a-zA-Z]+)(\\\\{2}\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}))(?=(\\\\(\\w[\\w ]*)))(\\\\\\w[\\w ]*)*)$";
 //    private static final String RGX_FOLDERPATH = "^(?:[a-zA-Z]\\:|\\\\\\\\[\\w\\.]+\\\\[\\w.$]+)\\\\(?:[\\w]+\\\\)*\\w([\\w.])+$";
 //    private static final String RGX_FOLDERPATH = "^[^\\\\/?%*:|\"<>\\.]+$";
-    private static final String RGX_FOLDERPATH = "^[^(\\/)?%*:|\"<>\\.]+$";
+    private static final String RGX_FOLDERPATH = "^[^(\\/)?%*:|\"<>\\.]*$";
     private static RegexHelper regex = null;
 
     protected RegexHelper() {
@@ -49,7 +49,7 @@ public class RegexHelper {
 
         String patternToUse;
 
-        if (input == null || input.isEmpty() || regEx == null) {
+        if (input == null || regEx == null) {
             return true;
         }
 
