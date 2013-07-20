@@ -42,8 +42,8 @@ public class ClientDAO extends StockFileDAO
             ps.setString(1, UserSession.getInstance().getCurrentUser().getUserName());
             ps.setString(2, client.getType());
             ps.setTimestamp(3, UserSession.getInstance().getLastSync());
-            ps.setBytes(4, client.getIpAddress());
-            ps.setBytes(5, client.getMacAddress());
+            ps.setString(4, client.getIpAddress().toString());
+            ps.setString(5, client.getMacAddress().toString());
             ps.setString(6, client.getHomeDir());
             System.out.println(ps.toString());
             ps.executeUpdate();
@@ -65,7 +65,7 @@ public class ClientDAO extends StockFileDAO
             ps = conn.prepareStatement("DELETE FROM user_client WHERE username = ? AND mac_address = ?");
 
             ps.setString(1, UserSession.getInstance().getCurrentUser().getUserName());
-            ps.setBytes(2, client.getMacAddress());
+            ps.setString(2, client.getMacAddress().toString());
 
             ps.executeUpdate();
         }
@@ -87,10 +87,10 @@ public class ClientDAO extends StockFileDAO
 
             ps.setString(1, client.getType());
             ps.setTimestamp(2, UserSession.getInstance().getLastSync());
-            ps.setBytes(3, client.getIpAddress());
+            ps.setString(3, client.getIpAddress().toString());
             ps.setString(4, client.getHomeDir());
             ps.setString(5, UserSession.getInstance().getCurrentUser().getUserName());
-            ps.setBytes(6, client.getMacAddress());
+            ps.setString(6, client.getMacAddress().toString());
 
             ps.executeUpdate();
 

@@ -6,7 +6,6 @@ import stockfile.controllers.StateController;
 public class StockFileDriver
 {
 	private static final int SYNC_DELAY = 10000;
-    StateController stateTools;
 
     public StockFileDriver() throws Exception
     {
@@ -42,7 +41,8 @@ public class StockFileDriver
             @Override
             public void run()
             {
-                stateTools.saveState();
+            	System.out.println("Saving state... Goodbye!");
+            	StateController.getInstance().saveState();
             }
         });
     }

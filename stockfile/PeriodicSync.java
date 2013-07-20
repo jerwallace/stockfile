@@ -32,7 +32,7 @@ public class PeriodicSync implements Runnable {
 		watcherThread.start();
 	}
 	
-	public synchronized void runSync() {
+	public void runSync() {
 		
 			// TODO Auto-generated method stub
 			try {
@@ -59,7 +59,6 @@ public class PeriodicSync implements Runnable {
 			} catch (IllegalMonitorStateException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				System.exit(0);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

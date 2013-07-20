@@ -105,7 +105,7 @@ public class SyncController {
 
 	}
 
-	public synchronized void syncronize() throws Exception {
+	public void syncronize() throws Exception {
 
 		generateSyncList();
 		
