@@ -3,6 +3,7 @@ package stockfile.models;
 import java.io.Serializable;
 import java.util.HashMap;
 
+import org.apache.commons.io.FilenameUtils;
 import org.joda.time.LocalDate;
 
 import stockfile.dao.ClientDAO;
@@ -19,7 +20,7 @@ public class User implements Serializable
     private String lastName;
     private String email;
     private LocalDate dateJoined;
-    private String homeDirectory = System.getProperty("user.home")+"/Stockfile";
+    private String homeDirectory = FilenameUtils.separatorsToSystem(System.getProperty("user.home")+"/Stockfile");
     private HashMap<byte[], Client> userClients = new HashMap<>();
     private ClientDAO clientDao = new ClientDAO();
 

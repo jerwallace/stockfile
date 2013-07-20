@@ -29,6 +29,8 @@ public class SyncController {
 
 	private FileDAO fileDAO = new FileDAO();
 	private Map<String, Operation> syncList;
+	private Manifest serverManifest;
+	private Manifest clientManifest;
 	private String homeDir = UserSession.getInstance().getCurrentUser()
 			.getHomeDirectory();
 
@@ -38,51 +40,53 @@ public class SyncController {
 
 	private void generateSyncList() {
 
-		Map<String, StockFile> serverManifest = getServerManifest().manifest;
-		Map<String, StockFile> clientManifest = FileList.getInstance()
-				.getManifest().manifest;
+		serverManifest = getServerManifest();
+		clientManifest = FileList.getInstance().getManifest();
+		System.out.println(serverManifest);
+		System.out.println(clientManifest);
 
+		System.out.println(serverManifest);
 		this.syncList = new TreeMap<>();
 
-		if (clientManifest.isEmpty()) {
+		if (clientManifest.manifest.isEmpty()) {
 
-			for (String key : serverManifest.keySet()) {
+			for (String key : serverManifest.manifest.keySet()) {
 				syncList.put(key, Operation.DOWNLOAD);
 			}
 
 		} else {
 			
-			for (String key : clientManifest.keySet()) {
+			for (String key : clientManifest.manifest.keySet()) {
 
-				StockFile clientFile = clientManifest.get(key);
+				StockFile clientFile = clientManifest.manifest.get(key);
 
-				if (!serverManifest.containsKey(key)) {
+				if (!serverManifest.manifest.containsKey(key)) {
 					syncList.put(key, Operation.UPLOAD);
 
 				} else {
 
-					StockFile servFile = serverManifest.get(key);
+					StockFile servFile = serverManifest.manifest.get(key);
 
 					if (clientFile.hasRemoveMarker()) {
 						syncList.put(key, Operation.DELETE);
 					} else if (servFile.getVersion() == clientFile.getVersion()) {
 						syncList.put(key, Operation.NO_ACTION);
-					} else if (servFile.getVersion() > clientFile.getVersion()) {
-						syncList.put(key, Operation.DOWNLOAD_AND_OVERWRITE);
 					} else {
 						syncList.put(key, Operation.UPLOAD);
 					}
 
-					serverManifest.remove(key);
+					if (!(servFile.getVersion() > clientFile.getVersion())) {
+						serverManifest.manifest.remove(key);
+					}
 				}
 
 			}
 
-			for (String servkey : serverManifest.keySet()) {
+			for (String servkey : serverManifest.manifest.keySet()) {
 					FileList.getInstance()
 						.getManifest()
 						.updateFile(homeDir + servkey,
-								serverManifest.get(servkey));
+								serverManifest.manifest.get(servkey));
 				syncList.put(servkey, Operation.DOWNLOAD);
 			}
 		}
@@ -116,6 +120,7 @@ public class SyncController {
 						case DOWNLOAD_AND_OVERWRITE:
 							System.out.println("Downloading " + key + "...");
 							SFTPController.getInstance().get(key);
+							FileList.getInstance().getManifest().updateFile(serverManifest.manifest.get(key).getRelativePath(),serverManifest.manifest.get(key));
 							break;
 						case UPLOAD:
 							System.out.println("Uploading " + key + "...");
@@ -158,14 +163,16 @@ public class SyncController {
 								System.err.println("File not found. Flipping operation...");
 								System.err.println("Attempt #"+attempts+"...");
 								operation = flipOperation(operation);
+								attempts++;
 								continue;
 							} else {
 								throw ex;
 							}
 						} else {
 							if (attempts < 3) {
-								System.err.println(ex.getCause());
+								System.err.println(ex+""+ex.getStackTrace());
 								SFTPController.getInstance().reconnect();
+								attempts++;
 								continue;
 							} else {
 								throw new ApplicationFailedException("No valid servers.");
