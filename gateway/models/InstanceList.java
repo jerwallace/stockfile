@@ -1,4 +1,4 @@
-package Gateway.models;
+package gateway.models;
 
 import java.util.ArrayList;
 import java.util.HashMap;
