@@ -1,9 +1,5 @@
-package sandbox.gateway.InstanceController;
+package sandbox.gateway.ClientController;
 
-/*
- * To change this template, choose Tools | Templates and open the template in
- * the editor.
- */
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,61 +8,23 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
- *
  * @author Bahman
  */
-public class InstanceController
+public class ClientController
 {
 
     private static DatagramSocket socket = null;
     protected BufferedReader in = null;
     private static String serverAddress = "localhost";
-    private static int cSendPort;// = 1350;
-    private static int gRecPort;// = 1050;
+    private static int cSendPort;
+    private static int gRecPort;
     private static InetAddress address = null;
     private static String input = "";
 
     public static void main(String args[]) throws SocketException, UnknownHostException, IOException
     {
-
-//        DatagramSocket socket = null;
-//
-//        socket = new DatagramSocket(1350);
-//
-//        // send request
-//
-//        byte[] buf = new byte[256];
-//
-//        String request = "requestingIpAddress";
-//
-//        buf = request.getBytes();
-//
-//        InetAddress address = null;
-//
-//        address = InetAddress.getByName("localhost");
-//
-//        System.out.println("Connecting to Server - " + address.getCanonicalHostName().toString());
-//
-//        DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 1050);
-//
-//        socket.send(packet);
-//
-//        System.out.println("Packet sent to Gateway successfully.");
-//
-//        // get response
-//        packet = new DatagramPacket(buf, buf.length);
-//        socket.receive(packet);
-//
-//        // display response
-//        String received = new String(packet.getData(), 0, packet.getLength());
-//
-//        System.out.println("Response packet received: " + received);
-//
-//        socket.close();
 
         InputStreamReader istream = new InputStreamReader(System.in);
         BufferedReader bufRead = new BufferedReader(istream);

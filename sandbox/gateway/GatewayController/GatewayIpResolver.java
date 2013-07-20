@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package sandbox.gateway.GatewayController;
 
 import java.io.BufferedReader;
@@ -13,7 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
  * @author Bahman
  */
 public class GatewayIpResolver implements Runnable

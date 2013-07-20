@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package sandbox.gateway.GatewayController;
 
 import java.io.*;
@@ -37,19 +33,9 @@ public class Gateway
         {
             String serverName, masterName;
 
-//            try
-//            {
-//            System.out.println("What is Server" + i + "'s name: ");
-//            input = bufRead.readLine();
-//            serverName = input;
-
             System.out.println("Server" + i + " Address(Name): ");
             input = bufRead.readLine();
             InetAddress myAddress = InetAddress.getByName(input);
-
-//            System.out.println("Server" + i + "'s Master's Name: ");
-//            input = bufRead.readLine();
-//            masterName = input;
 
             if (i == 1)
             {
@@ -72,27 +58,7 @@ public class Gateway
 
             Server newServer = new Server(serverName, myAddress, masterName, portNumber++, portNumber++, "START");
             ServerList.getInstance().getServerMap().put(newServer.getServerName(), newServer);
-//
-//                System.out.println("Server" + i + " HeartBeat send port number: ");
-//                input = bufRead.readLine();
-//                int hbSendPort = Integer.parseInt(input);
-//
-//                System.out.println("Server" + i + " HeartBeat receive port number: ");
-//                input = bufRead.readLine();
-//                int hbReceivePort = Integer.parseInt(input);
-//
-//                Server newServer = new Server(serverName, myAddress, slaveAddress, hbSendPort, hbReceivePort, "START");
-//
-//                serverMap.put(newServer.getServerName(), newServer);
-//            }
-//            catch (IOException err)
-//            {
-//                System.out.println("Error reading line.");
-//            }
-//            catch (NumberFormatException err)
-//            {
-//                System.out.println("Error Converting Number.");
-//            }
+
         }
     }
 
