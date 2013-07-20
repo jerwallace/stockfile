@@ -18,7 +18,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.joda.time.LocalDate;
-import stockfile.controllers.LoginController.ChooseFile;
 import stockfile.dao.ClientDAO;
 
 import stockfile.dao.UserDAO;
@@ -61,7 +60,7 @@ public class LoginController {
             RegexHelper.RegExPattern.ALPHABETS,
             RegexHelper.RegExPattern.EMAIL};
 
-        String[] ret = new String[5];
+        String[] ret = new String[arr.length];
         String tmp;
 
         for (int i = 0; i < arr.length;) {
@@ -114,7 +113,7 @@ public class LoginController {
             RegexHelper.RegExPattern.FOLDERPATH};
 
         String homeDir = System.getProperty("user.home") + (System.getProperty("os.name").toLowerCase().indexOf("windows") >= 0 ? "\\" : "/");
-        String[] ret = new String[5];
+        String[] ret = new String[arr.length];
         String tmp;
 
         System.out.println("Please supply the following information for your client.");
