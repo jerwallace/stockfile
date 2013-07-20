@@ -3,6 +3,8 @@ package gateway.models;
 import java.net.InetAddress;
 
 /**
+ * Public class that describes an Amazon EC2 Server Instance.
+ * <p/>
  * @author Bahman
  */
 public class ServerInstance
@@ -10,16 +12,26 @@ public class ServerInstance
 
     private String serverName;
     private InetAddress myIpAddress;
-    private String publiDnsAddress;
+    private String publiDnsName;
     private int hbSendPort;
     private int hbReceivePort;
     private String status;
 
-    public ServerInstance(String name, InetAddress myAddress, String publicDNSAddress, int hbSendPortNum, int hbReceivePortNum, String serverStatus)
+    /**
+     * Public main class constructor.
+     * <p/>
+     * @param name             - Name of the instance
+     * @param privateIP        - Private IP address of the instance
+     * @param publicDNSName    - Public DNS name of the instance
+     * @param hbSendPortNum    - Port number to send UDP heartbeat
+     * @param hbReceivePortNum - Port number to receive UDP heartbeat
+     * @param serverStatus     - Status of server
+     */
+    public ServerInstance(String name, InetAddress privateIP, String publicDNSName, int hbSendPortNum, int hbReceivePortNum, String serverStatus)
     {
         this.serverName = name;
-        this.myIpAddress = myAddress;
-        this.publiDnsAddress = publicDNSAddress;
+        this.myIpAddress = privateIP;
+        this.publiDnsName = publicDNSName;
         this.hbReceivePort = hbReceivePortNum;
         this.hbSendPort = hbSendPortNum;
         this.status = serverStatus;
@@ -50,26 +62,6 @@ public class ServerInstance
         return this.serverName;
     }
 
-    public void setServerName(String serverName)
-    {
-        this.serverName = serverName;
-    }
-
-    public void setMyIpAddress(InetAddress myIpAddress)
-    {
-        this.myIpAddress = myIpAddress;
-    }
-
-    public void setHbSendPort(int hbSendPort)
-    {
-        this.hbSendPort = hbSendPort;
-    }
-
-    public void setHbReceivePort(int hbReceivePort)
-    {
-        this.hbReceivePort = hbReceivePort;
-    }
-
     public void setStatus(String status)
     {
         this.status = status;
@@ -77,11 +69,11 @@ public class ServerInstance
 
     public String getPubliDnsAddress()
     {
-        return this.publiDnsAddress;
+        return this.publiDnsName;
     }
 
     public void setPubliDnsAddress(String publiDnsAddress)
     {
-        this.publiDnsAddress = publiDnsAddress;
+        this.publiDnsName = publiDnsAddress;
     }
 }
