@@ -4,12 +4,15 @@
  */
 package stockfile.controllers;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
 import stockfile.dao.FileDAO;
@@ -21,8 +24,11 @@ import stockfile.models.Manifest.Operation;
 import stockfile.security.UserSession;
 
 /**
- * 
- * @author WallaceJ
+ * The sync controller contains the methods required to synchronize a local folder with a server.
+ * @author Jeremy Wallace, Bahman Razmpa, Peter Lee
+ * @project StockFile, CICS 525
+ * @organization University of British Columbia
+ * @date July 20, 2013
  */
 public class SyncController {
 
@@ -34,15 +40,20 @@ public class SyncController {
 			.getFullDir();
 	private String userName = UserSession.getInstance().getCurrentUser().getUserName();
 	private static SyncController syncController = null;
+	
+	private final int RECONNECTION_ATTEMPTS = 4;
 
+	/**
+	 * Empty constructor.
+	 */
 	private SyncController() {
 
 	}
 	
 	/**
-     * Static method returns a single instance of MySQLConnection.
+     * Static method returns a single instance of Sync Controller
      * <p/>
-     * @return a single instance of MySQLConnection
+     * @return a single instance of Sync Controller
      */
     public static SyncController getInstance()
     {
@@ -53,13 +64,21 @@ public class SyncController {
         return syncController;
     }
 
+    /**
+     * This method compares two manifests and generates a sync list based on the state.
+     * A file is considered in sync until it has been modified locally, at that point it changes from
+     * increments its version and sets the insync flag to false.
+     */
 	private void generateSyncList() {
 		
+		// Get the two manifests... One from the server, and one locally.
 		serverManifest = getServerManifest();
 		clientManifest = FileList.getInstance().getManifest();
 
+		// This list of <File Key,Operation> to use in the synchronize method.
 		this.syncList = new TreeMap<>();
 
+		// If there are no files locally, download everything.
 		if (clientManifest.manifest.isEmpty()) {
 
 			for (String key : serverManifest.manifest.keySet()) {
@@ -68,46 +87,64 @@ public class SyncController {
 
 		} else {
 			
+			// Go through each file locally and find differences.
 			for (String key : clientManifest.manifest.keySet()) {
 
 				StockFile clientFile = clientManifest.manifest.get(key);
 
+				// If the file is not on the server, upload it.
 				if (!serverManifest.manifest.containsKey(key)) {
 					syncList.put(key, Operation.UPLOAD);
-
+				
+				// File is on server and stored locally.
 				} else {
-
+					
 					StockFile servFile = serverManifest.manifest.get(key);
-
+					
+					// SITUATION: 	Remove marker found.
+					// ACITON: 		Delete.
 					if (clientFile.hasRemoveMarker()) {
 						syncList.put(key, Operation.DELETE);
-					} else if (servFile.getVersion() == clientFile.getVersion()) {
+					
+					// SITUATION: 	Version numbers the same and the file is in sync.
+					// ACTION: 		None.
+					} else if (servFile.getVersion() == clientFile.getVersion()&&clientFile.inSync()) {
 						syncList.put(key, Operation.NO_ACTION);
-					} else if (!(clientFile.inSync())&&servFile.getLastModifiedDB().isAfter(clientFile.getLastModifiedDB())){
+						
+					// SITUATION: 	InSync flag is false AND last sync time on the server is after local file's last sync.
+					// ACTION: 		Duplicate, files are conflicting.
+					} else if (!(clientFile.inSync())&&servFile.getLastSyncTimeDB().isAfter(clientFile.getLastSyncTimeDB())) {
 						syncList.put(key, Operation.DUPLICATE);
-					} else {
+					
+					// SITUATION: 	InSync flag is false and the last sync time in the DB is equal to or less than the local file.
+					//				(The user has updated their file and the changes need to be reflected)
+					// ACTION:		Upload and overwrite database file.
+					} else if (!(clientFile.inSync())) {
 						syncList.put(key, Operation.UPLOAD_AND_OVERWRITE);
-					}
-
-					if (!(servFile.getVersion() > clientFile.getVersion())) {
-						serverManifest.manifest.remove(key);
+						
+					// SITUATION:	The client file version is less than the server version and the file is inSync.
+					// ACTION:		The server has a later version, so download it!	
+					} else if (clientFile.getVersion()<servFile.getVersion()) {
+						syncList.put(key, Operation.DOWNLOAD);
 					}
 				}
 
 			}
 
-			for (String servkey : serverManifest.manifest.keySet()) {
-					FileList.getInstance()
-						.getManifest()
-						.updateFile(homeDir + servkey,
-								serverManifest.manifest.get(servkey));
-				syncList.put(servkey, Operation.DOWNLOAD);
-			}
 		}
 
 	}
-
-	public void syncronize() throws Exception {
+	
+	/**
+	 * Synchronize method synchronizes a folder by following a generated sync list.
+	 * @throws IOException If there is an error with the file stream.
+	 * @throws FileNotFoundException If a file can not be found while downloading or uploading.
+	 * @throws SQLException If the database can not be reached or a record can not be updated or removed.
+	 * @throws JSchException If an SFTP channel can not be established (all servers down)
+	 * @throws SftpException If a file upload or download operation fails.
+	 * @throws InterruptedException If the current thread is interrupted.
+	 */
+	public void syncronize() throws FileNotFoundException, IOException, SQLException, JSchException, InterruptedException, SftpException {
 
 		generateSyncList();
 		
@@ -129,48 +166,50 @@ public class SyncController {
 				
 				while (!success) {
 					
+					// Run the operations
 					try {
 						switch (operation) {
-						case DOWNLOAD:
-						case DOWNLOAD_AND_OVERWRITE:
-							System.out.println("Downloading " + key + "...");
-							SFTPController.getInstance(userName).download(key);
-							FileList.getInstance().getManifest().updateFile(serverManifest.manifest.get(key).getRelativePath(),serverManifest.manifest.get(key));
-							break;
-						case UPLOAD:
-							System.out.println("Uploading " + key + "...");
-							if (SFTPController.getInstance(userName).upload(key)) {
-								fileDAO.updateFile(FileList.getInstance().getManifest()
-										.getFile(key));
-							}
-							break;
-						case UPLOAD_AND_OVERWRITE:
-							System.out.println("Uploading and overwriting " + key + "...");
+							case DOWNLOAD:
+							case DOWNLOAD_AND_OVERWRITE:
+								System.out.println("Downloading " + key + "...");
+								SFTPController.getInstance(userName).download(key);
+								FileList.getInstance().getManifest().updateFile(serverManifest.manifest.get(key).getRelativePath(),serverManifest.manifest.get(key));
+								break;
+							case UPLOAD:
+								System.out.println("Uploading " + key + "...");
 								if (SFTPController.getInstance(userName).upload(key)) {
 									fileDAO.updateFile(FileList.getInstance().getManifest()
 											.getFile(key));
 								}
-							break;
-						case DUPLICATE:
-							System.out.println("Duplicating " + key + "...");
-							SFTPController.getInstance(userName).duplicate(key);
-							fileDAO.updateFile(FileList.getInstance().getManifest()
+								break;
+							case UPLOAD_AND_OVERWRITE:
+								System.out.println("Uploading and overwriting " + key + "...");
+									if (SFTPController.getInstance(userName).upload(key)) {
+										fileDAO.updateFile(FileList.getInstance().getManifest()
+												.getFile(key));
+									}
+								break;
+							case DUPLICATE:
+								System.out.println("Duplicating " + key + "...");
+								SFTPController.getInstance(userName).duplicate(key);
+								fileDAO.updateFile(FileList.getInstance().getManifest()
+											.getFile(key));
+								break;
+							case DELETE:
+								System.out.println("Deleting file " + key + "...");
+								SFTPController.getInstance(userName).delete(key);
+								fileDAO.removeFile(FileList.getInstance().getManifest()
 										.getFile(key));
-							break;
-						case DELETE:
-							System.out.println("Deleting file " + key + "...");
-							SFTPController.getInstance(userName).delete(key);
-							fileDAO.removeFile(FileList.getInstance().getManifest()
-									.getFile(key));
-							FileList.getInstance().getManifest().removeFile(key);
-							break;
-						case NO_ACTION:
-							System.out.println("No action is being performed on " + key + "...");
-							break;
-						default:
-							break;
+								FileList.getInstance().getManifest().removeFile(key);
+								break;
+							case NO_ACTION:
+								System.out.println("No action is being performed on " + key + "...");
+								break;
+							default:
+								break;
 						}
 						
+						// Reset the sync flag to true after sync operation is complete on the file.
 						if (FileList.getInstance().getManifest().containsFile(key)) {
 							FileList.getInstance().getManifest().getFile(key).resetSync();
 						}
@@ -178,8 +217,12 @@ public class SyncController {
 						success = true;
 						
 					} catch (SftpException ex) {
+						
+						// SITUATION: 	File was not found on the server, but the database records exist.
+						//				It was likely deleted by an administrator without changing the database.
+						//				Try to flip the operation (upload the local file) to replace the file.
 						if (ex.id == 2) {
-							if (attempts < 3) {
+							if (attempts < RECONNECTION_ATTEMPTS) {
 								System.err.println("File not found. Flipping operation...");
 								System.err.println("Attempt #"+attempts+"...");
 								operation = flipOperation(operation);
@@ -188,12 +231,19 @@ public class SyncController {
 							} else {
 								throw ex;
 							}
+							
+						// SITUATION:	Failed connection.
+						//				The master server you are connecting to has failed or the connection timed out.
+						// ACTION:		Retry the connection up to three times
 						} else {
-							if (attempts < 3) {
+							if (attempts < RECONNECTION_ATTEMPTS) {
 								System.err.println(ex+""+ex.getStackTrace());
 								SFTPController.getInstance(userName).reconnect();
 								attempts++;
 								continue;
+							
+							// SITUATION:	All servers are down.
+							// ACTION:		Exit the program.
 							} else {
 								throw new ApplicationFailedException("No valid servers.");
 							}
@@ -205,6 +255,11 @@ public class SyncController {
 		}
 	}
 	
+	/**
+	 * This method flips the operation.
+	 * @param thisOp Takes an operation and gives the opposite operation.
+	 * @return the opposite operation.
+	 */
 	private Operation flipOperation(Operation thisOp) {
 		switch(thisOp) {
 			case DOWNLOAD_AND_OVERWRITE:
@@ -218,6 +273,10 @@ public class SyncController {
 		}
 	}
 
+	/**
+	 * Gets the server manifest from the database.
+	 * @return The server manifest.
+	 */
 	private Manifest getServerManifest() {
 		try {
 			Manifest serverManifest = fileDAO.generateManifest();

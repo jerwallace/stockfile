@@ -32,8 +32,11 @@ import stockfile.models.FileList;
 import stockfile.security.UserSession;
 
 /**
- *
- * @author WallaceJ
+ * The state controller loads and saves PBJ files and the contents of a directory into the application.
+ * @author Jeremy Wallace, Bahman Razmpa, Peter Lee
+ * @project StockFile, CICS 525
+ * @organization University of British Columbia
+ * @date July 20, 2013
  */
 public class StateController
 {

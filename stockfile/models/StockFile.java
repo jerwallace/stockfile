@@ -35,7 +35,7 @@ public class StockFile extends File {
 		resetSync();
 		this.setRelativePath(relativePath);
 		this.setVersion(version);
-		this.setLastModifiedDB(lastMod);
+		this.setLastSyncTimeDB(lastMod);
 		this.setLastSyncBy(lastSyncBy);
 		this.setCreatedBy(createdBy);
 		if (remotePath!=null)
@@ -106,7 +106,7 @@ public class StockFile extends File {
 	/**
 	 * @return the lastModified
 	 */
-	public DateTime getLastModifiedDB() {
+	public DateTime getLastSyncTimeDB() {
 		return lastModifiedDB;
 	}
 
@@ -114,7 +114,7 @@ public class StockFile extends File {
 	 * @param lastModified
 	 *            the lastModified to set
 	 */
-	public void setLastModifiedDB(Date lastModified) {
+	public void setLastSyncTimeDB(Date lastModified) {
 		this.lastModifiedDB = new DateTime(lastModified);
 	}
 
