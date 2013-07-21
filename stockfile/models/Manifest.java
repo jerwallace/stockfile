@@ -109,7 +109,7 @@ public class Manifest implements Serializable {
     }
 
     /**
-     * 
+     * Checks if the manifest provided is the same as this
      * @param newManifest
      * @return 
      */
