@@ -31,8 +31,8 @@ public class SyncController {
 	private Map<String, Operation> syncList;
 	private Manifest serverManifest;
 	private Manifest clientManifest;
-	private String homeDir = UserSession.getInstance().getCurrentUser()
-			.getHomeDirectory();
+	private String homeDir = UserSession.getInstance().getCurrentClient()
+			.getFullDir();
 	private static SyncController syncController = null;
 
 	private SyncController() {

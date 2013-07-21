@@ -238,7 +238,7 @@ public class LoginController {
 
                 break;
 
-            } catch (InvalidAuthenticationException e) {
+            } catch (Exception e) {
                 System.err.println(e);
                 continue;
             }

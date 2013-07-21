@@ -1,5 +1,11 @@
 package stockfile.security;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.sql.SQLException;
+
 import stockfile.dao.*;
 import stockfile.exceptions.InvalidAuthenticationException;
 import stockfile.models.Client;
@@ -20,20 +26,24 @@ public class AuthenticateService {
         this.authenticateValidator = new AuthenticateValidator();
     }
 	
-    public void authenticate(String username, String password) throws InvalidAuthenticationException {
+    public void authenticate(String username, String password) throws InvalidAuthenticationException, SocketException, UnknownHostException {
 
         this.authenticateValidator.validateUserName(username);
         this.authenticateValidator.validatePassword(Security.sha(password));
         
+        String macAddr = Client.convertByteArrayString(
+                NetworkInterface.getByInetAddress(InetAddress.getLocalHost()).getHardwareAddress());
+        
         System.out.println(username + " " + Security.sha(password));
         User user = this.userDao.getUser(username, Security.sha(password));
-        
+
         if (user != null) {
             
             if (user.getUserName() == null) 
                 throw new InvalidAuthenticationException(ERROR_MESSAGE);
             else {
                 UserSession.getInstance().setCurrentUser(user);
+                UserSession.getInstance().setCurrentClient(this.clientDAO.getClientByUser(user, macAddr));
                 System.out.println("User "+UserSession.getInstance().getCurrentUser().getUserName()+" signed in.");
             }
         } else 

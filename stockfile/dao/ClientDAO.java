@@ -166,7 +166,7 @@ public class ClientDAO extends StockFileDAO {
         return client;
     }
 
-    public Client getClientByUser(User user, String mac) throws SQLException {
+    public Client getClientByUser(User user, String mac) {
 
         Client client = new Client();
 
@@ -193,7 +193,6 @@ public class ClientDAO extends StockFileDAO {
         } catch (SQLException sqlex) {
             System.err.println("SQLException: " + sqlex.getMessage());
             this.psclose();
-            throw sqlex;
         }
         
         this.psclose();

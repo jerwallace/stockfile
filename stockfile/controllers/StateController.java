@@ -40,7 +40,7 @@ public class StateController
 {
 
     private final String DATA_FILE_NAME = "/stockdata.pbj";
-    private final String HOME_DIR = UserSession.getInstance().getCurrentUser().getHomeDirectory();
+    private final String HOME_DIR = UserSession.getInstance().getCurrentClient().getFullDir();
     private Manifest currentManifest = FileList.getInstance().getManifest();
     private FileDAO fileDAO = new FileDAO();
     private static StateController sc = null;
@@ -90,7 +90,7 @@ public class StateController
         try
         {
 
-            Path startPath = Paths.get(UserSession.getInstance().getCurrentUser().getHomeDirectory());
+            Path startPath = Paths.get(UserSession.getInstance().getCurrentClient().getFullDir());
             Files.walkFileTree(startPath, new SimpleFileVisitor<Path>()
             {
                 @Override

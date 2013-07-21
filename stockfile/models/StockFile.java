@@ -17,7 +17,7 @@ import stockfile.security.UserSession;
 @SuppressWarnings("serial")
 public class StockFile extends File {
 
-	private static final String HOME_PATH = UserSession.getInstance().getCurrentUser().getHomeDirectory();
+	private static final String HOME_PATH = UserSession.getInstance().getCurrentClient().getFullDir();
 	
 	private String remoteHomePath = "/stockfiles/"+UserSession.getInstance().getCurrentUser().getUserName();
 	private String relFilePath;

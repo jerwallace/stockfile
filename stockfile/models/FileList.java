@@ -22,7 +22,7 @@ public class FileList
     }
 
     public static String convertToRelativePath(String fullPath) {
-    	return fullPath.replace(UserSession.getInstance().getCurrentUser().getHomeDirectory(),"");
+    	return fullPath.replace(UserSession.getInstance().getCurrentClient().getFullDir(),"");
     }
     
     /**
