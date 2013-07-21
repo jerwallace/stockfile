@@ -52,26 +52,31 @@ public class Client {
         this.ipAddress = ipAddress;
         this.macAddress = macAddress;
     }
-    
+
     public Client(String type) {
-    	this.type = type;
-    	this.description = "Stockfile Server";
-    	this.manufacturer = "Amazon Inc";
-    	this.modelNo = "EC2 Cloud";
-    	this.homeDir = "/stockfiles";
+        this.type = type;
+        this.description = "Stockfile Server";
+        this.manufacturer = "Amazon Inc";
+        this.modelNo = "EC2 Cloud";
+        this.homeDir = "/stockfiles";
     }
 
+    /**
+     * Converts a given byte[] array to a String object
+     * @param byteArray
+     * @return 
+     */
     public static String convertByteArrayString(byte[] byteArray) {
 
-        if (byteArray == null) {
+        if (byteArray == null)
             return null;
-        }
 
         StringBuilder sb = new StringBuilder(18);
         for (byte b : byteArray) {
-            if (sb.length() > 0) {
+            
+            if (sb.length() > 0)
                 sb.append(':');
-            }
+            
             sb.append(String.format("%02x", b));
         }
         return sb.toString();
@@ -175,6 +180,9 @@ public class Client {
         this.homeDir = homeDir;
     }
 
+    /**
+     * @return the full directory with respect to the home directory
+     */
     public String getFullDir() {
         return FilenameUtils.separatorsToSystem(System.getProperty("user.home") + "/" + this.homeDir);
     }

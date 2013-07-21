@@ -55,7 +55,7 @@ public class DNSResolver {
     }
     
     /**
-     * This method performs a DNS request and recieves the current server.
+     * This method performs a DNS request and receives the current server.
      * @throws IOException
      */
     private final void dnsRequest() throws IOException {
