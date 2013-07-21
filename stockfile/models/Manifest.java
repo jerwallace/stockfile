@@ -26,19 +26,25 @@ public class Manifest implements Serializable {
         DOWNLOAD, UPLOAD, DUPLICATE, UPLOAD_AND_OVERWRITE, DOWNLOAD_AND_OVERWRITE, NO_ACTION, DELETE
     }
 
+    /**
+     * Default constructor accepts a manifest identifier
+     * @param name 
+     */
     public Manifest(String name) {
         manifest = new TreeMap<>();
         this.setName(name);
     }
 
     /**
-     * Updates the manifest with the StockFile (thisFile) provided.
-     * thisFile is added to the manifest if not found
+     * Updates the manifest with the relativePath and StockFile (thisFile)
+     * provided. thisFile is added to the manifest if the corresponding
+     * relativePath is not found
+     *
      * @param relativePath
      * @param thisFile
      */
     public void updateFile(String relativePath, StockFile thisFile) {
-        
+
         relativePath = FilenameUtils.separatorsToSystem(relativePath);
         thisFile.setRelativePath(relativePath);
         if (!this.manifest.containsKey(thisFile.getRelativePath())) {
@@ -50,12 +56,18 @@ public class Manifest implements Serializable {
     }
 
     /**
-     * 
+     * Adds an entry <relativePath, thisFile> to the manifest. 
+     * 1) If the given relativePath is not found in the manifest or the version 
+     * of thisFile is greater than that of the one exists in the manifest,
+     * update the manifest accordingly. 
+     * 2) If the last modified time of thisFile is greater than that of the one
+     * exists in the manifest, update the manifest accordingly and increments the version.
+     *
      * @param relativePath
-     * @param thisFile 
+     * @param thisFile
      */
     public void insertFile(String relativePath, StockFile thisFile) {
-        
+
         relativePath = FilenameUtils.separatorsToSystem(relativePath);
 
         if (!this.manifest.containsKey(relativePath) || thisFile.getVersion() > this.manifest.get(relativePath).getVersion()) {
@@ -69,20 +81,40 @@ public class Manifest implements Serializable {
         }
     }
 
+    /**
+     * Removes the given relativePath provided from the manifest
+     *
+     * @param relativePath
+     */
     public void removeFile(String relativePath) {
         this.manifest.remove(FilenameUtils.separatorsToSystem(relativePath));
     }
 
+    /**
+     * Checks if the given relativePath exists in the manifest
+     * @param relativePath
+     * @return 
+     */
     public boolean containsFile(String relativePath) {
         return this.manifest.containsKey(FilenameUtils.separatorsToSystem(relativePath));
     }
 
+    /**
+     * Returns a StockFile object that corresponds to the given relativePath
+     * @param relativePath
+     * @return 
+     */
     public StockFile getFile(String relativePath) {
         return this.manifest.get(FilenameUtils.separatorsToSystem(relativePath));
     }
 
+    /**
+     * 
+     * @param newManifest
+     * @return 
+     */
     public boolean isEqual(Manifest newManifest) {
-        Set<StockFile> values1 = new HashSet<StockFile>(newManifest.manifest.values());
+        Set<StockFile> values1 = new HashSet<StockFile>(this.manifest.values());
         Set<StockFile> values2 = new HashSet<StockFile>(newManifest.manifest.values());
         return values1.equals(values2);
     }
