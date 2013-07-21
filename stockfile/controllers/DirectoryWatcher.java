@@ -24,14 +24,27 @@ import java.util.Map;
 
 import stockfile.models.FileList;
 import stockfile.models.StockFile;
+import stockfile.security.UserSession;
 
+/**
+ * Directory watcher is based on the java online example of WatchService and sets up 
+ * notifications on the directory inbetween syncronization periods. If a file changes, 
+ * it updates the singleton FileList by incrementing the version number and sets the inSync flag
+ * to false.
+ * @author jeremywallace
+ * @project StockFile, CICS 525
+ * @organization University of British Columbia
+ * @date July 20, 2013
+ */
 public class DirectoryWatcher implements Runnable
 {
 
-    private final WatchService watchServ;
-    private final Map<WatchKey, Path> keys;
+    private final WatchService watchService;
+    private final Map<WatchKey, Path> pathsToWatch;
+    
     private boolean trace = true;
-    private final String HOME_DIR = System.getProperty("user.home") + "/Stockfile";
+    
+    private final String HOME_DIR = UserSession.getInstance().getCurrentClient().getFullDir();
 
     @SuppressWarnings("unchecked")
     static <T> WatchEvent<T> cast(WatchEvent<?> event)
@@ -41,10 +54,10 @@ public class DirectoryWatcher implements Runnable
 
     private void registerDir(Path dir) throws IOException
     {
-        WatchKey key = dir.register(watchServ, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+        WatchKey key = dir.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
         if (trace)
         {
-            Path prev = keys.get(key);
+            Path prev = pathsToWatch.get(key);
             if (prev == null)
             {
                 //System.out.format("register: %s\n", dir);
@@ -57,7 +70,7 @@ public class DirectoryWatcher implements Runnable
                 }
             }
         }
-        keys.put(key, dir);
+        pathsToWatch.put(key, dir);
     }
 
     private void registerHome() throws IOException
@@ -102,8 +115,8 @@ public class DirectoryWatcher implements Runnable
     public DirectoryWatcher() throws IOException
     {
 
-        this.watchServ = FileSystems.getDefault().newWatchService();
-        this.keys = new HashMap<WatchKey, Path>();
+        this.watchService = FileSystems.getDefault().newWatchService();
+        this.pathsToWatch = new HashMap<WatchKey, Path>();
         registerHome();
 
         // enable trace after initial registration
@@ -118,14 +131,14 @@ public class DirectoryWatcher implements Runnable
             WatchKey key;
             try
             {
-                key = watchServ.take();
+                key = watchService.take();
             }
             catch (InterruptedException x)
             {
                 return;
             }
 
-            Path dir = keys.get(key);
+            Path dir = pathsToWatch.get(key);
             if (dir == null)
             {
                 System.err.println("WatchKey not recognized!!");
@@ -189,10 +202,10 @@ public class DirectoryWatcher implements Runnable
             boolean valid = key.reset();
             if (!valid)
             {
-                keys.remove(key);
+                pathsToWatch.remove(key);
 
                 // all directories are inaccessible
-                if (keys.isEmpty())
+                if (pathsToWatch.isEmpty())
                 {
                     break;
                 }
