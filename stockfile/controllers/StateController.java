@@ -42,10 +42,13 @@ public class StateController {
 
     // Name of the state file to save locally.
     private final String DATA_FILE_NAME = "/stockdata.pbj";
+    
     // The client's home directory.
     private final String HOME_DIR = UserSession.getInstance().getCurrentClient().getFullDir();
+    
     // The manifest of the file list stored in memory.
     private Manifest currentManifest = FileList.getInstance().getManifest();
+    
     private FileDAO fileDAO = new FileDAO();
     private static StateController sc = null;
 
@@ -106,15 +109,38 @@ public class StateController {
 
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                    StockFile thisFile = new StockFile(file.toString(), null);
-                    System.out.println("Visited file" + file.toString());
-                    FileList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
+                    
+                	StockFile thisFile = new StockFile(file.toString(), null);
+                    
+                    String key = thisFile.getRelativePath();
+                    
+                   // System.out.println("Visited file" + file.toString());
+                    
+                    // If the file is already in the list, take a look at the last modified dates.
+                    if (FileList.getInstance().getManifest().containsFile(key)) {
+                    	
+                    	// If the file found has been modified after the file in the list... Increment the version.
+                    	
+                    	Long fileLastMod = FileList.getInstance().getManifest().getFile(key).getLastModifiedOnLoad();
+                    	
+                    	//System.out.println("Comparing "+thisFile.lastModified()+" to "+fileLastMod);
+                    	
+                    	if ((fileLastMod!=null)&&thisFile.lastModified()>fileLastMod) {
+                    		FileList.getInstance().getManifest().getFile(key).incrementVersion();
+                    	}
+                    	
+                    	FileList.getInstance().getManifest().getFile(key).setLastModifiedOnLoad(thisFile.lastModified());
+                   
+                    } else {
+                    	FileList.getInstance().getManifest().insertFile(thisFile.getRelativePath(), thisFile);
+                    }
+                   
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
                 public FileVisitResult visitFileFailed(Path file, IOException e) {
-                    System.err.println("Visiting file " + file.toString() + " failed.");
+                    //System.err.println("Visiting file " + file.toString() + " failed.");
                     return FileVisitResult.CONTINUE;
                 }
             });

@@ -272,8 +272,21 @@ public class SFTPController
 	            }
 	            else
 	            {
-	                ch_sftp.put(new FileInputStream(f), f.getFullRemotePath());
+	            	
+	            	FileInputStream fileStream = new FileInputStream(f);
+	            	
+	            	try {
+		               ch_sftp.put(fileStream, f.getFullRemotePath());
+	            	} catch (Exception e) {
+	            		throw e;
+	            	} finally {
+	            		if (fileStream!=null)
+	            			fileStream.close();
+	            		System.gc();
+	            	}
+	            	
 	            }
+	            
 	            return true;
             } else {
             	System.err.println("Upload Error: File does not exist. Removing file from file list.");
@@ -313,7 +326,21 @@ public class SFTPController
             	f.mkdirs();
             } else {
             	f.getParentFile().mkdirs();
-            	ch_sftp.get(f.getFullRemotePath(), new FileOutputStream(f));
+            	
+            	FileOutputStream fileStream = new FileOutputStream(f);
+            	
+	            	try {
+	            		ch_sftp.get(f.getFullRemotePath(), new FileOutputStream(f));
+	            	} catch (Exception e) {
+	            		throw e;
+	            	} finally {
+	            		if (fileStream!=null)
+	            			fileStream.close();
+	            		
+	            		System.gc();
+	            	}
+                
+                fileStream = null;
             }
 
             return true;
