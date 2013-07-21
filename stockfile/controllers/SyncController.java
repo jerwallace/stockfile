@@ -274,6 +274,8 @@ public class SyncController {
                                 throw new ApplicationFailedException("No valid servers.");
                             }
                         }
+                    } catch (SQLException sqlex) {
+                    	System.err.println("Problem running SQL query. Refreshing queue and trying again momentarily.");
                     }
                 }
             }

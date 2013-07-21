@@ -85,7 +85,7 @@ public class PeriodicSync implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (Exception e) {
-				e.printStackTrace();
+				System.err.println();
 			}
 		
 	}

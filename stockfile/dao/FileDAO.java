@@ -166,6 +166,14 @@ public class FileDAO extends StockFileDAO {
             ps.setString(2, FilenameUtils.separatorsToUnix(file.getRemoteHomePath()));
 
             ps.executeUpdate();
+            
+            ps = conn.prepareStatement("DELETE FROM user_file WHERE username = ? AND file_name = ? AND file_path = ?");
+
+            ps.setString(1, FilenameUtils.separatorsToUnix(UserSession.getInstance().getCurrentUser().getUserName()));
+            ps.setString(2, FilenameUtils.separatorsToUnix(file.getRelativePath()));
+            ps.setString(3, FilenameUtils.separatorsToUnix(file.getRemoteHomePath()));
+
+            ps.executeUpdate();
 
         } catch (SQLException sqlex) {
             throw sqlex;
