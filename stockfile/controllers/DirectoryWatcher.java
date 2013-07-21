@@ -28,7 +28,7 @@ import stockfile.security.UserSession;
 
 /**
  * Directory watcher is based on the java online example of WatchService and sets up 
- * notifications on the directory inbetween syncronization periods. If a file changes, 
+ * notifications on the directory inbetween synchronization periods. If a file changes, 
  * it updates the singleton FileList by incrementing the version number and sets the inSync flag
  * to false.
  * @author Jeremy Wallace, Bahman Razmpa, Peter Lee

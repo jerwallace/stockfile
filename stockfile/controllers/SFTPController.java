@@ -30,7 +30,7 @@ import stockfile.models.StockFile;
 import stockfile.security.UserSession;
 
 /**
- * SFTP Controller contains all of the commands used to send and recieve files over SSH.
+ * SFTP Controller contains all of the commands used to send and receive files over SSH.
  * @author Jeremy Wallace, Bahman Razmpa, Peter Lee
  * @project StockFile, CICS 525
  * @organization University of British Columbia
@@ -39,7 +39,7 @@ import stockfile.security.UserSession;
 public class SFTPController
 {
 	
-	// Connection properties
+    // Connection properties
     private Properties props;
     private static SFTPController sftp_connection = null;
     

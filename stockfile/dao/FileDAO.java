@@ -72,27 +72,6 @@ public class FileDAO extends StockFileDAO {
 
     }
 
-    public void getFiles() throws SQLException {
-
-        try {
-
-            ps = conn.prepareStatement("SELECT * FROM file");
-
-            rs = ps.executeQuery();
-            System.out.println("res = ");
-
-            while (rs.next()) {
-                //
-            }
-
-        } catch (SQLException sqlex) {
-            throw sqlex;
-        }
-
-        this.psclose();
-
-    }
-
     /**
      * Checks if the given StockFile already exists in the database
      * @param file

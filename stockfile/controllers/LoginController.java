@@ -38,8 +38,13 @@ import stockfile.security.RegexHelper.RegExPattern;
 import stockfile.security.UserSession;
 
 /**
+ * Login Controller contains the methods required to authenticate a user, create
+ * a new user, and create a new client.
  *
- * @author MrAtheist
+ * @author Jeremy Wallace, Bahman Razmpa, Peter Lee
+ * @project StockFile, CICS 525
+ * @organization University of British Columbia
+ * @date July 20, 2013
  */
 public class LoginController {
 
@@ -48,19 +53,23 @@ public class LoginController {
     private static String macAddr;
 
     /**
-     * @return the macAddr
+     * The constructor initiates the macAddr
+     *
+     * @throws UnknownHostException
+     * @throws SocketException
      */
-    public static String getMacAddr() {
-        return macAddr;
-    }
-
     private LoginController() throws UnknownHostException, SocketException {
-        
+
         macAddr = Client.convertByteArrayString(
                 NetworkInterface.getByInetAddress(InetAddress.getLocalHost()).getHardwareAddress());
-        
+
     }
 
+    /**
+     * Static method returns a single
+     * @return
+     * @throws ApplicationFailedException 
+     */
     public static LoginController getInstance() throws ApplicationFailedException {
         if (loginController == null) {
             try {
@@ -70,6 +79,13 @@ public class LoginController {
             }
         }
         return loginController;
+    }
+
+    /**
+     * @return the macAddr
+     */
+    public static String getMacAddr() {
+        return macAddr;
     }
 
     /**
@@ -128,8 +144,7 @@ public class LoginController {
                 }
             } catch (final CreateUserException e) {
                 System.err.println(e);
-
-            };
+            }
         }
 
         User newUser = new User(ret[0], ret[2], ret[3], ret[4], new LocalDate(),
@@ -217,7 +232,7 @@ public class LoginController {
             newClient = new Client(ret[0], ret[1], ret[2], ret[3], ret[4]);
             clientDAO.addClient(newClient);
         }
-        
+
         if (clientDAO.getClientByUser(UserSession.getInstance().getCurrentUser(), macAddr) == null) {
             // no association found between the user's mac address and client type
             // add an entry to the user_client table
