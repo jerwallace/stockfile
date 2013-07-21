@@ -30,6 +30,7 @@ import stockfile.models.StockFile;
 import stockfile.security.UserSession;
 
 /**
+ * SFTP Controller contains all of the commands used to send and receive files over SSH.
  * SFTP Controller contains all of the commands used to send and receive files
  * over SSH.
  *
@@ -251,69 +252,105 @@ public class SFTPController {
 
     /**
      * Uploads a file over SFTP
-     *
      * @param filename The file name in the local PBJ file list to send.
      * @return True if the file was sent.
      * @throws SftpException If there is an error during transmission.
      * @throws IOException If there was a file stream error.
      */
-    public boolean upload(String filename) throws SftpException, IOException {
-
-        filename = FilenameUtils.separatorsToUnix(filename);
-        if (!inBlackList(filename)) {
+    public boolean upload(String filename) throws SftpException, IOException
+    {
+    	filename = FilenameUtils.separatorsToUnix(filename);
+        if (!inBlackList(filename))
+        {
             System.out.println("Attempting to upload file:" + filename);
             StockFile f = FileList.getInstance().getManifest().getFile(filename);
             System.out.println(f);
             if (f.exists()) {
-                if (f.isDirectory()) {
-                    try {
-                        ch_sftp.mkdir(f.getFullRemotePath());
-                    } catch (SftpException ex) {
-                        System.out.println("Directory already exists. Skipping entry.");
-                    }
-                } else {
-                    ch_sftp.put(new FileInputStream(f), f.getFullRemotePath());
-                }
-                return true;
+	            if (f.isDirectory())
+	            {
+	            	try {
+	            		ch_sftp.mkdir(f.getFullRemotePath());
+	            	} catch (SftpException ex) {
+	            		System.out.println("Directory already exists. Skipping entry.");
+	            	}
+	            }
+	            else
+	            {
+	            	
+	            	FileInputStream fileStream = new FileInputStream(f);
+	            	
+	            	try {
+		               ch_sftp.put(fileStream, f.getFullRemotePath());
+	            	} catch (Exception e) {
+	            		throw e;
+	            	} finally {
+	            		if (fileStream!=null)
+	            			fileStream.close();
+	            		System.gc();
+	            	}
+	            	
+	            }
+	            
+	            return true;
             } else {
-                System.err.println("Upload Error: File does not exist. Removing file from file list.");
-                FileList.getInstance().getManifest().removeFile(FilenameUtils.separatorsToSystem(filename));
-                return false;
+            	System.err.println("Upload Error: File does not exist. Removing file from file list.");
+            	FileList.getInstance().getManifest().removeFile(FilenameUtils.separatorsToSystem(filename));
+            	return false;
+            	
             }
-
-        } else {
+            
+        }
+        else
+        {
             System.out.println(filename + " upload ignored.");
             return false;
         }
     }
-
+    
     /**
      * Downloads a file from the remote server.
-     *
      * @param filename The remote file to download.
      * @return True if the file is downloaded.
      * @throws SftpException If there is a problem downloading the file.
      * @throws FileNotFoundException If the file is not found on the server.
      * @throws IOException If there is a problem with the file stream.
      */
-    public boolean download(String filename) throws SftpException, FileNotFoundException, IOException {
-
-        if (!inBlackList(filename)) {
-            System.out.println("Looking up: " + filename);
-            StockFile f = new StockFile(filename, null);
-
+    public boolean download(String filename) throws SftpException, FileNotFoundException, IOException
+    {
+    	
+        if (!inBlackList(filename))
+        {
+        	System.out.println("Looking up: "+filename);
+            StockFile f = new StockFile(filename,null);
+            
             System.out.println("Attempting to download file: " + f.getFullRemotePath());
             System.out.println(f);
-
+            
             if (!filename.matches("(.*)\\.[A-Za-z0-9]{2,12}")) {
-                f.mkdirs();
+            	f.mkdirs();
             } else {
-                f.getParentFile().mkdirs();
-                ch_sftp.get(f.getFullRemotePath(), new FileOutputStream(f));
+            	f.getParentFile().mkdirs();
+            	
+            	FileOutputStream fileStream = new FileOutputStream(f);
+            	
+	            	try {
+	            		ch_sftp.get(f.getFullRemotePath(), new FileOutputStream(f));
+	            	} catch (Exception e) {
+	            		throw e;
+	            	} finally {
+	            		if (fileStream!=null)
+	            			fileStream.close();
+	            		
+	            		System.gc();
+	            	}
+                
+                fileStream = null;
             }
 
             return true;
-        } else {
+        }
+        else
+        {
 
             System.out.println(filename + " download ignored.");
             return false;

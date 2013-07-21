@@ -23,6 +23,7 @@ public class StockFile extends File {
 	private String relFilePath;
 	private float version = (float) 1.0;
 	private DateTime lastModifiedDB;
+	private Long lastModifiedOnLoad;
 	private String lastSyncBy = UserSession.getInstance().getCurrentUser().getUserName();
 	private String createdBy = UserSession.getInstance().getCurrentUser().getUserName();
 	private boolean inSync;
@@ -99,6 +100,7 @@ public class StockFile extends File {
 	public void incrementVersion() {
 		if (inSync()) {
 			this.version = this.version + ((float) 0.1);
+			System.out.println("Incremented file "+getName()+" to "+getVersion());
 			this.inSync = false;
 		}
 	}
@@ -191,5 +193,13 @@ public class StockFile extends File {
 
 	public void setRemoveMarker(boolean removeMarker) {
 		this.removeMarker = removeMarker;
+	}
+
+	public Long getLastModifiedOnLoad() {
+		return lastModifiedOnLoad;
+	}
+
+	public void setLastModifiedOnLoad(Long lastModifiedOnLoad) {
+		this.lastModifiedOnLoad = lastModifiedOnLoad;
 	}
 }

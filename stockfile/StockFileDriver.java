@@ -25,7 +25,7 @@ public class StockFileDriver
         try {
             LoginController.getInstance().run();
             StateController.getInstance().loadState();
-            StateController.getInstance().loadDirectoryState(UserSession.getInstance().getCurrentClient().getHomeDir());
+            StateController.getInstance().loadDirectoryState(UserSession.getInstance().getCurrentClient().getFullDir());
         } catch (ApplicationFailedException ex) {
             System.err.println(ex);
             System.exit(0);
