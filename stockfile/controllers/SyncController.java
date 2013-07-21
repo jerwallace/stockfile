@@ -104,33 +104,50 @@ public class SyncController {
 					// SITUATION: 	Remove marker found.
 					// ACITON: 		Delete.
 					if (clientFile.hasRemoveMarker()) {
+						System.out.println("DELETE OPERATION INVOKED.");
 						syncList.put(key, Operation.DELETE);
-					
+						serverManifest.manifest.remove(key);
+						
 					// SITUATION: 	Version numbers the same and the file is in sync.
 					// ACTION: 		None.
 					} else if (servFile.getVersion() == clientFile.getVersion()&&clientFile.inSync()) {
+						System.out.println("NO OPERATION INVOKED.");
 						syncList.put(key, Operation.NO_ACTION);
+						serverManifest.manifest.remove(key);
 						
 					// SITUATION: 	InSync flag is false AND last sync time on the server is after local file's last sync.
 					// ACTION: 		Duplicate, files are conflicting.
 					} else if (!(clientFile.inSync())&&servFile.getLastSyncTimeDB().isAfter(clientFile.getLastSyncTimeDB())) {
+						System.out.println("DUPLICATE OPERATION INVOKED.");
 						syncList.put(key, Operation.DUPLICATE);
-					
+						serverManifest.manifest.remove(key);
+						
 					// SITUATION: 	InSync flag is false and the last sync time in the DB is equal to or less than the local file.
 					//				(The user has updated their file and the changes need to be reflected)
 					// ACTION:		Upload and overwrite database file.
 					} else if (!(clientFile.inSync())) {
+						System.out.println("UPLOAD AND OVERWRITE OPERATION INVOKED.");
 						syncList.put(key, Operation.UPLOAD_AND_OVERWRITE);
-						
+						serverManifest.manifest.remove(key);
 					// SITUATION:	The client file version is less than the server version and the file is inSync.
 					// ACTION:		The server has a later version, so download it!	
-					} else if (clientFile.getVersion()<servFile.getVersion()) {
-						syncList.put(key, Operation.DOWNLOAD);
 					}
+					
 				}
+				
+				
 
 			}
-
+			
+			System.out.println("Setting download settings: "+serverManifest);
+			
+			// SITUATION:	The file is on the server but is not in the FileList.
+			// ACTION:		Download the file.
+			for (String servKey : serverManifest.manifest.keySet()) {
+				FileList.getInstance().getManifest().updateFile(homeDir + servKey,serverManifest.manifest.get(servKey));
+				syncList.put(servKey, Operation.DOWNLOAD);
+			}			
+			
 		}
 
 	}
