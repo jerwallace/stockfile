@@ -19,9 +19,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Properties;
+import java.util.Random;
 import java.util.Set;
+import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import stockfile.dao.connection.Utils;
 import stockfile.exceptions.ApplicationFailedException;
@@ -263,19 +267,24 @@ public class SFTPController
     	
     }
     
+    private final static String dupFileName(String filename) {
+    	Random randomGenerator = new Random();
+    	String filenameBits[] = filename.split(".");
+    	filenameBits[0] = filenameBits[0]+"_sfdup"+randomGenerator.nextInt(100);
+    	return StringUtils.join(filenameBits);
+    	
+    }
     
-//    public void duplicate(String filename) {
-//
-//        try {
-//            File f = new File("c:\\Users\\wallacej\\Stockfile\\"+filename);
-//            System.out.println("Getting file "+ filename);
-//            ch_sftp.get(filename, new FileOutputStream(f));
-//        } catch (FileNotFoundException ex) {
-//                Logger.getLogger(SFTP.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (SftpException ex) {
-//            Logger.getLogger(SFTP.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//
-//
-//    }
+    public void duplicate(String filename) throws IOException, SftpException {
+
+        	StockFile f = null;
+        	
+            do {
+            	f = new StockFile(dupFileName(filename),null);
+            } while (f.exists());
+            
+            FileUtils.copyFile(FileList.getInstance().getManifest().getFile(filename), f);
+            send(f.getRelativePath());
+
+    }
 }

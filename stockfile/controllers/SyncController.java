@@ -83,8 +83,10 @@ public class SyncController {
 						syncList.put(key, Operation.DELETE);
 					} else if (servFile.getVersion() == clientFile.getVersion()) {
 						syncList.put(key, Operation.NO_ACTION);
+					} else if (!(clientFile.inSync())&&servFile.getLastModifiedDB().isAfter(clientFile.getLastModifiedDB())){
+						syncList.put(key, Operation.DUPLICATE);
 					} else {
-						syncList.put(key, Operation.UPLOAD);
+						syncList.put(key, Operation.UPLOAD_AND_OVERWRITE);
 					}
 
 					if (!(servFile.getVersion() > clientFile.getVersion())) {
@@ -151,9 +153,9 @@ public class SyncController {
 							break;
 						case DUPLICATE:
 							System.out.println("Duplicating " + key + "...");
-							SFTPController.getInstance().send(key);
+							SFTPController.getInstance().duplicate(key);
 							fileDAO.updateFile(FileList.getInstance().getManifest()
-									.getFile(key));
+										.getFile(key));
 							break;
 						case DELETE:
 							System.out.println("Deleting file " + key + "...");
@@ -168,6 +170,11 @@ public class SyncController {
 						default:
 							break;
 						}
+						
+						if (FileList.getInstance().getManifest().containsFile(key)) {
+							FileList.getInstance().getManifest().getFile(key).resetSync();
+						}
+						
 						success = true;
 						
 					} catch (SftpException ex) {

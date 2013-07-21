@@ -165,11 +165,11 @@ public class StockFile extends File {
 
 	}
 
-	private boolean inSync() {
+	public boolean inSync() {
 		return inSync;
 	}
 
-	private void resetSync() {
+	public void resetSync() {
 		this.inSync = true;
 	}
 
