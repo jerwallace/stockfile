@@ -298,6 +298,7 @@ public class LoginController {
     public void run() {
 
         Scanner scanner = new Scanner(System.in);
+//        LoginController login = getInstance();
 
         System.out.println("********Welcome to Stockfile********\n");
 
