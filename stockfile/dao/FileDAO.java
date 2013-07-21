@@ -61,6 +61,7 @@ public class FileDAO extends StockFileDAO {
                 System.out.println("Connected user to file in database.");
 
             } catch (SQLException sqlex) {
+            	System.out.println("INS: Error code: "+sqlex.getErrorCode());
                 throw sqlex;
             }
         } else {
@@ -98,6 +99,7 @@ public class FileDAO extends StockFileDAO {
             }
 
         } catch (SQLException sqlex) {
+        	System.out.println("FIND: Error code: "+sqlex.getErrorCode());
             throw sqlex;
         }
 
@@ -140,6 +142,7 @@ public class FileDAO extends StockFileDAO {
                 ps.executeUpdate();
 
             } catch (SQLException sqlex) {
+            	System.out.println("UPD Error code: "+sqlex.getErrorCode());
                 throw sqlex;
             }
 

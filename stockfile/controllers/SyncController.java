@@ -87,9 +87,12 @@ public class SyncController {
 
             // Go through each file locally and find differences.
             for (String key : clientManifest.manifest.keySet()) {
-
+            	
+            	
+            	
                 StockFile clientFile = clientManifest.manifest.get(key);
-
+                System.out.println("Last Sync Client:"+clientFile.getLastSyncTimeDB());
+               
                 // If the file is not on the server, upload it.
                 if (!serverManifest.manifest.containsKey(key)) {
                     syncList.put(key, Operation.UPLOAD);
@@ -98,7 +101,7 @@ public class SyncController {
                 } else {
 
                     StockFile servFile = serverManifest.manifest.get(key);
-
+                    System.out.println("Last Sync Server:"+servFile.getLastSyncTimeDB());
                     // SITUATION: 	Remove marker found.
                     // ACITON: 		Delete.
                     if (clientFile.hasRemoveMarker()) {
@@ -113,9 +116,10 @@ public class SyncController {
                         syncList.put(key, Operation.NO_ACTION);
                         serverManifest.manifest.remove(key);
 
-                        // SITUATION: 	InSync flag is false AND last sync time on the server is after local file's last sync.
+                        // SITUATION: 	InSync flag is false on a file (not a directory) AND last sync time on the server is after local file's last sync.
                         // ACTION: 		Duplicate, files are conflicting.
-                    } else if (!(clientFile.inSync()) && servFile.getLastSyncTimeDB().isAfter(clientFile.getLastSyncTimeDB())) {
+                    
+                    } else if ((!clientFile.isDirectory()) && !(clientFile.inSync()) && servFile.getLastSyncTimeDB().isAfter(clientFile.getLastSyncTimeDB())) {
                         System.out.println("DUPLICATE OPERATION INVOKED.");
                         syncList.put(key, Operation.DUPLICATE);
                         serverManifest.manifest.remove(key);

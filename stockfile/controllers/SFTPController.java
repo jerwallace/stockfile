@@ -1,7 +1,6 @@
 package stockfile.controllers;
 
 import com.jcraft.jsch.Channel;
-
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
@@ -13,7 +12,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
@@ -381,10 +382,11 @@ public class SFTPController {
      * @return The duplicate file name.
      */
     private final static String dupFileName(String filename) {
+    	
         Random randomGenerator = new Random();
-        String filenameBits[] = filename.split(".");
-        filenameBits[0] = filenameBits[0] + "_sfdup" + randomGenerator.nextInt(100);
-        return StringUtils.join(filenameBits);
+        List<String> filenameBits = Arrays.asList(filename.split("."));
+        filenameBits.set(0, filenameBits.get(0) + "_sfdup" + randomGenerator.nextInt(100));
+        return StringUtils.join(filenameBits,"");
 
     }
 
