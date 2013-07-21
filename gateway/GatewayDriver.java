@@ -26,7 +26,7 @@ public class GatewayDriver
     public static void main(String[] args) throws java.io.IOException
     {
         //initialize myProerties class and give it an arbitrary port number to use for assigning ports to instances and gateway
-        myProperties = new Properties(2050, 2010, 1000, 100);
+        myProperties = new Properties(2050, 2010, 2025, 1000, 100);
 
         //Initializes the server instances and the thread pool
         initialize();
@@ -43,6 +43,9 @@ public class GatewayDriver
         //Create ONE thread that will resolve the master server DNS name for the client
         Thread ipResolver = new Thread(new clientIpResolverThread(myProperties.getGatewayIpResolverPort()));
 
+        //Create ONE thread that will resolve the slave DNS name for the servers
+        Thread DNSresolver = new Thread(new serverDNSResolverThread(myProperties.getGatewayDNSresolverPort()));
+
         //Start each thread
         for (int i = 0; i < threadPool.size(); i++)
         {
@@ -55,6 +58,9 @@ public class GatewayDriver
         //start ipResolver thread
         ipResolver.start();
 
+        //start ipResolver thread
+        DNSresolver.start();
+
         //wait on all threads to return
         try
         {
@@ -66,6 +72,8 @@ public class GatewayDriver
             failCheck.join();
 
             ipResolver.join();
+
+            DNSresolver.join();
         }
         catch (InterruptedException ex)
         {
@@ -74,7 +82,9 @@ public class GatewayDriver
     }
 
     /**
-     *
+     * Public class called when Gateway is run the first time to initialize all
+     * the Threads using the values stored in the Properties object.
+     * <p/>
      * @throws IOException
      */
     public static void initialize() throws IOException

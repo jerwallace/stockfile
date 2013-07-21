@@ -16,6 +16,7 @@ public final class Properties
     private ArrayList<String> publicIpList;
     private int gatewayHeartBeatPort;
     private int gatewayIpResolverPort;
+    private int gatewayDNSresolverPort;
     private int heartbeatInterval;
     private int failCheckInterval;
 
@@ -32,12 +33,13 @@ public final class Properties
      * @param failCheckTimeInterval  - Period which if times out, means a server
      *                               instance is DOWN
      */
-    public Properties(int gatewayStartPortNumber, int ipResolverPortNumber, int heartbeatSendInterval, int failCheckTimeInterval)
+    public Properties(int gatewayStartPortNumber, int ipResolverPortNumber, int DNSresolverPort, int heartbeatSendInterval, int failCheckTimeInterval)
     {
         this.privateIpList = new ArrayList<>();
         this.publicIpList = new ArrayList<>();
         this.gatewayHeartBeatPort = gatewayStartPortNumber;
         this.gatewayIpResolverPort = ipResolverPortNumber;
+        this.gatewayDNSresolverPort = DNSresolverPort;
         this.heartbeatInterval = heartbeatSendInterval;
         this.failCheckInterval = failCheckTimeInterval;
         initialize();
@@ -92,5 +94,10 @@ public final class Properties
     public int getFailCheckInterval()
     {
         return failCheckInterval;
+    }
+
+    public int getGatewayDNSresolverPort()
+    {
+        return gatewayDNSresolverPort;
     }
 }

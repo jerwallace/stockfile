@@ -92,9 +92,6 @@ public class clientIpResolverThread extends Thread
             {
                 System.err.println("IP Resolver Packet Send Failure: " + ex.toString());
             }
-
-            System.out.println("Response: " + masterDnsAddress + " sent back to MulticastServer at: "
-                    + packet.getAddress() + " : " + packet.getPort());
         }
     }
 }
