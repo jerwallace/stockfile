@@ -24,10 +24,16 @@ public class ClientDAO extends StockFileDAO {
         super(true);
     }
 
+    /**
+     * Create a new user client in the database with the given Client object
+     *  and the username of the current user within UserSession
+     * @param client
+     * @throws SQLException
+     * @throws SocketException
+     * @throws UnknownHostException
+     * @throws UnsupportedEncodingException 
+     */
     public void addUserClient(Client client) throws SQLException, SocketException, UnknownHostException, UnsupportedEncodingException {
-
-//        System.out.println("IP Address: " + ipAddress.getAddress());
-//        System.out.println("MAC Address: " + macAddress);
 
         try {
 
@@ -43,8 +49,7 @@ public class ClientDAO extends StockFileDAO {
             ps.setString(6, client.getHomeDir());
 
             ps.executeUpdate();
-            System.out.println("Client with IP Address: " + client.getIpAddress()
-                    + " and MAC Address: " + client.getMacAddress() + " were added! " + ps.toString());
+            
         } catch (SQLException sqlex) {
             throw sqlex;
         }
@@ -52,7 +57,14 @@ public class ClientDAO extends StockFileDAO {
         this.psclose();
     }
 
+    /**
+     * Removes the entry from the user client table that matches the given Client object
+     *  and the username in the UserSession
+     * @param client
+     * @throws SQLException 
+     */
     public void removeUserClient(Client client) throws SQLException {
+     
         try {
             ps = conn.prepareStatement("DELETE FROM user_client WHERE username = ? AND mac_address = ?");
 
@@ -67,7 +79,14 @@ public class ClientDAO extends StockFileDAO {
         this.psclose();
     }
 
+    /**
+     * Updates the entry in the user client table that corresponds to the given 
+     *  Client object and the username in the UserSession
+     * @param client
+     * @throws SQLException 
+     */
     public void updateUserClient(Client client) throws SQLException {
+     
         try {
             ps = conn.prepareStatement("UPDATE user_client "
                     + "SET client_type = ?, last_sync = ?, ip_address = ?, home_directory = ?"
@@ -88,7 +107,15 @@ public class ClientDAO extends StockFileDAO {
         this.psclose();
     }
 
+    /**
+     * Creates a Client in the client table based on the Client object provided
+     * @param client
+     * @throws SQLException
+     * @throws SocketException
+     * @throws UnknownHostException 
+     */
     public void addClient(Client client) throws SQLException, SocketException, UnknownHostException {
+    
         try {
 
             ps = conn.prepareStatement("INSERT INTO "
@@ -102,8 +129,6 @@ public class ClientDAO extends StockFileDAO {
 
             ps.executeUpdate();
 
-            System.out.println("Client with IP Address: " + client.getIpAddress()
-                    + " and MAC Address: " + client.getMacAddress() + " were added! " + ps.toString());
         } catch (SQLException sqlex) {
             throw sqlex;
         }
@@ -111,13 +136,21 @@ public class ClientDAO extends StockFileDAO {
         this.psclose();
     }
 
+    /**
+     * Removes the entry in the client table that corresponds to the client type
+     *  of the Client object provided
+     * @param client
+     * @throws SQLException 
+     */
     public void removeClient(Client client) throws SQLException {
+    
         try {
             ps = conn.prepareStatement("DELETE FROM client WHERE client_type = ?");
 
             ps.setString(1, client.getType());
 
             ps.executeUpdate();
+            
         } catch (SQLException sqlex) {
             throw sqlex;
         }
@@ -125,7 +158,13 @@ public class ClientDAO extends StockFileDAO {
         this.psclose();
     }
 
+    /**
+     * Updates the entry in the client table based on the Client object provided
+     * @param client
+     * @throws SQLException 
+     */
     public void updateClient(Client client) throws SQLException {
+    
         try {
             ps = conn.prepareStatement("UPDATE client "
                     + "SET client_desc = ?, client_manufacturer = ?, client_model_no = ? "
@@ -144,6 +183,12 @@ public class ClientDAO extends StockFileDAO {
         this.psclose();
     }
 
+    /**
+     * Returns a Client object that matches to the given type of client
+     * @param type
+     * @return
+     * @throws SQLException 
+     */
     public Client getClientByType(String type) throws SQLException {
 
         Client client = new Client();
@@ -166,8 +211,16 @@ public class ClientDAO extends StockFileDAO {
         return client;
     }
 
+    /**
+     * Returns a unique Client object based on the User object and the MAC
+     *  address provided
+     * @param user
+     * @param mac
+     * @return 
+     */
     public Client getClientByUser(User user, String mac) {
-
+   
+        boolean hasClient = false;
         Client client = new Client();
 
         try {
@@ -179,26 +232,36 @@ public class ClientDAO extends StockFileDAO {
             ps.setString(2, mac);
             rs = ps.executeQuery();
 
-            if (rs.next()) {
-                while (rs.next()) {
-                    client.setType(rs.getString("client_type"));
-                    client.setDescription(rs.getString("client_description"));
-                    client.setManufacturer(rs.getString("client_manufacturer"));
-                    client.setModelNo(rs.getString("client_model_no"));
-                    client.setHomeDir(rs.getString("home_directory"));
-                    client.setIpAddress(rs.getString("ip_address"));
-                    client.setMacAddress(rs.getString("mac_address"));
-                }
-            } else return null;
+            while (rs.next()) {
+                hasClient = true;
+                client.setType(rs.getString("client_type"));
+                client.setDescription(rs.getString("client_description"));
+                client.setManufacturer(rs.getString("client_manufacturer"));
+                client.setModelNo(rs.getString("client_model_no"));
+                client.setHomeDir(rs.getString("home_directory"));
+                client.setIpAddress(rs.getString("ip_address"));
+                client.setMacAddress(rs.getString("mac_address"));
+            }
+            
+            if (!hasClient) {
+                return null;
+            }
         } catch (SQLException sqlex) {
             System.err.println("SQLException: " + sqlex.getMessage());
             this.psclose();
         }
-        
+
         this.psclose();
         return client;
     }
 
+    /**
+     * Returns a hashmap of <macAddr, Client> that the given User object is 
+     *  associated to
+     * @param user
+     * @return
+     * @throws Exception 
+     */
     public HashMap<String, Client> getClientsByUser(User user) throws Exception {
 
         HashMap<String, Client> clientHashMap = new HashMap<>();
@@ -228,7 +291,7 @@ public class ClientDAO extends StockFileDAO {
     }
 
     /**
-     * Checks if the given type already exists in the "client" table
+     * Checks if the given type already exists in the client table
      *
      * @param type
      * @return true if the given type already exists in the "client" table
