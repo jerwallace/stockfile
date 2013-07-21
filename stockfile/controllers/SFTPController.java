@@ -21,8 +21,6 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
-import java.util.logging.Logger;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;

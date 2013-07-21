@@ -1,7 +1,6 @@
 package stockfile.dao;
 
 import stockfile.exceptions.CreateUserException;
-import stockfile.exceptions.CreateUserException.CreateUserError;
 import stockfile.models.User;
 
 import java.sql.SQLException;

@@ -4,7 +4,7 @@
  */
 package stockfile.controllers;
 
-import java.awt.Graphics;
+import java.awt.Frame;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
@@ -16,14 +16,13 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import org.apache.commons.io.FilenameUtils;
-
 import org.joda.time.LocalDate;
-import stockfile.dao.ClientDAO;
 
+import stockfile.dao.ClientDAO;
 import stockfile.dao.UserDAO;
 import stockfile.exceptions.CreateClientException;
 import stockfile.exceptions.CreateClientException.CreateClientError;
@@ -322,8 +321,8 @@ public class LoginController {
         }
 
         private void BringToFront() {
-            frame.setExtendedState(JFrame.ICONIFIED);
-            frame.setExtendedState(JFrame.NORMAL);
+            frame.setExtendedState(Frame.ICONIFIED);
+            frame.setExtendedState(Frame.NORMAL);
 
         }
     }

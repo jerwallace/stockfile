@@ -20,13 +20,11 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.Stack;
 
 import org.apache.commons.io.FileUtils;
 
 import stockfile.dao.FileDAO;
-import stockfile.exceptions.ApplicationFailedException;
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
 import stockfile.models.FileList;

@@ -9,7 +9,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import org.apache.commons.io.FilenameUtils;
-import stockfile.dao.ClientDAO;
 
 /**
  * Class describing a Client object
