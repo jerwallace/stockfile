@@ -24,6 +24,9 @@ import java.util.Stack;
 
 import org.apache.commons.io.FileUtils;
 
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
+
 import stockfile.dao.FileDAO;
 import stockfile.exceptions.ApplicationFailedException;
 import stockfile.models.Manifest;
@@ -153,8 +156,10 @@ public class StateController {
 
     /**
      * This method loads a .pbj file that contains the last manifest.
+     * @throws JSchException 
+     * @throws SftpException 
      */
-    public void loadState() throws ApplicationFailedException {
+    public void loadState() throws SftpException, JSchException {
 
         // Check if the PBJ file exists.
         File f = new File(this.HOME_DIR + DATA_FILE_NAME);
@@ -180,17 +185,22 @@ public class StateController {
                     // If the manifest in the PBJ file contains a file that is not in the database, it 
                     // means at one point it was in the database and was removed. Therefore, it has been deleted.
                     for (String key : FileList.getInstance().getManifest().manifest.keySet()) {
+                    	
                         StockFile thisFile = FileList.getInstance().getManifest().manifest.get(key);
-                        if (!fileDAO.inDatabase(thisFile)) {
-                            if (!SFTPController.getInstance(UserSession.getInstance().getCurrentUser().getUserName()).inBlackList(thisFile.getName())) {
-                                System.out.println("File" + thisFile.getAbsolutePath() + " was deleted on the server.");
-                                if (thisFile.isDirectory()) {
-                                    FileUtils.deleteDirectory(thisFile);
-                                } else if (thisFile.exists()) {
-                                    thisFile.delete();
-                                }
-                                removeList.add(key);
-                            }
+                        if (thisFile.exists()) {
+	                        if (!fileDAO.inDatabase(thisFile)) {
+	                            if (!SFTPController.getInstance(UserSession.getInstance().getCurrentUser().getUserName()).inBlackList(thisFile.getName())) {
+	                                System.out.println("File" + thisFile.getAbsolutePath() + " was deleted on the server.");
+	                                if (thisFile.isDirectory()) {
+	                                    FileUtils.deleteDirectory(thisFile);
+	                                } else if (thisFile.exists()) {
+	                                    thisFile.delete();
+	                                }
+	                                removeList.add(key);
+	                            }
+	                        }
+                        } else {
+                        	FileList.getInstance().getManifest().manifest.get(key).setRemoveMarker(true);
                         }
                     }
 
