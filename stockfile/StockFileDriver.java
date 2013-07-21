@@ -3,10 +3,21 @@ package stockfile;
 import stockfile.controllers.LoginController;
 import stockfile.controllers.StateController;
 
+/**
+ * Stockfile driver is the main class for the StockFile application.
+ * @author jeremywallace
+ * @project StockFile, CICS 525
+ * @organization University of British Columbia
+ * @date July 20, 2013
+ */
 public class StockFileDriver
 {
 	private static final int SYNC_DELAY = 10000;
 
+	/**
+	 * Initializes the application by requiring the user to login and then loading the previous state
+	 * from the saved .pbj file in the users default directory.
+	 */
     public StockFileDriver() throws Exception
     {
         LoginController.run();
@@ -14,7 +25,13 @@ public class StockFileDriver
         StateController.getInstance().loadDirectoryState();
         
     }
-
+    
+    /**
+     * The main class launches the stockfile application.
+     * Shutdown hooks are established to save the state of the application.
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception
     {
 
