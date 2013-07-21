@@ -9,6 +9,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import org.apache.commons.io.FilenameUtils;
+import stockfile.dao.ClientDAO;
 
 /**
  * Class describing a Client object
@@ -22,8 +23,8 @@ public class Client {
     private String manufacturer;
     private String modelNo;
     private String homeDir;
-    private byte[] ipAddress;
-    private byte[] macAddress;
+    private String ipAddress;
+    private String macAddress;
 
     public Client() {
     }
@@ -38,11 +39,11 @@ public class Client {
         InetAddress myIpAddress = InetAddress.getLocalHost();
         NetworkInterface nwi = NetworkInterface.getByInetAddress(myIpAddress);
         byte myMacAddress[] = nwi.getHardwareAddress();
-        this.ipAddress = myIpAddress.getAddress();
-        this.macAddress = myMacAddress;
+        this.ipAddress = convertByteArrayString(myIpAddress.getAddress());
+        this.macAddress = convertByteArrayString(myMacAddress);
     }
 
-    public Client(String type, String description, String manufacturer, String modelNo, String homeDir, byte[] ipAddress, byte[] macAddress) throws UnknownHostException, SocketException {
+    public Client(String type, String description, String manufacturer, String modelNo, String homeDir, String ipAddress, String macAddress) throws UnknownHostException, SocketException {
 
         this.type = type;
         this.description = description;
@@ -51,6 +52,22 @@ public class Client {
         this.homeDir = homeDir;
         this.ipAddress = ipAddress;
         this.macAddress = macAddress;
+    }
+
+    public static String convertByteArrayString(byte[] byteArray) {
+
+        if (byteArray == null) {
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder(18);
+        for (byte b : byteArray) {
+            if (sb.length() > 0) {
+                sb.append(':');
+            }
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
     }
 
     /**
@@ -112,28 +129,28 @@ public class Client {
     /**
      * @return IP Address
      */
-    public byte[] getIpAddress() {
+    public String getIpAddress() {
         return ipAddress;
     }
 
     /**
      * @return MAC Address
      */
-    public byte[] getMacAddress() {
+    public String getMacAddress() {
         return macAddress;
     }
 
     /**
      * @param ipAddress the last known IP Address for this client
      */
-    public void setIpAddress(byte[] ipAddress) {
+    public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
     }
 
     /**
      * @param macAddress the MAC Address for this client
      */
-    public void setMacAddress(byte[] macAddress) {
+    public void setMacAddress(String macAddress) {
         this.macAddress = macAddress;
     }
 

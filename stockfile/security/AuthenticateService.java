@@ -2,6 +2,7 @@ package stockfile.security;
 
 import stockfile.dao.*;
 import stockfile.exceptions.InvalidAuthenticationException;
+import stockfile.models.Client;
 import stockfile.models.User;
 
 public class AuthenticateService {
@@ -9,11 +10,13 @@ public class AuthenticateService {
     protected final String ERROR_MESSAGE = "Invalid Credentials. Please try again.";
     
     private final UserDAO userDao;
+    private final ClientDAO clientDAO;
     
     private final AuthenticateValidator authenticateValidator;
     	
     public AuthenticateService() {
         this.userDao = new UserDAO();
+        this.clientDAO = new ClientDAO();
         this.authenticateValidator = new AuthenticateValidator();
     }
 	
@@ -24,7 +27,7 @@ public class AuthenticateService {
         
         System.out.println(username + " " + Security.sha(password));
         User user = this.userDao.getUser(username, Security.sha(password));
-
+        
         if (user != null) {
             
             if (user.getUserName() == null) 
