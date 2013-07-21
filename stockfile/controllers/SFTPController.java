@@ -381,12 +381,15 @@ public class SFTPController {
      * @param filename File name to change.
      * @return The duplicate file name.
      */
-    private final static String dupFileName(String filename) {
+    private String dupFileName(String filename) {
+    	
+    	if (filename.isEmpty()) return "";
     	
         Random randomGenerator = new Random();
-        List<String> filenameBits = Arrays.asList(filename.split("."));
+        List<String> filenameBits = Arrays.asList(filename.split("\\."));
+        
         filenameBits.set(0, filenameBits.get(0) + "_sfdup" + randomGenerator.nextInt(100));
-        return StringUtils.join(filenameBits,"");
+        return StringUtils.join(filenameBits,".");
 
     }
 
