@@ -243,9 +243,9 @@ public class ClientDAO extends StockFileDAO {
                 client.setMacAddress(rs.getString("mac_address"));
             }
             
-            if (!hasClient) {
+            if (!hasClient)
                 return null;
-            }
+
         } catch (SQLException sqlex) {
             System.err.println("SQLException: " + sqlex.getMessage());
             this.psclose();
@@ -299,9 +299,8 @@ public class ClientDAO extends StockFileDAO {
      */
     public boolean typeExists(String type) throws SQLException {
 
-        if (type.length() == 0) {
+        if (type.length() == 0)
             return false;
-        }
 
         try {
 

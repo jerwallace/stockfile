@@ -38,20 +38,25 @@ public class RegexHelper {
      */
     public static RegexHelper getInstance() {
 
-        if (regex == null) {
+        if (regex == null)
             regex = new RegexHelper();
-        }
 
         return regex;
     }
 
+    /**
+     * Static method comparing the given input to the regex pattern
+     *
+     * @param input
+     * @param regEx
+     * @return true if the given input matches to the regex pattern
+     */
     public static Boolean validate(String input, RegExPattern regEx) {
 
         String patternToUse;
 
-        if (input == null || regEx == null) {
+        if (input == null || regEx == null)
             return true;
-        }
 
         switch (regEx) {
             case USERNAME:
@@ -88,11 +93,11 @@ public class RegexHelper {
             Pattern rPattern = Pattern.compile(patternToUse);
             Matcher matcher = rPattern.matcher(input);
 
-            if (matcher.find()) {
+            if (matcher.find())
                 return true;
-            } else {
+            else
                 return false;
-            }
+            
         } else {
             System.err.println("No regular expression could be found.");
             return true;

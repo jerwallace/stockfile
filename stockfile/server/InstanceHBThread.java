@@ -10,31 +10,27 @@ import java.net.*;
  * <p/>
  * @author Bahman
  */
-public class InstanceHBThread extends Thread
-{
+public class InstanceHBThread extends Thread {
 
     protected static boolean alive = true;
     private int receivePortNumber;
 
     //Public constructor for the InstanceHBThread that takes in the listening port
-    public InstanceHBThread(int receivePort)
-    {
+    public InstanceHBThread(int receivePort) {
         super();
         this.receivePortNumber = receivePort;
     }
 
     @Override
-    public void run()
-    {
-        try
-        {
+    public void run() {
+        
+        try {
             //Create a UDP socket on the pre-specified port to listen for heartbeat
             DatagramSocket socket = new DatagramSocket(this.receivePortNumber);
 
             System.out.print("Heartbeat send/receive status->");
 
-            while (alive)
-            {
+            while (alive) {
                 byte[] buf = new byte[256];
 
                 //Create receive datagram and read it from socket when available
@@ -55,9 +51,7 @@ public class InstanceHBThread extends Thread
 
             //If failure, close the UDP socket
             socket.close();
-        }
-        catch (IOException ex)
-        {
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
     }

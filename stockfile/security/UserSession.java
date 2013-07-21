@@ -9,9 +9,7 @@ import stockfile.models.User;
 /**
  * Class definition for the Singleton User type client session
  */
-
-public class UserSession
-{
+public class UserSession {
 
     private static UserSession userSession = null;
     private User currentUser;
@@ -20,88 +18,78 @@ public class UserSession
     private Timestamp last_sync;
     private HashMap<String, Client> userClientHashMap;
 
-    protected UserSession()
-    {
-    	
+    protected UserSession() {
+        // empty constructor
     }
 
     //Default constructor for the singleton instance of the UserSession
     public static UserSession getInstance() {
 
         if (userSession == null) {
-        	
+
             synchronized (UserSession.class) {
-                
+
                 UserSession inst = userSession;
 
                 if (inst == null) {
 
                     synchronized (UserSession.class) {
-                        
+
                         userSession = new UserSession();
                     }
                 }
             }
         }
-
         return userSession;
     }
 
     /**
      * @return the lastSyncTime
      */
-    public Timestamp getLastSync()
-    {
+    public Timestamp getLastSync() {
         return this.last_sync;
     }
 
     /**
      * @param lastSyncStime for the currentUser to set
      */
-    public void setlastSync(Timestamp last_sync_time)
-    {
+    public void setlastSync(Timestamp last_sync_time) {
         this.last_sync = last_sync_time;
     }
 
     /**
      * @return the currentUser
      */
-    public User getCurrentUser()
-    {
+    public User getCurrentUser() {
         return currentUser;
     }
 
     /**
      * @param currentUser the currentUser to set
      */
-    public void setCurrentUser(User currentUser)
-    {
+    public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
     }
 
     /**
      * @return the validSession
      */
-    public boolean isValidSession()
-    {
+    public boolean isValidSession() {
         return validSession;
     }
 
     /**
      * @param validSession the validSession to set
      */
-    public void setValidSession(boolean validSession)
-    {
+    public void setValidSession(boolean validSession) {
         this.validSession = validSession;
     }
 
-    public HashMap<String, Client> getUserClientHashMap()
-    {
+    public HashMap<String, Client> getUserClientHashMap() {
         return userClientHashMap;
     }
 
-    public void setUserClientHashMap(HashMap<String, Client> userClientHashMap)
-    {
+    public void setUserClientHashMap(HashMap<String, Client> userClientHashMap) {
         this.userClientHashMap = userClientHashMap;
     }
 
@@ -118,5 +106,4 @@ public class UserSession
     public void setCurrentClient(Client currentClient) {
         this.currentClient = currentClient;
     }
-
 }
