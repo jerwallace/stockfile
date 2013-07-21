@@ -38,7 +38,7 @@ public class Client {
         InetAddress myIpAddress = InetAddress.getLocalHost();
         NetworkInterface nwi = NetworkInterface.getByInetAddress(myIpAddress);
         byte myMacAddress[] = nwi.getHardwareAddress();
-        this.ipAddress = convertByteArrayString(myIpAddress.getAddress());
+        this.ipAddress = myIpAddress.getHostAddress();
         this.macAddress = convertByteArrayString(myMacAddress);
     }
 

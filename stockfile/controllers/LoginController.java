@@ -24,6 +24,7 @@ import org.joda.time.LocalDate;
 
 import stockfile.dao.ClientDAO;
 import stockfile.dao.UserDAO;
+import stockfile.exceptions.ApplicationFailedException;
 import stockfile.exceptions.CreateClientException;
 import stockfile.exceptions.CreateClientException.CreateClientError;
 import stockfile.exceptions.CreateUserException;
@@ -42,7 +43,34 @@ import stockfile.security.UserSession;
  */
 public class LoginController {
 
+    private static LoginController loginController = null;
     private final static AuthenticateService as = new AuthenticateService();
+    private static String macAddr;
+
+    /**
+     * @return the macAddr
+     */
+    public static String getMacAddr() {
+        return macAddr;
+    }
+
+    private LoginController() throws UnknownHostException, SocketException {
+        
+        macAddr = Client.convertByteArrayString(
+                NetworkInterface.getByInetAddress(InetAddress.getLocalHost()).getHardwareAddress());
+        
+    }
+
+    public static LoginController getInstance() throws ApplicationFailedException {
+        if (loginController == null) {
+            try {
+                loginController = new LoginController();
+            } catch (UnknownHostException | SocketException ex) {
+                throw new ApplicationFailedException("Mac address could not be determined. Exiting.");
+            }
+        }
+        return loginController;
+    }
 
     /**
      * Creates a user and adds it to the user table
@@ -55,7 +83,7 @@ public class LoginController {
      * @throws UnknownHostException
      * @throws SocketException
      */
-    private static void createUser(Scanner scanner) throws SQLException, CreateUserException,
+    private void createUser(Scanner scanner) throws SQLException, CreateUserException,
             InvalidAuthenticationException, CreateClientException, UnknownHostException, SocketException {
 
         UserDAO userDAO = new UserDAO();
@@ -120,13 +148,12 @@ public class LoginController {
      * @throws SocketException
      * @throws SQLException
      */
-    private static void createClient(Scanner scanner) throws CreateClientException, UnknownHostException, SocketException, SQLException, UnsupportedEncodingException {
+    public void createClient(Scanner scanner) throws CreateClientException, UnknownHostException, SocketException, SQLException, UnsupportedEncodingException {
 
         ClientDAO clientDAO = new ClientDAO();
         Client newClient = new Client();
-        String macAddr = Client.convertByteArrayString(
-                NetworkInterface.getByInetAddress(InetAddress.getLocalHost()).getHardwareAddress());
-        String ipAddr = Client.convertByteArrayString(InetAddress.getLocalHost().getAddress());
+
+        String ipAddr = InetAddress.getLocalHost().getHostAddress();
         String homeDir = FilenameUtils.separatorsToSystem(System.getProperty("user.home") + "/");
 
         String[] arr = {"Type", "Description", "Manufacturer", "Model Number", "Home Directory"};
@@ -190,9 +217,9 @@ public class LoginController {
             newClient = new Client(ret[0], ret[1], ret[2], ret[3], ret[4]);
             clientDAO.addClient(newClient);
         }
-
+        
         if (clientDAO.getClientByUser(UserSession.getInstance().getCurrentUser(), macAddr) == null) {
-            // no associated found between the user's mac address and client type
+            // no association found between the user's mac address and client type
             // add an entry to the user_client table
 
             newClient = new Client(newClient.getType(),
@@ -213,7 +240,7 @@ public class LoginController {
      *
      * @param scanner
      */
-    private static void login(Scanner scanner) {
+    private void login(Scanner scanner) {
 
         String username, password;
 
@@ -246,7 +273,7 @@ public class LoginController {
 
     }
 
-    public static void run() {
+    public void run() {
 
         Scanner scanner = new Scanner(System.in);
 
