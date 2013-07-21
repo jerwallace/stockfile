@@ -56,7 +56,10 @@ public class SFTPController
     
     // A blacklist of files that are not transferred
     private Set<String> blackList;
-
+    
+    // Current reconnection attempt #.
+    private int reconnectionAttempt = 0;
+    
     /**
      * The constructor sets up the home directory and the blacklists for the connection.
      * @param homeFolder
@@ -120,7 +123,7 @@ public class SFTPController
     	// The server address is requested from the DNS Resolver.
         session = jsch.getSession(
                 props.getProperty("username"),
-                DNSResolver.getInstance(ServerType.Master).getServerDefault(),
+                DNSResolver.getInstance(ServerType.MASTER).getServerDefault(),
                 new Integer(props.getProperty("ftpPort")));
 
         System.out.println("Session created.");
@@ -195,20 +198,36 @@ public class SFTPController
     	}
     }
     
-    public void reconnect() throws InterruptedException, SftpException, IOException {
-
+    /**
+     * Reconnects to SFTP in the event of a failure.
+     * @throws InterruptedException
+     * @throws SftpException
+     * @throws IOException
+     */
+    public void reconnect() throws InterruptedException, SftpException, ApplicationFailedException {
+    	
+    	reconnectionAttempt++;
+    	
     	try {
     		close();
     		connect();
     	} catch (JSchException ex) {
-    		System.err.println("Unable to connect to FTP server. ");
-    		System.out.println("Attempting reconnect in 10 seconds.");
-    		Thread.sleep(1000);
-    		reconnect();
+    		if (reconnectionAttempt<Integer.parseInt(props.getProperty("numReconnectionAttempts"))) {
+    			System.err.println("Unable to connect to FTP server. Attempting reconnect in 10 seconds.");
+        		Thread.sleep(1000);
+        		System.out.println("Attempt "+reconnectionAttempt+" of "+props.getProperty("numReconnectionAttempts"));
+    			reconnect();
+    		} else {
+    			throw new ApplicationFailedException("Connection to SFTP failed.");
+    		}
     	}
     	
     }
     
+    /**
+     * Changes root directory to the users home stockfile directory.
+     * @throws SftpException If there was a problem getting or creating this directory.
+     */
     public void goToHomeDir() throws SftpException
     {
     	try {
@@ -227,8 +246,14 @@ public class SFTPController
     	}
     }
 
-
-    public boolean send(String filename) throws SftpException, IOException
+    /**
+     * Uploads a file over SFTP
+     * @param filename The file name in the local PBJ file list to send.
+     * @return True if the file was sent.
+     * @throws SftpException If there is an error during transmission.
+     * @throws IOException If there was a file stream error.
+     */
+    public boolean upload(String filename) throws SftpException, IOException
     {
     	filename = FilenameUtils.separatorsToUnix(filename);
         if (!inBlackList(filename))
@@ -264,8 +289,16 @@ public class SFTPController
             return false;
         }
     }
-
-    public boolean get(String filename) throws SftpException, FileNotFoundException, IOException
+    
+    /**
+     * Downloads a file from the remote server.
+     * @param filename The remote file to download.
+     * @return True if the file is downloaded.
+     * @throws SftpException If there is a problem downloading the file.
+     * @throws FileNotFoundException If the file is not found on the server.
+     * @throws IOException If there is a problem with the file stream.
+     */
+    public boolean download(String filename) throws SftpException, FileNotFoundException, IOException
     {
     	
         if (!inBlackList(filename))
@@ -293,7 +326,10 @@ public class SFTPController
         }
     }
     
-    
+    /**
+     * Deletes a file on the server.
+     * TODO: Make this more secure!
+     */
     public final void delete(String filename) throws SftpException, JSchException {
     	
     	StockFile f = FileList.getInstance().getManifest().getFile(filename);
@@ -301,12 +337,17 @@ public class SFTPController
     	System.out.println("Attempting to delete the file or folder: " + f.getFullRemotePath());
     	
     	ChannelExec chanExec = (ChannelExec) session.openChannel("exec");
-    	chanExec.setCommand("/bin/rm -rf " + f.getFullRemotePath());
+    	chanExec.setCommand("/bin/rm -rf /stockfiles/" + f.getRelativePath());
     	chanExec.connect();
     	chanExec.disconnect();
     	
     }
     
+    /**
+     * Helper function: Creates a duplicate file name based on StockFile standards.
+     * @param filename File name to change.
+     * @return The duplicate file name.
+     */
     private final static String dupFileName(String filename) {
     	Random randomGenerator = new Random();
     	String filenameBits[] = filename.split(".");
@@ -315,6 +356,12 @@ public class SFTPController
     	
     }
     
+    /**
+     * Duplicates a file locally and then uploads.
+     * @param filename File name to duplicate
+     * @throws IOException If a file stream error occurs.
+     * @throws SftpException If an error in uploading occurs.
+     */
     public void duplicate(String filename) throws IOException, SftpException {
 
         	StockFile f = null;
@@ -324,7 +371,7 @@ public class SFTPController
             } while (f.exists());
             
             FileUtils.copyFile(FileList.getInstance().getManifest().getFile(filename), f);
-            send(f.getRelativePath());
+            upload(f.getRelativePath());
 
     }
 }

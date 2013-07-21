@@ -134,19 +134,19 @@ public class SyncController {
 						case DOWNLOAD:
 						case DOWNLOAD_AND_OVERWRITE:
 							System.out.println("Downloading " + key + "...");
-							SFTPController.getInstance(userName).get(key);
+							SFTPController.getInstance(userName).download(key);
 							FileList.getInstance().getManifest().updateFile(serverManifest.manifest.get(key).getRelativePath(),serverManifest.manifest.get(key));
 							break;
 						case UPLOAD:
 							System.out.println("Uploading " + key + "...");
-							if (SFTPController.getInstance(userName).send(key)) {
+							if (SFTPController.getInstance(userName).upload(key)) {
 								fileDAO.updateFile(FileList.getInstance().getManifest()
 										.getFile(key));
 							}
 							break;
 						case UPLOAD_AND_OVERWRITE:
 							System.out.println("Uploading and overwriting " + key + "...");
-								if (SFTPController.getInstance(userName).send(key)) {
+								if (SFTPController.getInstance(userName).upload(key)) {
 									fileDAO.updateFile(FileList.getInstance().getManifest()
 											.getFile(key));
 								}

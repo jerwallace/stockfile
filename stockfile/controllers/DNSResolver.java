@@ -7,29 +7,42 @@ import java.net.InetAddress;
 
 import stockfile.exceptions.ApplicationFailedException;
 
+/**
+ * The DNS Resolver sends a UDP packet to the StockFile Gateway, which determines the current live server.
+ * It can give the IP address of three servers, The current master, the instances slave or the localhost.
+ * @author Jeremy Wallace, Bahman Razmpa, Peter Lee
+ * @project StockFile, CICS 525
+ * @organization University of British Columbia
+ * @date July 20, 2013
+ */
 public class DNSResolver {
 
 	private static DNSResolver dnsResolver;
 	private int timeout = 3000;
-	private String serverDefault;
+	private String currentServer;
 	private int attempt = 0;
 	private ServerType type;
 	private String message;
 	private int port;
 	
 	public enum ServerType {
-		Master,Slave,LocalHost
+		MASTER,SLAVE,LOCAL_HOST
 	}
 	
+	/**
+	 * The constructor accepts a type of address to retrieve.
+	 * @param type The type of server address to recieve, MASTER, SLAVE OR LOCAL_HOST
+	 * @throws ApplicationFailedException
+	 */
 	private DNSResolver(ServerType type) throws ApplicationFailedException {
 		this.type = type;
 		this.getServerName();
 	}
 	
 	/**
-     * Static method returns a single instance of MySQLConnection.
+     * Static method returns a single instance of DNS Resolver
      * <p/>
-     * @return a single instance of MySQLConnection
+     * @return a single instance of DNS Resolver
 	 * @throws ApplicationFailedException 
      */
     public static DNSResolver getInstance(ServerType type) throws ApplicationFailedException
@@ -41,14 +54,18 @@ public class DNSResolver {
         return dnsResolver;
     }
     
-    private final void requestDNS() throws IOException {
+    /**
+     * This method performs a DNS request and recieves the current server.
+     * @throws IOException
+     */
+    private final void dnsRequest() throws IOException {
     	
     	switch (type) {
     		
-    		case LocalHost:
-    			setServerDefault("localhost");
+    		case LOCAL_HOST:
+    			setCurrentServer("localhost");
     			return;
-    		case Slave:
+    		case SLAVE:
     			setMessage("Who do I back up?");
     			setPort(2025);
     			break;
@@ -87,14 +104,18 @@ public class DNSResolver {
         //Close UDP socket
         socket.close();
         
-        setServerDefault(received+".stockfile.ca");
+        setCurrentServer(received+".stockfile.ca");
         this.attempt = 0;
     }
 
+    /**
+     * This method runs a DNS request to determine which server is alive.
+     * @throws ApplicationFailedException If the gateway server is down.
+     */
     private final void getServerName() throws ApplicationFailedException {
     	while (this.attempt<3) { 
 			try {
-				this.requestDNS();
+				this.dnsRequest();
 				return;
 			} catch (IOException e) {
 				this.attempt++;
@@ -104,28 +125,53 @@ public class DNSResolver {
     	throw new ApplicationFailedException("Gateway is down.");
     }
     
+    /**
+     * Returns the name of the server that was requested.
+     * @return The [MASTER | SLAVE | LOCALHOST] server domain name.
+     * @throws ApplicationFailedException If the gateway is down or all servers are down.
+     */
 	public String getServerDefault() throws ApplicationFailedException {
 		getServerName();
-		System.out.println("Server connected to: "+serverDefault);
-		return serverDefault;
+		System.out.println("Server connected to: "+currentServer);
+		return currentServer;
+	}
+	
+	/**
+	 * Set the current server that will be given to the requestor.
+	 * @param currentServer The current server
+	 */
+	private final void setCurrentServer(String currentServer) {
+		this.currentServer = currentServer;
 	}
 
-	private final void setServerDefault(String serverDefault) {
-		this.serverDefault = serverDefault;
-	}
-
+	/**
+	 * Get the port that is used to send UDP messages.
+	 * @return Port number to use.
+	 */
 	private int getPort() {
 		return port;
 	}
 
+	/**
+	 * Set the port that is used to send UDP messages
+	 * @param port Port number to use.
+	 */
 	private void setPort(int port) {
 		this.port = port;
 	}
 
+	/**
+	 * Get the message to send over UDP
+	 * @return The message to send.
+	 */
 	private String getMessage() {
 		return message;
 	}
 
+	/**
+	 * Set the message to send over UDP
+	 * @param message The message to send.
+	 */
 	private void setMessage(String message) {
 		this.message = message;
 	}

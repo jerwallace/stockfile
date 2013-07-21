@@ -31,7 +31,7 @@ import stockfile.security.UserSession;
  * notifications on the directory inbetween syncronization periods. If a file changes, 
  * it updates the singleton FileList by incrementing the version number and sets the inSync flag
  * to false.
- * @author jeremywallace
+ * @author Jeremy Wallace, Bahman Razmpa, Peter Lee
  * @project StockFile, CICS 525
  * @organization University of British Columbia
  * @date July 20, 2013

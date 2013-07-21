@@ -25,6 +25,7 @@ import java.util.Stack;
 import org.apache.commons.io.FileUtils;
 
 import stockfile.dao.FileDAO;
+import stockfile.exceptions.ApplicationFailedException;
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
 import stockfile.models.FileList;
@@ -37,21 +38,27 @@ import stockfile.security.UserSession;
 public class StateController
 {
 
+	// Name of the state file to save locally.
     private final String DATA_FILE_NAME = "/stockdata.pbj";
+    
+    // The client's home directory.
     private final String HOME_DIR = UserSession.getInstance().getCurrentClient().getFullDir();
+    
+    // The manifest of the file list stored in memory.
     private Manifest currentManifest = FileList.getInstance().getManifest();
+    
     private FileDAO fileDAO = new FileDAO();
     private static StateController sc = null;
     
     private StateController()
     {
-       
+       // Empty constructor
     }
     
     /**
-     * Static method returns a single instance of MySQLConnection.
+     * Static method returns a single instance of State Controller.
      * <p/>
-     * @return a single instance of MySQLConnection
+     * @return a single instance of State Controller.
      */
     public static StateController getInstance()
     {
@@ -63,7 +70,8 @@ public class StateController
     }
     
     /**
-     *
+     * This method saves the state of the system by serializing the 
+     * singleton FileList to a .pbj file in the root stockfiles local directory.
      */
     public void saveState()
     {
@@ -82,6 +90,11 @@ public class StateController
         }
     }
 
+    /**
+     * This method scans through a local directory and looks for discrepencies between the local file list.
+     * If it is not in the list, it is added to the list.
+     * @param dirToScan A directory to scan.
+     */
     public void loadDirectoryState(String dirToScan)
     {
 
@@ -127,32 +140,37 @@ public class StateController
     }
 
     /**
-     *
+     * This method loads a .pbj file that contains the last manifest.
      */
-    public void loadState()
+    public void loadState() throws ApplicationFailedException
     {
-
+    	
+    	// Check if the PBJ file exists.
         File f = new File(this.HOME_DIR + DATA_FILE_NAME);
 
         if (f.exists())
         {
             try
             {
-                //use buffering
+                // Buffer the PBJ file to insert it into the singleton File List.
                 InputStream file = new FileInputStream(this.HOME_DIR + DATA_FILE_NAME);
                 InputStream buffer = new BufferedInputStream(file);
                 try (ObjectInput input = new ObjectInputStream(buffer))
                 {
-                    //deserialize the List
+                    // Deserialize the object and retain the manifest from the PBJ file.
                     currentManifest = (Manifest) input.readObject();
+                    
+                    // Load the manifest into the FileList.
                     FileList.getInstance().loadManifest(currentManifest);
 
-                    //display its data
                     
                     System.out.println("Checking for any deleted items on the server...");
                     
+                    // A list of files to remove from the system.
                     Stack<String> removeList = new Stack<String>();
                     
+                    // If the manifest in the PBJ file contains a file that is not in the database, it 
+                    // means at one point it  was in the database and was removed. Therefore, it has been deleted.
                     for (String key : FileList.getInstance().getManifest().manifest.keySet()) {
                     	StockFile thisFile = FileList.getInstance().getManifest().manifest.get(key);
                     	if (!fileDAO.inDatabase(thisFile)) {
@@ -168,11 +186,12 @@ public class StateController
                     	}
                     }
                     
+                    // Remove the files from the local file list.
                     while (!removeList.empty()) {
                     	
                     	FileList.getInstance().getManifest().removeFile(removeList.pop());
                     }
-                    
+
                     System.out.println("Local Manifest:");
                     System.out.println(FileList.getInstance().getManifest());
                 }
@@ -184,8 +203,9 @@ public class StateController
             catch (IOException ex)
             {
                 System.err.println("Cannot perform input." + ex);
+                
             } catch (SQLException ex) {
-            	System.err.println("Problem with database connection." + ex);
+            	throw new ApplicationFailedException("Could not connect to database.");
             }
         }
         else

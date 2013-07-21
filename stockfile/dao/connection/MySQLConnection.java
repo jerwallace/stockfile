@@ -100,12 +100,12 @@ public class MySQLConnection {
      * This method allows members of this class to clean up after itself 
      * before it is garbage collected. It is called by the garbage collector.
      */ 
-//    @Override
-//    protected void finalize() throws Throwable {
-//        if (connection != null) {
-//            connection.close();
-//        }
-//        // finalize() must call super.finalize() as the last thing it does
-//        super.finalize();     
-//    }
+    @Override
+    protected void finalize() throws Throwable {
+        if (connection != null) {
+            connection.close();
+       }
+        // finalize() must call super.finalize() as the last thing it does
+        super.finalize();     
+    }
 }

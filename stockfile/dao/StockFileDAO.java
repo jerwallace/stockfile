@@ -36,7 +36,7 @@ public abstract class StockFileDAO {
         rm = null;
         
         if (autoStartConnection)
-        	this.initConnection(ServerType.Master);
+        	this.initConnection(ServerType.MASTER);
     }
 
     /**
