@@ -137,7 +137,9 @@ public class LoginController {
                     throw new CreateUserException(err[i]);
 
                 } else if (arr[i].equals("Username") && userDAO.usernameTaken(tmp)) {
+                    
                     throw new CreateUserException(CreateUserError.USERNAME_TAKEN);
+                
                 } else {
                     ret[i] = tmp;
                     i++;
@@ -194,9 +196,8 @@ public class LoginController {
             System.out.print(arr[i] + ": ");
 
             try {
-                if (arr[i].equals("Home Directory")) {
+                if (arr[i].equals("Home Directory"))
                     System.out.print(homeDir);
-                }
 
                 tmp = scanner.nextLine();
 
@@ -222,9 +223,8 @@ public class LoginController {
         File dir = new File(homeDir + ret[4]);
         if (!dir.exists()) {
             System.out.println("The specified directory does not exist. System will now create it...");
-            if (!dir.mkdirs()) {
+            if (!dir.mkdirs())
                 System.err.println("The specified directory could not be created.");
-            }
         }
 
         if (newClient.getType() == null) {
