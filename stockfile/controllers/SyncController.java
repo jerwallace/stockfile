@@ -95,8 +95,15 @@ public class SyncController {
                
                 // If the file is not on the server, upload it.
                 if (!serverManifest.manifest.containsKey(key)) {
-                    syncList.put(key, Operation.UPLOAD);
-
+                	
+                	// If it is a new file, upload it.
+                	if (clientFile.getLastSyncTimeDB()==null) {
+                		syncList.put(key, Operation.UPLOAD);
+                	
+                		// If it is an old file, it must have been deleted by someone else.
+                	} else {
+                		clientFile.delete();
+                	}
                     // File is on server and stored locally.
                 } else {
 
