@@ -66,8 +66,8 @@ public class LoginController {
     }
 
     /**
-     * Static method returns a single
-     * @return
+     * Static method returns a single instance of Login Controller
+     * @return a single instance of Login Controller
      * @throws ApplicationFailedException 
      */
     public static LoginController getInstance() throws ApplicationFailedException {
@@ -147,8 +147,7 @@ public class LoginController {
             }
         }
 
-        User newUser = new User(ret[0], ret[2], ret[3], ret[4], new LocalDate(),
-                FilenameUtils.separatorsToSystem(System.getProperty("user.home") + "/Stockfile"));
+        User newUser = new User(ret[0], ret[2], ret[3], ret[4], new LocalDate());
         userDAO.createUser(newUser, ret[1]);
         UserSession.getInstance().setCurrentUser(newUser);
     }
@@ -202,6 +201,7 @@ public class LoginController {
                 tmp = scanner.nextLine();
 
                 if (arr[i].equals("Type") && clientDAO.typeExists(tmp)) {
+                    // skips to prompting for home directory if the received input for 'type' already exists in the database
                     newClient = clientDAO.getClientByType(tmp);
                     i = arr.length - 1;
 
@@ -215,9 +215,8 @@ public class LoginController {
                 }
 
             } catch (final CreateClientException e) {
-
                 System.err.println(e);
-            };
+            }
         }
 
         File dir = new File(homeDir + ret[4]);
@@ -229,6 +228,9 @@ public class LoginController {
         }
 
         if (newClient.getType() == null) {
+            // if received 'type' is not found in the database,
+            // create a client object based on the user inputs and add to client table
+            
             newClient = new Client(ret[0], ret[1], ret[2], ret[3], ret[4]);
             clientDAO.addClient(newClient);
         }
@@ -243,15 +245,15 @@ public class LoginController {
                     newClient.getModelNo(),
                     ret[4], ipAddr, macAddr);
             clientDAO.addUserClient(newClient);
-
         }
 
         UserSession.getInstance().setCurrentClient(newClient);
     }
 
     /**
-     * Prompts a user for login credentials and populates UserSession object
-     * accordingly
+     * Prompts a user for login credentials and attempts to authenticate;
+     *  - populates a UserSession object accordingly if succeed
+     *  - otherwise repeat the prompt
      *
      * @param scanner
      */
@@ -288,6 +290,11 @@ public class LoginController {
 
     }
 
+    /**
+     * Displays the welcome screen 
+     *  - 1: prompts the user for login credentials
+     *  - 2: prompts the user for basic information
+     */
     public void run() {
 
         Scanner scanner = new Scanner(System.in);
@@ -339,6 +346,9 @@ public class LoginController {
 
     }
 
+    /**
+     * future upgrade for opening up a file chooser when prompt for home directory
+     */
     class ChooseFile {
 
         private JFrame frame;
