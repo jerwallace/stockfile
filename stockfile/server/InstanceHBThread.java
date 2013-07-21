@@ -1,4 +1,4 @@
-package gateway.listener;
+package stockfile.server;
 
 import java.io.*;
 import java.net.*;
@@ -14,13 +14,13 @@ public class InstanceHBThread extends Thread
 {
 
     protected static boolean alive = true;
-    private int receivePorNumber;
+    private int receivePortNumber;
 
     //Public constructor for the InstanceHBThread that takes in the listening port
     public InstanceHBThread(int receivePort)
     {
         super();
-        this.receivePorNumber = receivePort;
+        this.receivePortNumber = receivePort;
     }
 
     @Override
@@ -29,7 +29,7 @@ public class InstanceHBThread extends Thread
         try
         {
             //Create a UDP socket on the pre-specified port to listen for heartbeat
-            DatagramSocket socket = new DatagramSocket(this.receivePorNumber);
+            DatagramSocket socket = new DatagramSocket(this.receivePortNumber);
 
             System.out.print("Heartbeat send/receive status->");
 

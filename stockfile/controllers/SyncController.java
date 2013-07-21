@@ -32,6 +32,7 @@ public class SyncController {
 	private Manifest clientManifest;
 	private String homeDir = UserSession.getInstance().getCurrentClient()
 			.getFullDir();
+	private String userName = UserSession.getInstance().getCurrentUser().getUserName();
 	private static SyncController syncController = null;
 
 	private SyncController() {
@@ -133,32 +134,32 @@ public class SyncController {
 						case DOWNLOAD:
 						case DOWNLOAD_AND_OVERWRITE:
 							System.out.println("Downloading " + key + "...");
-							SFTPController.getInstance().get(key);
+							SFTPController.getInstance(userName).get(key);
 							FileList.getInstance().getManifest().updateFile(serverManifest.manifest.get(key).getRelativePath(),serverManifest.manifest.get(key));
 							break;
 						case UPLOAD:
 							System.out.println("Uploading " + key + "...");
-							if (SFTPController.getInstance().send(key)) {
+							if (SFTPController.getInstance(userName).send(key)) {
 								fileDAO.updateFile(FileList.getInstance().getManifest()
 										.getFile(key));
 							}
 							break;
 						case UPLOAD_AND_OVERWRITE:
 							System.out.println("Uploading and overwriting " + key + "...");
-								if (SFTPController.getInstance().send(key)) {
+								if (SFTPController.getInstance(userName).send(key)) {
 									fileDAO.updateFile(FileList.getInstance().getManifest()
 											.getFile(key));
 								}
 							break;
 						case DUPLICATE:
 							System.out.println("Duplicating " + key + "...");
-							SFTPController.getInstance().duplicate(key);
+							SFTPController.getInstance(userName).duplicate(key);
 							fileDAO.updateFile(FileList.getInstance().getManifest()
 										.getFile(key));
 							break;
 						case DELETE:
 							System.out.println("Deleting file " + key + "...");
-							SFTPController.getInstance().delete(key);
+							SFTPController.getInstance(userName).delete(key);
 							fileDAO.removeFile(FileList.getInstance().getManifest()
 									.getFile(key));
 							FileList.getInstance().getManifest().removeFile(key);
@@ -190,7 +191,7 @@ public class SyncController {
 						} else {
 							if (attempts < 3) {
 								System.err.println(ex+""+ex.getStackTrace());
-								SFTPController.getInstance().reconnect();
+								SFTPController.getInstance(userName).reconnect();
 								attempts++;
 								continue;
 							} else {

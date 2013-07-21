@@ -18,7 +18,7 @@ import stockfile.security.UserSession;
 public class FileDAO extends StockFileDAO{
 	
 	public FileDAO () {
-		super();
+		super(true);
 	}
 	
 	public int createFile(StockFile file) throws SQLException {

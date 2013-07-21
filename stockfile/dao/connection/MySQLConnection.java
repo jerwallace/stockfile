@@ -7,7 +7,11 @@ import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import stockfile.controllers.DNSResolver;
+import stockfile.controllers.DNSResolver.ServerType;
 import stockfile.dao.connection.Utils;
+import stockfile.exceptions.ApplicationFailedException;
 
 
 /**
@@ -38,8 +42,9 @@ public class MySQLConnection {
     /**
      * Loads the MySQL JDBC driver and connects to the database.
      * @return  true if the connection is successful; false otherwise.
+     * @throws ApplicationFailedException 
      */
-    public boolean connect() {
+    public boolean connect(ServerType type) throws ApplicationFailedException {
        try {
             props = Utils.readProperties("/stockfile/config/stockfile.properties");
         } catch (IOException ex) {
@@ -51,7 +56,7 @@ public class MySQLConnection {
                 driverLoaded = true; 
             }
             
-            connection = DriverManager.getConnection(props.getProperty("jdbcMaster"), 
+            connection = DriverManager.getConnection("jdbc:mysql://"+DNSResolver.getInstance(type).getServerDefault()+":3306/Stockfile", 
                                                      props.getProperty("username"),
                                                      props.getProperty("password"));
             
@@ -65,12 +70,13 @@ public class MySQLConnection {
     /**
      * Gets the connection.
      * @return  the Connection object
+     * @throws ApplicationFailedException 
      */
-    public Connection getConnection() {
+    public Connection getConnection(ServerType type) throws ApplicationFailedException {
         //System.err.println("This Connection: " + connection);
         try {
             if (connection == null||(!connection.isValid(0))) {
-                this.connect(); 
+                this.connect(type); 
             } else {
                 return this.connection; 
             }

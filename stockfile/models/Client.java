@@ -52,6 +52,14 @@ public class Client {
         this.ipAddress = ipAddress;
         this.macAddress = macAddress;
     }
+    
+    public Client(String type) {
+    	this.type = type;
+    	this.description = "Stockfile Server";
+    	this.manufacturer = "Amazon Inc";
+    	this.modelNo = "EC2 Cloud";
+    	this.homeDir = "/stockfiles";
+    }
 
     public static String convertByteArrayString(byte[] byteArray) {
 

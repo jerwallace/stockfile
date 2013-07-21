@@ -21,7 +21,7 @@ import stockfile.security.UserSession;
 public class ClientDAO extends StockFileDAO {
 
     public ClientDAO() {
-        super();
+        super(true);
     }
 
     public void addUserClient(Client client) throws SQLException, SocketException, UnknownHostException, UnsupportedEncodingException {

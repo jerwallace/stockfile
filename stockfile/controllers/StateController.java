@@ -82,13 +82,13 @@ public class StateController
         }
     }
 
-    public void loadDirectoryState()
+    public void loadDirectoryState(String dirToScan)
     {
 
         try
         {
 
-            Path startPath = Paths.get(UserSession.getInstance().getCurrentClient().getFullDir());
+            Path startPath = Paths.get(dirToScan);
             Files.walkFileTree(startPath, new SimpleFileVisitor<Path>()
             {
                 @Override
@@ -156,7 +156,7 @@ public class StateController
                     for (String key : FileList.getInstance().getManifest().manifest.keySet()) {
                     	StockFile thisFile = FileList.getInstance().getManifest().manifest.get(key);
                     	if (!fileDAO.inDatabase(thisFile)) {
-                    		if (!SFTPController.getInstance().inBlackList(thisFile.getName())) {
+                    		if (!SFTPController.getInstance(UserSession.getInstance().getCurrentUser().getUserName()).inBlackList(thisFile.getName())) {
                     			System.out.println("File"+thisFile.getAbsolutePath()+" was deleted on the server.");
                     			if (thisFile.isDirectory()) {
                     				FileUtils.deleteDirectory(thisFile);

@@ -9,6 +9,7 @@ import stockfile.controllers.DirectoryWatcher;
 import stockfile.controllers.SFTPController;
 import stockfile.controllers.StateController;
 import stockfile.controllers.SyncController;
+import stockfile.security.UserSession;
 
 /**
  * Periodic sync is a runnable thread that stops and starts the directory watcher and syncronizes the folder with the database.
@@ -34,7 +35,7 @@ public class PeriodicSync implements Runnable {
 		try {
 			watcherThread = new Thread(new DirectoryWatcher());
 			try {
-				SFTPController.getInstance().connect();
+				SFTPController.getInstance(UserSession.getInstance().getCurrentUser().getUserName()).connect();
 			} catch (JSchException | SftpException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -68,7 +69,7 @@ public class PeriodicSync implements Runnable {
 				System.out.println("===== SYNC PROCESS END =====");
 				
 				System.out.println("Loading directory state");
-				StateController.getInstance().loadDirectoryState();
+				StateController.getInstance().loadDirectoryState(UserSession.getInstance().getCurrentClient().getFullDir());
 				
 //				System.out.println("Starting watcher...");
 //				System.out.println("State:"+watcherThread.getState());

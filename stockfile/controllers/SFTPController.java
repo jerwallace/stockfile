@@ -1,11 +1,7 @@
 package stockfile.controllers;
 
-/*
- * To change this template, choose Tools | Templates and open the template in
- * the editor.
- */
-
 import com.jcraft.jsch.Channel;
+
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
@@ -21,44 +17,74 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import stockfile.controllers.DNSResolver.ServerType;
 import stockfile.dao.connection.Utils;
 import stockfile.exceptions.ApplicationFailedException;
 import stockfile.models.FileList;
 import stockfile.models.StockFile;
 import stockfile.security.UserSession;
 
+/**
+ * SFTP Controller contains all of the commands used to send and recieve files over SSH.
+ * @author Jeremy Wallace, Bahman Razmpa, Peter Lee
+ * @project StockFile, CICS 525
+ * @organization University of British Columbia
+ * @date July 20, 2013
+ */
 public class SFTPController
 {
-
+	
+	// Connection properties
     private Properties props;
     private static SFTPController sftp_connection = null;
+    
+    // We use the JSch library to connect over SSH.
     private JSch jsch = new JSch();
-    private Session session = null;
-    private Channel channel = null;
-    private ChannelSftp ch_sftp = null;
+    
+    // Session, Channel and SFTP objects.
+    protected Session session = null;
+    protected Channel channel = null;
+    protected ChannelSftp ch_sftp = null;
+    
+    // The remote root for the user.
     private String userRoot = null;
+    
+    // A blacklist of files that are not transferred
     private Set<String> blackList;
 
-    private SFTPController()
+    /**
+     * The constructor sets up the home directory and the blacklists for the connection.
+     * @param homeFolder
+     */
+    protected SFTPController(String homeFolder)
     {
+    	
         this.blackList = new HashSet<>();
         this.blackList.add("stockdata.pbj");
         this.blackList.add(".DS_Store");
         //this.blackList.add(UserSession.getInstance().getCurrentUser().getHomeDirectory());
         
+        // Load properties
         try {
 			loadConfiguration();
 		} catch (ApplicationFailedException e) {
 			System.err.println(e);
 		}
         
-        this.userRoot = props.getProperty("ftpRootDir") + UserSession.getInstance().getCurrentUser().getUserName();
+        // Set user root to their home folder.
+        this.userRoot = props.getProperty("ftpRootDir") + homeFolder;
     }
 
+    /**
+     * Checks if the file is in the blacklist.
+     * @param filename Filename to check.
+     * @return true if the file is in the blacklist.
+     */
     public boolean inBlackList(String filename) {
     	for (String blackListWord : this.blackList) {
     		if (filename.matches("(?i).*"+blackListWord+".*")) {
@@ -67,44 +93,53 @@ public class SFTPController
     	}
     	return false;
     }
+    
     /**
-     * Static method returns a single instance of MySQLConnection.
+     * Static method returns a single instance of SFTPConnection
      * <p/>
-     * @return a single instance of MySQLConnection
+     * @return a single instance of SFTPConnection
      */
-    public static SFTPController getInstance()
+    public static SFTPController getInstance(String homeFolder)
     {
         if (sftp_connection == null)
         {
-            sftp_connection = new SFTPController();
+            sftp_connection = new SFTPController(homeFolder);
         }
         return sftp_connection;
     }
     
-    public void connectSSH() throws JSchException {
+    /**
+     * Establishes an SSH connection and initializes the channel.
+     * @throws JSchException If the session can not be established.
+     * @throws ApplicationFailedException If the servers are unavailable and the application has failed.
+     */
+    private void connectSSH() throws JSchException, ApplicationFailedException {
     	System.out.println("Connection to FTP.");
-        //Create a session sending through our username and password
+        
+    	// Create a new session withe the connection details.
+    	// The server address is requested from the DNS Resolver.
         session = jsch.getSession(
                 props.getProperty("username"),
-                props.getProperty("ftpMaster"),
+                DNSResolver.getInstance(ServerType.Master).getServerDefault(),
                 new Integer(props.getProperty("ftpPort")));
 
         System.out.println("Session created.");
         session.setPassword(props.getProperty("password"));
-        //Security.addProvider(new com.sun.crypto.provider.SunJCE());
-
-
-        //Setup Strict HostKeyChecking to no so we dont get the
-        //unknown host key exception
-        //
+        
         Properties config = new Properties();
         config.put("StrictHostKeyChecking", "no");
         session.setConfig(config);
+        
+        // Connect through the session with the credentials provided.
         session.connect();
         System.out.println("Session connected.");
     }
     
-    public void openSFTPChannel() throws JSchException {
+    /**
+     * Open the SFTP channel after connecting to an open session.
+     * @throws JSchException If the session is unavailable or if an SFTP channel can not be opened.
+     */
+    private void openSFTPChannel() throws JSchException {
     	//
         //Open the SFTP channel
         //
@@ -114,7 +149,11 @@ public class SFTPController
         ch_sftp = (ChannelSftp) channel;
     }
     
-    public void loadConfiguration() throws ApplicationFailedException {
+    /**
+     * Load the configuration details from the utilies file.
+     * @throws ApplicationFailedException If there are no credentials supplied.
+     */
+    private void loadConfiguration() throws ApplicationFailedException {
     	try
         {
             props = Utils.readProperties("/stockfile/config/stockfile_ftp.properties");
@@ -125,10 +164,11 @@ public class SFTPController
         }
     }
     
-    public void cycleServers() {
-    	// TODO: Add server implementation.
-    }
-
+    /**
+     * Run the entire connection process to establish an SFTP connection and cd to the home directory.
+     * @throws JSchException If the channel or session fails.
+     * @throws SftpException If the SFTP channel fails or there is a problem finding the home directory.
+     */
     public void connect() throws JSchException, SftpException
     {
     	
@@ -140,6 +180,9 @@ public class SFTPController
             
     }
     
+    /**
+     * Close the connection
+     */
     public void close() {
     	if (ch_sftp.isConnected()) {
     		ch_sftp.disconnect();
@@ -152,11 +195,10 @@ public class SFTPController
     	}
     }
     
-    public void reconnect() throws InterruptedException, SftpException {
+    public void reconnect() throws InterruptedException, SftpException, IOException {
 
     	try {
     		close();
-    		cycleServers();
     		connect();
     	} catch (JSchException ex) {
     		System.err.println("Unable to connect to FTP server. ");

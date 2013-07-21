@@ -2,6 +2,7 @@ package stockfile;
 
 import stockfile.controllers.LoginController;
 import stockfile.controllers.StateController;
+import stockfile.security.UserSession;
 
 /**
  * Stockfile driver is the main class for the StockFile application.
@@ -12,6 +13,7 @@ import stockfile.controllers.StateController;
  */
 public class StockFileDriver
 {
+	// The syncronization delay period.
 	private static final int SYNC_DELAY = 10000;
 
 	/**
@@ -22,7 +24,7 @@ public class StockFileDriver
     {
         LoginController.run();
         StateController.getInstance().loadState();
-        StateController.getInstance().loadDirectoryState();
+        StateController.getInstance().loadDirectoryState(UserSession.getInstance().getCurrentClient().getFullDir());
         
     }
     

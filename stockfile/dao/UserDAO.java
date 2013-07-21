@@ -19,7 +19,7 @@ import stockfile.security.Security;
 public class UserDAO extends StockFileDAO {
 
     public UserDAO() {
-        super();
+        super(true);
     }
 
     public enum ColumnHeader {

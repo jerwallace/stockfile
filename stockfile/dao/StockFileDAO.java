@@ -4,7 +4,10 @@
  */
 package stockfile.dao;
 
+import stockfile.controllers.DNSResolver.ServerType;
 import stockfile.dao.connection.MySQLConnection;
+import stockfile.exceptions.ApplicationFailedException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,22 +29,30 @@ public abstract class StockFileDAO {
 		CLIENT, FILE, USER, USER_CLIENT, USER_FILE;
 	}
 	
-    public StockFileDAO() {
+    public StockFileDAO(boolean autoStartConnection) {
         conn = null;
         ps = null;
         rs = null;
         rm = null;
-        this.initConnection();
+        
+        if (autoStartConnection)
+        	this.initConnection(ServerType.Master);
     }
 
     /**
      * Initialize a connection.
+     * @param type TODO
      */
-    protected void initConnection() {
+    protected void initConnection(ServerType type) {
         
-        conn = MySQLConnection.getInstance().getConnection();
+        try {
+			conn = MySQLConnection.getInstance().getConnection(type);
+		} catch (ApplicationFailedException e) {
+			System.out.println(e);
+			System.exit(0);
+		}
     }
-
+    
     /**
      * This method closes the preparedstatement.
      */
