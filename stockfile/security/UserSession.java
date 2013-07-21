@@ -18,7 +18,7 @@ public class UserSession
     private Client currentClient;
     private boolean validSession = false;
     private Timestamp last_sync;
-    private HashMap<byte[], Client> userClientHashMap;
+    private HashMap<String, Client> userClientHashMap;
 
     protected UserSession()
     {
@@ -95,12 +95,12 @@ public class UserSession
         this.validSession = validSession;
     }
 
-    public HashMap<byte[], Client> getUserClientHashMap()
+    public HashMap<String, Client> getUserClientHashMap()
     {
         return userClientHashMap;
     }
 
-    public void setUserClientHashMap(HashMap<byte[], Client> userClientHashMap)
+    public void setUserClientHashMap(HashMap<String, Client> userClientHashMap)
     {
         this.userClientHashMap = userClientHashMap;
     }

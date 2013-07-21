@@ -21,7 +21,7 @@ public class User implements Serializable
     private String email;
     private LocalDate dateJoined;
     private String homeDirectory = FilenameUtils.separatorsToSystem(System.getProperty("user.home")+"/Stockfile");
-    private HashMap<byte[], Client> userClients = new HashMap<>();
+    private HashMap<String, Client> userClients = new HashMap<>();
     private ClientDAO clientDao = new ClientDAO();
 
     public User()
@@ -167,7 +167,7 @@ public class User implements Serializable
         this.dateJoined = dateJoined;
     }
 
-    public HashMap<byte[], Client> getUserClients()
+    public HashMap<String, Client> getUserClients()
     {
         return userClients;
     }
@@ -177,7 +177,7 @@ public class User implements Serializable
         return clientDao;
     }
 
-    public void setUserClients(HashMap<byte[], Client> userClients)
+    public void setUserClients(HashMap<String, Client> userClients)
     {
         this.userClients = userClients;
     }
