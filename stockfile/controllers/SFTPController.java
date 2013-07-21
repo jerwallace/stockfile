@@ -266,7 +266,7 @@ public class SFTPController {
             System.out.println("Attempting to upload file:" + filename);
             StockFile f = FileList.getInstance().getManifest().getFile(filename);
             System.out.println(f);
-            if (f.exists()) {
+            if (f!=null&&f.exists()) {
 	            if (f.isDirectory())
 	            {
 	            	try {
