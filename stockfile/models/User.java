@@ -20,7 +20,6 @@ public class User implements Serializable
     private String lastName;
     private String email;
     private LocalDate dateJoined;
-    private String homeDirectory = FilenameUtils.separatorsToSystem(System.getProperty("user.home")+"/Stockfile");
     private HashMap<String, Client> userClients = new HashMap<>();
     private ClientDAO clientDao = new ClientDAO();
 
@@ -33,7 +32,7 @@ public class User implements Serializable
         this.userName = userName;
     }
 
-    public User(String userName, String firstName, String lastName, String email, LocalDate dateJoined, String homeDir)
+    public User(String userName, String firstName, String lastName, String email, LocalDate dateJoined)
     {
 
         this.userName = userName;
@@ -41,7 +40,7 @@ public class User implements Serializable
         this.lastName = lastName;
         this.email = email;
         this.dateJoined = dateJoined;
-        this.homeDirectory = homeDir;
+
         try
         {
             this.userClients = clientDao.getClientsByUser(this);
@@ -136,22 +135,6 @@ public class User implements Serializable
     }
 
     /**
-     * @return the homeDirectory
-     */
-    public String getHomeDirectory()
-    {
-        return homeDirectory;
-    }
-
-    /**
-     * @param homeDirectory the homeDirectory to set
-     */
-    public void setHomeDirectory(String homeDirectory)
-    {
-        this.homeDirectory = homeDirectory;
-    }
-
-    /**
      * @return the dateJoined
      */
     public LocalDate getDateJoined()
@@ -172,18 +155,8 @@ public class User implements Serializable
         return userClients;
     }
 
-    public ClientDAO getClientDao()
-    {
-        return clientDao;
-    }
-
     public void setUserClients(HashMap<String, Client> userClients)
     {
         this.userClients = userClients;
-    }
-
-    public void setClientDao(ClientDAO clientDao)
-    {
-        this.clientDao = clientDao;
     }
 }

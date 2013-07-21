@@ -32,7 +32,9 @@ import stockfile.models.FileList;
 import stockfile.security.UserSession;
 
 /**
- * The state controller loads and saves PBJ files and the contents of a directory into the application.
+ * The state controller loads and saves PBJ files and the contents of a
+ * directory into the application.
+ *
  * @author Jeremy Wallace, Bahman Razmpa, Peter Lee
  * @project StockFile, CICS 525
  * @organization University of British Columbia
@@ -85,7 +87,7 @@ public class StateController {
     }
 
     /**
-     * This method scans through a local directory and looks for discrepencies
+     * This method scans through a local directory and looks for discrepancies
      * between the local file list. If it is not in the list, it is added to the
      * list.
      *
@@ -176,7 +178,7 @@ public class StateController {
                     Stack<String> removeList = new Stack<String>();
 
                     // If the manifest in the PBJ file contains a file that is not in the database, it 
-                    // means at one point it  was in the database and was removed. Therefore, it has been deleted.
+                    // means at one point it was in the database and was removed. Therefore, it has been deleted.
                     for (String key : FileList.getInstance().getManifest().manifest.keySet()) {
                         StockFile thisFile = FileList.getInstance().getManifest().manifest.get(key);
                         if (!fileDAO.inDatabase(thisFile)) {
