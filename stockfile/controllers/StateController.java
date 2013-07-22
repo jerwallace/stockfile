@@ -27,12 +27,12 @@ import org.apache.commons.io.FileUtils;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
-import stockfile.dao.FileDAO;
+import stockfile.dao.UserFileDAO;
 import stockfile.exceptions.ApplicationFailedException;
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
 import stockfile.models.FileList;
-import stockfile.security.UserSession;
+import stockfile.security.StockFileSession;
 
 /**
  * The state controller loads and saves PBJ files and the contents of a
@@ -49,12 +49,12 @@ public class StateController {
     private final String DATA_FILE_NAME = "/stockdata.pbj";
     
     // The client's home directory.
-    private final String HOME_DIR = UserSession.getInstance().getCurrentClient().getFullDir();
+    private final String HOME_DIR = StockFileSession.getInstance().getCurrentClient().getFullDir();
     
     // The manifest of the file list stored in memory.
     private Manifest currentManifest = FileList.getInstance().getManifest();
     
-    private FileDAO fileDAO = new FileDAO();
+    private UserFileDAO fileDAO = new UserFileDAO();
     private static StateController sc = null;
 
     private StateController() {
@@ -189,7 +189,7 @@ public class StateController {
                         StockFile thisFile = FileList.getInstance().getManifest().manifest.get(key);
                         if (thisFile.exists()) {
 	                        if (!fileDAO.inDatabase(thisFile)) {
-	                            if (!SFTPController.getInstance(UserSession.getInstance().getCurrentUser().getUserName()).inBlackList(thisFile.getName())) {
+	                            if (!SFTPController.getInstance(StockFileSession.getInstance().getCurrentUser().getUserName()).inBlackList(thisFile.getName())) {
 	                                System.out.println("File" + thisFile.getAbsolutePath() + " was deleted on the server.");
 	                                if (thisFile.isDirectory()) {
 	                                    FileUtils.deleteDirectory(thisFile);

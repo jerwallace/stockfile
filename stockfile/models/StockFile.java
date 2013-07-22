@@ -7,7 +7,7 @@ import java.util.Date;
 import org.apache.commons.io.FilenameUtils;
 import org.joda.time.DateTime;
 
-import stockfile.security.UserSession;
+import stockfile.security.StockFileSession;
 
 /**
  * Class describing a File object
@@ -17,14 +17,14 @@ import stockfile.security.UserSession;
 @SuppressWarnings("serial")
 public class StockFile extends File {
 
-    private static final String HOME_PATH = UserSession.getInstance().getCurrentClient().getFullDir();
-    private String remoteHomePath = "/stockfiles/" + UserSession.getInstance().getCurrentUser().getUserName();
+    private static final String HOME_PATH = StockFileSession.getInstance().getCurrentClient().getFullDir();
+    private String remoteHomePath = "/stockfiles/" + StockFileSession.getInstance().getCurrentUser().getUserName();
     private String relFilePath;
     private float version = (float) 1.0;
     private DateTime lastModifiedDB;
     private Long lastModifiedOnLoad;
-    private String lastSyncBy = UserSession.getInstance().getCurrentUser().getUserName();
-    private String createdBy = UserSession.getInstance().getCurrentUser().getUserName();
+    private String lastSyncBy = StockFileSession.getInstance().getCurrentUser().getUserName();
+    private String createdBy = StockFileSession.getInstance().getCurrentUser().getUserName();
     private boolean inSync;
     private boolean removeMarker;
 

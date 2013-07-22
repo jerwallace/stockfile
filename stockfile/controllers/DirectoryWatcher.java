@@ -24,7 +24,7 @@ import java.util.Map;
 
 import stockfile.models.FileList;
 import stockfile.models.StockFile;
-import stockfile.security.UserSession;
+import stockfile.security.StockFileSession;
 
 /**
  * Directory watcher is based on the java online example of WatchService and
@@ -42,7 +42,7 @@ public class DirectoryWatcher implements Runnable {
     private final WatchService watchService;
     private final Map<WatchKey, Path> pathsToWatch;
     private boolean trace = true;
-    private final String HOME_DIR = UserSession.getInstance().getCurrentClient().getFullDir();
+    private final String HOME_DIR = StockFileSession.getInstance().getCurrentClient().getFullDir();
 
     @SuppressWarnings("unchecked")
     static <T> WatchEvent<T> cast(WatchEvent<?> event) {

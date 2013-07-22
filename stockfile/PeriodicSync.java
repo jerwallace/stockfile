@@ -9,7 +9,8 @@ import stockfile.controllers.DirectoryWatcher;
 import stockfile.controllers.SFTPController;
 import stockfile.controllers.StateController;
 import stockfile.controllers.SyncController;
-import stockfile.security.UserSession;
+import stockfile.models.Client.ClientInstance;
+import stockfile.security.StockFileSession;
 
 /**
  * Periodic sync is a runnable thread that stops and starts the directory
@@ -38,7 +39,7 @@ public class PeriodicSync implements Runnable {
         try {
             watcherThread = new Thread(new DirectoryWatcher());
             try {
-                SFTPController.getInstance(UserSession.getInstance().getCurrentUser().getUserName()).connect();
+                SFTPController.getInstance(StockFileSession.getInstance().getCurrentUser().getUserName()).connect();
             } catch (JSchException | SftpException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -70,10 +71,13 @@ public class PeriodicSync implements Runnable {
             // Run syncronization process.
             System.out.println("===== SYNC PROCESS BEGIN =====");
             SyncController.getInstance().syncronize();
+            if (StockFileSession.getInstance().getCurrentClient().getInstance()==ClientInstance.SERVER) {
+            	SFTPController.getInstance("").copyDatabase();
+            }
             System.out.println("===== SYNC PROCESS END =====");
 
             System.out.println("Loading directory state");
-            StateController.getInstance().loadDirectoryState(UserSession.getInstance().getCurrentClient().getFullDir());
+            StateController.getInstance().loadDirectoryState(StockFileSession.getInstance().getCurrentClient().getFullDir());
 
 //				System.out.println("Starting watcher...");
 //				System.out.println("State:"+watcherThread.getState());

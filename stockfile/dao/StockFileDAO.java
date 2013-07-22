@@ -5,7 +5,8 @@
 package stockfile.dao;
 
 import stockfile.controllers.DNSResolver.ServerType;
-import stockfile.dao.connection.MySQLConnection;
+import stockfile.dao.connection.LocalMySQLConnection;
+import stockfile.dao.connection.RemoteMySQLConnection;
 import stockfile.exceptions.ApplicationFailedException;
 
 import java.sql.Connection;
@@ -46,7 +47,7 @@ public abstract class StockFileDAO {
     protected void initConnection(ServerType type) {
         
         try {
-			conn = MySQLConnection.getInstance().getConnection(type);
+			conn = RemoteMySQLConnection.getInstance().getConnection(type);
 		} catch (ApplicationFailedException e) {
 			System.out.println(e);
 			System.exit(0);

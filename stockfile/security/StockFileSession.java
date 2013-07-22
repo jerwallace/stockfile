@@ -9,33 +9,33 @@ import stockfile.models.User;
 /**
  * Class definition for the Singleton User type client session
  */
-public class UserSession {
+public class StockFileSession {
 
-    private static UserSession userSession = null;
+    private static StockFileSession userSession = null;
     private User currentUser;
     private Client currentClient;
     private boolean validSession = false;
     private Timestamp last_sync;
     private HashMap<String, Client> userClientHashMap;
 
-    protected UserSession() {
+    protected StockFileSession() {
         // empty constructor
     }
 
     //Default constructor for the singleton instance of the UserSession
-    public static UserSession getInstance() {
+    public static StockFileSession getInstance() {
 
         if (userSession == null) {
 
-            synchronized (UserSession.class) {
+            synchronized (StockFileSession.class) {
 
-                UserSession inst = userSession;
+                StockFileSession inst = userSession;
 
                 if (inst == null) {
 
-                    synchronized (UserSession.class) {
+                    synchronized (StockFileSession.class) {
 
-                        userSession = new UserSession();
+                        userSession = new StockFileSession();
                     }
                 }
             }

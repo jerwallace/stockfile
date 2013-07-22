@@ -3,7 +3,7 @@ package stockfile;
 import stockfile.controllers.LoginController;
 import stockfile.controllers.StateController;
 import stockfile.exceptions.ApplicationFailedException;
-import stockfile.security.UserSession;
+import stockfile.security.StockFileSession;
 
 /**
  * Stockfile driver is the main class for the StockFile application.
@@ -26,7 +26,7 @@ public class StockFileDriver {
         try {
             LoginController.getInstance().run();
             StateController.getInstance().loadState();
-            StateController.getInstance().loadDirectoryState(UserSession.getInstance().getCurrentClient().getFullDir());
+            StateController.getInstance().loadDirectoryState(StockFileSession.getInstance().getCurrentClient().getFullDir());
         } catch (ApplicationFailedException ex) {
             System.err.println(ex);
             System.exit(0);

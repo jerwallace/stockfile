@@ -1,9 +1,10 @@
 package stockfile.server;
 
-import stockfile.controllers.LoginController;
+import stockfile.PeriodicSync;
+import stockfile.controllers.ServerController;
 import stockfile.controllers.StateController;
 import stockfile.exceptions.ApplicationFailedException;
-import stockfile.security.UserSession;
+import stockfile.security.StockFileSession;
 
 /**
  * Stockfile driver is the main class for the StockFile application.
@@ -23,9 +24,9 @@ public class ServerDriver
     public ServerDriver() throws Exception
     {
         try {
-            LoginController.getInstance().run();
+        	ServerController.getInstance().run();
             StateController.getInstance().loadState();
-            StateController.getInstance().loadDirectoryState(UserSession.getInstance().getCurrentClient().getFullDir());
+            StateController.getInstance().loadDirectoryState(StockFileSession.getInstance().getCurrentClient().getFullDir());
         } catch (ApplicationFailedException ex) {
             System.err.println(ex);
             System.exit(0);
@@ -42,7 +43,7 @@ public class ServerDriver
     public static void main(String[] args) throws Exception
     {
 
-        StockFileDriver stockfileInstance = new StockFileDriver();
+        ServerDriver stockfileInstance = new ServerDriver();
 
         //Attach shutDownhook for data persistence after shutDown
         stockfileInstance.attachShutDownHook();
