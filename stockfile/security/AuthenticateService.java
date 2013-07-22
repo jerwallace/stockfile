@@ -58,15 +58,15 @@ public class AuthenticateService {
             if (user.getUserName() == null) {
                 throw new InvalidAuthenticationException(ERROR_MESSAGE);
             } else {
-                UserSession.getInstance().setCurrentUser(user);
-                System.out.println("User " + UserSession.getInstance().getCurrentUser().getUserName() + " signed in.");
+                StockFileSession.getInstance().setCurrentUser(user);
+                System.out.println("User " + StockFileSession.getInstance().getCurrentUser().getUserName() + " signed in.");
 
                 // attach client
                 Client client = this.clientDAO.getClientByUser(user, LoginController.getMacAddr());
           
                 if (client != null) {
-                    UserSession.getInstance().setCurrentClient(client);
-                    System.out.println("Attaching client: " + UserSession.getInstance().getCurrentClient().getType());
+                    StockFileSession.getInstance().setCurrentClient(client);
+                    System.out.println("Attaching client: " + StockFileSession.getInstance().getCurrentClient().getType());
                 } else {
                     LoginController.getInstance().createClient(new Scanner(System.in));
                 }

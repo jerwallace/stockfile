@@ -7,7 +7,8 @@ import java.util.Date;
 import org.apache.commons.io.FilenameUtils;
 import org.joda.time.DateTime;
 
-import stockfile.security.UserSession;
+import stockfile.models.Client.ClientInstance;
+import stockfile.security.StockFileSession;
 
 /**
  * Class describing a File object
@@ -17,14 +18,14 @@ import stockfile.security.UserSession;
 @SuppressWarnings("serial")
 public class StockFile extends File {
 
-    private static final String HOME_PATH = UserSession.getInstance().getCurrentClient().getFullDir();
-    private String remoteHomePath = "/stockfiles/" + UserSession.getInstance().getCurrentUser().getUserName();
+    private static final String HOME_PATH = StockFileSession.getInstance().getCurrentClient().getFullDir();
+    private String remoteHomePath = "/stockfiles/" + StockFileSession.getInstance().getCurrentUser().getUserName();
     private String relFilePath;
     private float version = (float) 1.0;
     private DateTime lastModifiedDB;
     private Long lastModifiedOnLoad;
-    private String lastSyncBy = UserSession.getInstance().getCurrentUser().getUserName();
-    private String createdBy = UserSession.getInstance().getCurrentUser().getUserName();
+    private String lastSyncBy = StockFileSession.getInstance().getCurrentUser().getUserName();
+    private String createdBy = StockFileSession.getInstance().getCurrentUser().getUserName();
     private boolean inSync;
     private boolean removeMarker;
 
@@ -76,7 +77,11 @@ public class StockFile extends File {
      * @param relativePath the relative path to set
      */
     public void setRelativePath(String relativePath) {
-        this.relFilePath = filterPathForWindows(relativePath).replace(HOME_PATH, "");
+    	if (StockFileSession.getInstance().getCurrentClient().getInstance()==ClientInstance.SERVER) {
+    		this.relFilePath = filterPathForWindows(relativePath).replace(HOME_PATH, "");
+    	} else {
+    		this.relFilePath = getFullRemotePath().replace("/stockfiles/", "");
+    	}
     }
 
     /**

@@ -1,6 +1,6 @@
 package stockfile.models;
 
-import stockfile.security.UserSession;
+import stockfile.security.StockFileSession;
 
 /**
  * Class describing the Singleton FileList
@@ -19,7 +19,7 @@ public class FileList {
     }
 
     public static String convertToRelativePath(String fullPath) {
-        return fullPath.replace(UserSession.getInstance().getCurrentClient().getFullDir(), "");
+        return fullPath.replace(StockFileSession.getInstance().getCurrentClient().getFullDir(), "");
     }
 
     /**

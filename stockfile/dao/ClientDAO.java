@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 import stockfile.models.Client;
 import stockfile.models.User;
-import stockfile.security.UserSession;
+import stockfile.security.StockFileSession;
 
 /**
  *
@@ -41,9 +41,9 @@ public class ClientDAO extends StockFileDAO {
                     + "user_client (username,client_type,last_sync,ip_address,mac_address,home_directory) "
                     + "VALUES (?,?,?,?,?,?);");
 
-            ps.setString(1, UserSession.getInstance().getCurrentUser().getUserName());
+            ps.setString(1, StockFileSession.getInstance().getCurrentUser().getUserName());
             ps.setString(2, client.getType());
-            ps.setTimestamp(3, UserSession.getInstance().getLastSync());
+            ps.setTimestamp(3, StockFileSession.getInstance().getLastSync());
             ps.setString(4, client.getIpAddress());
             ps.setString(5, client.getMacAddress());
             ps.setString(6, client.getHomeDir());
@@ -68,7 +68,7 @@ public class ClientDAO extends StockFileDAO {
         try {
             ps = conn.prepareStatement("DELETE FROM user_client WHERE username = ? AND mac_address = ?");
 
-            ps.setString(1, UserSession.getInstance().getCurrentUser().getUserName());
+            ps.setString(1, StockFileSession.getInstance().getCurrentUser().getUserName());
             ps.setString(2, client.getMacAddress());
 
             ps.executeUpdate();
@@ -93,10 +93,10 @@ public class ClientDAO extends StockFileDAO {
                     + "WHERE username = ? AND mac_address = ? ");
 
             ps.setString(1, client.getType());
-            ps.setTimestamp(2, UserSession.getInstance().getLastSync());
+            ps.setTimestamp(2, StockFileSession.getInstance().getLastSync());
             ps.setString(3, client.getIpAddress());
             ps.setString(4, client.getHomeDir());
-            ps.setString(5, UserSession.getInstance().getCurrentUser().getUserName());
+            ps.setString(5, StockFileSession.getInstance().getCurrentUser().getUserName());
             ps.setString(6, client.getMacAddress());
 
             ps.executeUpdate();

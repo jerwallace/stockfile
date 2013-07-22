@@ -24,12 +24,17 @@ public class Client {
     private String homeDir;
     private String ipAddress;
     private String macAddress;
-
+    private ClientInstance instance;
+    
+    public enum ClientInstance {
+    	HOST,SERVER
+    }
+    
     public Client() {
     }
 
     public Client(String type, String description, String manufacturer, String modelNo, String homeDir) throws UnknownHostException, SocketException {
-
+    	this.setInstance(ClientInstance.HOST);
         this.type = type;
         this.description = description;
         this.manufacturer = manufacturer;
@@ -43,7 +48,7 @@ public class Client {
     }
 
     public Client(String type, String description, String manufacturer, String modelNo, String homeDir, String ipAddress, String macAddress) throws UnknownHostException, SocketException {
-
+    	this.setInstance(ClientInstance.HOST);
         this.type = type;
         this.description = description;
         this.manufacturer = manufacturer;
@@ -54,11 +59,12 @@ public class Client {
     }
 
     public Client(String type) {
+    	this.setInstance(ClientInstance.SERVER);
         this.type = type;
         this.description = "Stockfile Server";
         this.manufacturer = "Amazon Inc";
         this.modelNo = "EC2 Cloud";
-        this.homeDir = "/stockfiles";
+        this.homeDir = "";
     }
 
     /**
@@ -184,7 +190,11 @@ public class Client {
      * @return the full directory with respect to the home directory
      */
     public String getFullDir() {
-        return FilenameUtils.separatorsToSystem(System.getProperty("user.home") + "/" + this.homeDir);
+        if (this.instance==ClientInstance.SERVER) {
+        	return FilenameUtils.separatorsToSystem("/stockfiles/"+this.homeDir);
+        } else {
+        	return FilenameUtils.separatorsToSystem(System.getProperty("user.home") + "/" + this.homeDir);
+        }
     }
 
     @Override
@@ -197,4 +207,12 @@ public class Client {
                 + "\nIP Address: " + getIpAddress()
                 + "\nMAC Address: " + getMacAddress();
     }
+
+	public ClientInstance getInstance() {
+		return instance;
+	}
+
+	private void setInstance(ClientInstance instance) {
+		this.instance = instance;
+	}
 }

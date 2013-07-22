@@ -16,12 +16,15 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
 import stockfile.dao.FileDAO;
+import stockfile.dao.ServerFileDAO;
+import stockfile.dao.UserFileDAO;
 import stockfile.exceptions.ApplicationFailedException;
+import stockfile.models.Client.ClientInstance;
 import stockfile.models.FileList;
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
 import stockfile.models.Manifest.Operation;
-import stockfile.security.UserSession;
+import stockfile.security.StockFileSession;
 
 /**
  * The sync controller contains the methods required to synchronize a local
@@ -34,13 +37,13 @@ import stockfile.security.UserSession;
  */
 public class SyncController {
 
-    private FileDAO fileDAO = new FileDAO();
+    private FileDAO fileDAO;
     private Map<String, Operation> syncList;
     private Manifest serverManifest;
     private Manifest clientManifest;
-    private String homeDir = UserSession.getInstance().getCurrentClient()
+    private String homeDir = StockFileSession.getInstance().getCurrentClient()
             .getFullDir();
-    private String userName = UserSession.getInstance().getCurrentUser().getUserName();
+    private String userName = StockFileSession.getInstance().getCurrentUser().getUserName();
     private static SyncController syncController = null;
     private final int RECONNECTION_ATTEMPTS = 4;
 
@@ -48,6 +51,11 @@ public class SyncController {
      * Empty constructor.
      */
     private SyncController() {
+    	if (StockFileSession.getInstance().getCurrentClient().getInstance()==ClientInstance.SERVER) {
+    		fileDAO = new ServerFileDAO();
+    	} else {
+    		fileDAO = new UserFileDAO();
+    	}
     }
 
     /**
@@ -97,7 +105,7 @@ public class SyncController {
                 if (!serverManifest.manifest.containsKey(key)) {
                 	
                 	// If it is a new file, upload it.
-                	if (clientFile.getLastSyncTimeDB()==null) {
+                	if (clientFile.getLastSyncTimeDB()==null&&StockFileSession.getInstance().getCurrentClient().getInstance()!=ClientInstance.SERVER) {
                 		syncList.put(key, Operation.UPLOAD);
                 	
                 		// If it is an old file, it must have been deleted by someone else.
@@ -134,7 +142,7 @@ public class SyncController {
                         // SITUATION: 	InSync flag is false and the last sync time in the DB is equal to or less than the local file.
                         //				(The user has updated their file and the changes need to be reflected)
                         // ACTION:		Upload and overwrite database file.
-                    } else if (!(clientFile.inSync())) {
+                    } else if (!(clientFile.inSync())&&StockFileSession.getInstance().getCurrentClient().getInstance()!=ClientInstance.SERVER) {
                         System.out.println("UPLOAD AND OVERWRITE OPERATION INVOKED.");
                         syncList.put(key, Operation.UPLOAD_AND_OVERWRITE);
                         serverManifest.manifest.remove(key);

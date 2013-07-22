@@ -18,54 +18,19 @@ import stockfile.exceptions.ApplicationFailedException;
  * This is a singleton class connecting to a MySQL database. 
  * To get a instance of the connection, use getConnection().
  */ 
-public class MySQLConnection {
+public abstract class MySQLConnection {
     
-    private static MySQLConnection stockfile_sql = null;
     protected Connection connection = null;
     protected boolean driverLoaded = false;
-    private Properties props;
+    protected Properties props;
     
-    protected MySQLConnection() {
- 
-    }
-
-    /**
-     * Static method returns a single instance of MySQLConnection.
-     * @return  a single instance of MySQLConnection
-     */
-    public static MySQLConnection getInstance()  {
-        if (stockfile_sql == null) {
-            stockfile_sql = new MySQLConnection(); 
-        }
-        return stockfile_sql;
-    }
+    
     /**
      * Loads the MySQL JDBC driver and connects to the database.
      * @return  true if the connection is successful; false otherwise.
      * @throws ApplicationFailedException 
      */
-    public boolean connect(ServerType type) throws ApplicationFailedException {
-       try {
-            props = Utils.readProperties("/stockfile/config/stockfile.properties");
-        } catch (IOException ex) {
-            Logger.getLogger(MySQLConnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {      
-            if (!driverLoaded)  {
-                DriverManager.registerDriver(new com.mysql.jdbc.Driver());
-                driverLoaded = true; 
-            }
-            
-            connection = DriverManager.getConnection("jdbc:mysql://"+DNSResolver.getInstance(type).getServerDefault()+":3306/Stockfile", 
-                                                     props.getProperty("username"),
-                                                     props.getProperty("password"));
-            
-            return true; 
-        } catch (SQLException sqlex) {
-            System.err.println("SQLException: " + sqlex.getMessage());
-            return false;
-        }
-    }
+    public abstract boolean connect(ServerType type) throws ApplicationFailedException;
     
     /**
      * Gets the connection.
@@ -82,7 +47,7 @@ public class MySQLConnection {
             }
         } catch (SQLException ex) {
             
-            Logger.getLogger(MySQLConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RemoteMySQLConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
         

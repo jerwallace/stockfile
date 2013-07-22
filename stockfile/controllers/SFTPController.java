@@ -8,6 +8,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -26,9 +27,10 @@ import org.apache.commons.lang3.StringUtils;
 import stockfile.controllers.DNSResolver.ServerType;
 import stockfile.dao.connection.Utils;
 import stockfile.exceptions.ApplicationFailedException;
+import stockfile.models.Client.ClientInstance;
 import stockfile.models.FileList;
 import stockfile.models.StockFile;
-import stockfile.security.UserSession;
+import stockfile.security.StockFileSession;
 
 /**
  * SFTP Controller contains all of the commands used to send and receive files
@@ -77,8 +79,11 @@ public class SFTPController {
         } catch (ApplicationFailedException e) {
             System.err.println(e);
         }
-
+        
         // Set user root to their home folder.
+        if (StockFileSession.getInstance().getCurrentClient().getInstance()==ClientInstance.SERVER)
+        this.userRoot = "/stockfiles/";
+        else 
         this.userRoot = props.getProperty("ftpRootDir") + homeFolder;
     }
 
@@ -263,9 +268,11 @@ public class SFTPController {
    
         filename = FilenameUtils.separatorsToUnix(filename);
         if (!inBlackList(filename)) {
-            System.out.println("Attempting to upload file:" + filename);
+            
+        	System.out.println("Attempting to upload file:" + filename);
             StockFile f = FileList.getInstance().getManifest().getFile(filename);
             System.out.println(f);
+            
             if (f != null && f.exists()) {
                 if (f.isDirectory()) {
                     try {
@@ -329,7 +336,7 @@ public class SFTPController {
                 FileOutputStream fileStream = new FileOutputStream(f);
 
                 try {
-                    ch_sftp.get(f.getFullRemotePath(), new FileOutputStream(f));
+                    ch_sftp.get(f.getFullRemotePath(), fileStream);
                 } catch (Exception e) {
                     throw e;
                 } finally {
@@ -366,6 +373,45 @@ public class SFTPController {
 
     }
 
+    /**
+     * Deletes a file on the server. TODO: Make this more secure!
+     * @throws IOException 
+     */
+    public final void copyDatabase() throws SftpException, JSchException, IOException {
+
+        System.out.println("Creating copy of database... This may take a few minutes.");
+        String backupLocation = userRoot+"stockfile.sql";
+        
+        ChannelExec chanExec = (ChannelExec) session.openChannel("exec");
+        chanExec.setCommand("/usr/bin/mysqldump -uroot -pMSSPBJ13! Stockfile > "+backupLocation);
+        chanExec.connect();
+        chanExec.disconnect();
+        
+        File databaseCopy = new File(backupLocation);
+        
+        if (databaseCopy.exists())
+        	databaseCopy.delete();
+        
+        FileOutputStream fileStream = new FileOutputStream(databaseCopy);
+        
+        try {
+            ch_sftp.get(backupLocation, fileStream);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (fileStream != null)
+            	fileStream.close();
+            System.gc();
+        }
+        
+        /*try {
+            Runtime.getRuntime().exec("mysqldump -uroot -pMSSPBJ13! Stockfile < "+backupLocation);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }*/
+
+    }    
+    
     /**
      * Helper function: Creates a duplicate file name based on StockFile
      * standards.

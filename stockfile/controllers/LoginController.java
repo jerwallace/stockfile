@@ -35,7 +35,7 @@ import stockfile.models.User;
 import stockfile.security.AuthenticateService;
 import stockfile.security.RegexHelper;
 import stockfile.security.RegexHelper.RegExPattern;
-import stockfile.security.UserSession;
+import stockfile.security.StockFileSession;
 
 /**
  * Login Controller contains the methods required to authenticate a user, create
@@ -151,7 +151,7 @@ public class LoginController {
 
         User newUser = new User(ret[0], ret[2], ret[3], ret[4], new LocalDate());
         userDAO.createUser(newUser, ret[1]);
-        UserSession.getInstance().setCurrentUser(newUser);
+        StockFileSession.getInstance().setCurrentUser(newUser);
     }
 
     /**
@@ -235,7 +235,7 @@ public class LoginController {
             clientDAO.addClient(newClient);
         }
 
-        if (clientDAO.getClientByUser(UserSession.getInstance().getCurrentUser(), macAddr) == null) {
+        if (clientDAO.getClientByUser(StockFileSession.getInstance().getCurrentUser(), macAddr) == null) {
             // no association found between the user's mac address and client type
             // add an entry to the user_client table
 
@@ -247,7 +247,7 @@ public class LoginController {
             clientDAO.addUserClient(newClient);
         }
 
-        UserSession.getInstance().setCurrentClient(newClient);
+        StockFileSession.getInstance().setCurrentClient(newClient);
     }
 
     /**
