@@ -7,6 +7,7 @@ import java.util.Date;
 import org.apache.commons.io.FilenameUtils;
 import org.joda.time.DateTime;
 
+import stockfile.models.Client.ClientInstance;
 import stockfile.security.StockFileSession;
 
 /**
@@ -76,7 +77,11 @@ public class StockFile extends File {
      * @param relativePath the relative path to set
      */
     public void setRelativePath(String relativePath) {
-        this.relFilePath = filterPathForWindows(relativePath).replace(HOME_PATH, "");
+    	if (StockFileSession.getInstance().getCurrentClient().getInstance()==ClientInstance.SERVER) {
+    		this.relFilePath = filterPathForWindows(relativePath).replace(HOME_PATH, "");
+    	} else {
+    		this.relFilePath = getFullRemotePath().replace("/stockfiles/", "");
+    	}
     }
 
     /**

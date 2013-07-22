@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import stockfile.controllers.DNSResolver.ServerType;
 import stockfile.dao.connection.Utils;
 import stockfile.exceptions.ApplicationFailedException;
+import stockfile.models.Client.ClientInstance;
 import stockfile.models.FileList;
 import stockfile.models.StockFile;
 import stockfile.security.StockFileSession;
@@ -78,8 +79,11 @@ public class SFTPController {
         } catch (ApplicationFailedException e) {
             System.err.println(e);
         }
-
+        
         // Set user root to their home folder.
+        if (StockFileSession.getInstance().getCurrentClient().getInstance()==ClientInstance.SERVER)
+        this.userRoot = "/stockfiles/";
+        else 
         this.userRoot = props.getProperty("ftpRootDir") + homeFolder;
     }
 
@@ -264,9 +268,11 @@ public class SFTPController {
    
         filename = FilenameUtils.separatorsToUnix(filename);
         if (!inBlackList(filename)) {
-            System.out.println("Attempting to upload file:" + filename);
+            
+        	System.out.println("Attempting to upload file:" + filename);
             StockFile f = FileList.getInstance().getManifest().getFile(filename);
             System.out.println(f);
+            
             if (f != null && f.exists()) {
                 if (f.isDirectory()) {
                     try {

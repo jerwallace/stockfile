@@ -33,14 +33,13 @@ public class ServerFileDAO extends FileDAO {
 
         try {
 
-            ps = conn.prepareStatement("SELECT * FROM user_file "
-                    + "JOIN file ON user_file.file_path = file.file_path AND user_file.file_name = file.file_name ");
+            ps = conn.prepareStatement("SELECT * FROM file; ");
 
             rs = ps.executeQuery();
 
             while (rs.next()) {
 
-                String filename = FilenameUtils.separatorsToSystem(rs.getString("file_path"));
+                String filename = FilenameUtils.separatorsToSystem(rs.getString("file_path").replace("/stockfiles/",""))+rs.getString("file_name");
 
                 StockFile thisFile = new StockFile(
                         filename,

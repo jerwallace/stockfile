@@ -45,7 +45,7 @@ public class ServerController {
 		String serverName;
 		serverName = this.scanner.nextLine();
 		Client serverInstance = new Client(serverName);
-		User serverUser = new User(serverName);
+		User serverUser = new User("");
 		StockFileSession.getInstance().setCurrentClient(serverInstance);
 		StockFileSession.getInstance().setCurrentUser(serverUser);
 		

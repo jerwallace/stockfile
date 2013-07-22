@@ -60,8 +60,6 @@ public class Manifest implements Serializable {
      * 1) If the given relativePath is not found in the manifest or the version 
      * of thisFile is greater than that of the one exists in the manifest,
      * update the manifest accordingly. 
-     * 2) If the last modified time of thisFile is greater than that of the one
-     * exists in the manifest, update the manifest accordingly and increments the version.
      *
      * @param relativePath
      * @param thisFile
@@ -74,11 +72,8 @@ public class Manifest implements Serializable {
             thisFile.setRelativePath(relativePath);
             System.out.println("Added item to " + getName() + ": " + thisFile.getRelativePath());
             this.manifest.put(thisFile.getRelativePath(), thisFile);
-        } else if (thisFile.lastModified() > this.manifest.get(relativePath).lastModified()) {
-            System.out.println("File was modified, incremented version. Added item to " + getName() + ": " + thisFile.getRelativePath());
-            this.manifest.put(thisFile.getRelativePath(), thisFile);
-            this.manifest.get(thisFile.getRelativePath()).incrementVersion();
         }
+        
     }
 
     /**
