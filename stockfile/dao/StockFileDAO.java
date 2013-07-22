@@ -5,7 +5,6 @@
 package stockfile.dao;
 
 import stockfile.controllers.DNSResolver.ServerType;
-import stockfile.dao.connection.LocalMySQLConnection;
 import stockfile.dao.connection.RemoteMySQLConnection;
 import stockfile.exceptions.ApplicationFailedException;
 
@@ -15,9 +14,12 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
-/*
- *
- * @author MrAtheist
+/**
+ * StockFile DAO is the abstract high level DAO with generic commands.
+ * @author Jeremy Wallace, Bahman Razmpa, Peter Lee
+ * @project StockFile, CICS 525
+ * @organization University of British Columbia
+ * @date July 20, 2013
  */
 public abstract class StockFileDAO {
     protected static Connection conn;

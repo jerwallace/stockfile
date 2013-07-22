@@ -108,7 +108,8 @@ public class StockFileSession {
         this.currentClient = currentClient;
     }
     
-    public String toString() {
+    @Override
+	public String toString() {
     	return "User:"+this.currentUser+"\n Client"+this.currentClient+"\n";
     }
 }

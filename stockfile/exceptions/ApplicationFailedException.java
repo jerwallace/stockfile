@@ -8,7 +8,7 @@ import com.jcraft.jsch.SftpException;
 
 /**
  *
- * @author MrAtheist
+ * @author Peter Lee, Jeremy Wallace, Bahman Razmpa
  */
 @SuppressWarnings("serial")
 public class ApplicationFailedException extends SftpException {

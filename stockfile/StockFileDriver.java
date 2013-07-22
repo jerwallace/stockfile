@@ -50,7 +50,7 @@ public class StockFileDriver {
         System.out.println("Initializing periodic sync...");
         Thread periodicSync = new Thread(new PeriodicSync(SYNC_DELAY));
         periodicSync.start();
-
+        
     }
 
     /**

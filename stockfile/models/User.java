@@ -3,19 +3,22 @@ package stockfile.models;
 import java.io.Serializable;
 import java.util.HashMap;
 
-import org.apache.commons.io.FilenameUtils;
 import org.joda.time.LocalDate;
 
 import stockfile.dao.ClientDAO;
 
 /**
- * Class describing a User object
+ * User model class.
+ * @author Jeremy Wallace, Bahman Razmpa, Peter Lee
+ * @project StockFile, CICS 525
+ * @organization University of British Columbia
+ * @date July 20, 2013
  */
 @SuppressWarnings("serial")
 public class User implements Serializable
 {
 
-    private String userName;
+    private String userName = "";
     private String firstName;
     private String lastName;
     private String email;

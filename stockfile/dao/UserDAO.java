@@ -1,6 +1,7 @@
 package stockfile.dao;
 
 import stockfile.exceptions.CreateUserException;
+import stockfile.exceptions.InvalidAuthenticationException;
 import stockfile.models.User;
 
 import java.sql.SQLException;
@@ -13,8 +14,10 @@ import stockfile.security.Security;
 
 /**
  * This is the DAO class for parsing the resultset and return instance of User.
- *
- * @author MrAtheist
+ * @author Jeremy Wallace, Bahman Razmpa, Peter Lee
+ * @project StockFile, CICS 525
+ * @organization University of British Columbia
+ * @date July 20, 2013
  */
 public class UserDAO extends StockFileDAO {
 
@@ -33,11 +36,12 @@ public class UserDAO extends StockFileDAO {
      * @param userName
      * @param password
      * @return
+     * @throws InvalidAuthenticationException 
      */
-    public User getUser(String userName, String password) {
+    public User getUser(String userName, String password) throws InvalidAuthenticationException {
 
         User user = new User();
-
+        boolean userExists = false;
         try {
             ps = conn.prepareStatement("SELECT * FROM user WHERE username = ? and password = ?");
             ps.setString(1, userName);
@@ -52,7 +56,9 @@ public class UserDAO extends StockFileDAO {
         }
 
         try {
+        	
             while (rs.next()) {
+            	userExists = true;
                 user.setUserName(rs.getString("username"));
                 user.setFirstName(rs.getString("first_name"));
                 user.setLastName(rs.getString("last_name"));
@@ -67,7 +73,12 @@ public class UserDAO extends StockFileDAO {
         }
 
         this.psclose();
-        return user;
+        
+        if (userExists)
+        	return user;
+        else {
+        	throw new InvalidAuthenticationException("Invalid password.");
+        }
     }
 
     /**

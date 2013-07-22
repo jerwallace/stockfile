@@ -9,8 +9,11 @@ import java.util.TreeMap;
 import org.apache.commons.io.FilenameUtils;
 
 /**
- *
- * @author Bahman
+ * A manifest that is passed between client and server to determine which the operation of the files.
+ * @author Jeremy Wallace, Bahman Razmpa, Peter Lee
+ * @project StockFile, CICS 525
+ * @organization University of British Columbia
+ * @date July 20, 2013
  */
 public class Manifest implements Serializable {
 

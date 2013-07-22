@@ -1,10 +1,8 @@
 package stockfile.dao.connection;
  
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,7 +40,8 @@ public class RemoteMySQLConnection extends MySQLConnection {
      * @return  true if the connection is successful; false otherwise.
      * @throws ApplicationFailedException 
      */
-    public boolean connect(ServerType type) throws ApplicationFailedException {
+    @Override
+	public boolean connect(ServerType type) throws ApplicationFailedException {
        try {
             props = Utils.readProperties("/stockfile/config/stockfile.properties");
         } catch (IOException ex) {

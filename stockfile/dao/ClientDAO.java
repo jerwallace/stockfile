@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package stockfile.dao;
 
 import java.io.UnsupportedEncodingException;
@@ -15,8 +12,11 @@ import stockfile.models.User;
 import stockfile.security.StockFileSession;
 
 /**
- *
- * @author MrAtheist
+ * Client DAO
+ * @author Jeremy Wallace, Bahman Razmpa, Peter Lee
+ * @project StockFile, CICS 525
+ * @organization University of British Columbia
+ * @date July 20, 2013
  */
 public class ClientDAO extends StockFileDAO {
 

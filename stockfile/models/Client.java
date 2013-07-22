@@ -13,7 +13,7 @@ import org.apache.commons.io.FilenameUtils;
 /**
  * Class describing a Client object
  * <p/>
- * @author MrAtheist
+ * @author Peter Lee, Jeremy Wallace, Bahman Razmpa
  */
 public class Client {
 

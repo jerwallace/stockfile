@@ -39,7 +39,8 @@ public class LocalMySQLConnection extends MySQLConnection {
      * @return  true if the connection is successful; false otherwise.
      * @throws ApplicationFailedException 
      */
-    public boolean connect(ServerType type) throws ApplicationFailedException {
+    @Override
+	public boolean connect(ServerType type) throws ApplicationFailedException {
        try {
             props = Utils.readProperties("/stockfile/config/stockfile.properties");
         } catch (IOException ex) {

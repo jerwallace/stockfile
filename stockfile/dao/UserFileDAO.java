@@ -13,8 +13,11 @@ import stockfile.models.StockFile;
 import stockfile.security.StockFileSession;
 
 /**
- *
- * @author MrAtheist
+ * UserFileDAO
+ * @author Jeremy Wallace, Bahman Razmpa, Peter Lee
+ * @project StockFile, CICS 525
+ * @organization University of British Columbia
+ * @date July 20, 2013
  */
 public class UserFileDAO extends FileDAO {
 
@@ -30,7 +33,8 @@ public class UserFileDAO extends FileDAO {
      * @return
      * @throws SQLException 
      */
-    public boolean createFile(StockFile file) throws SQLException {
+    @Override
+	public boolean createFile(StockFile file) throws SQLException {
         if (super.createFile(file)) {
             try {
 
@@ -71,7 +75,8 @@ public class UserFileDAO extends FileDAO {
      * @param file
      * @throws SQLException 
      */
-    public boolean updateFile(StockFile file) throws SQLException {
+    @Override
+	public boolean updateFile(StockFile file) throws SQLException {
     	if (super.updateFile(file)) {
 
     		try {
@@ -104,7 +109,8 @@ public class UserFileDAO extends FileDAO {
      * @param file
      * @throws SQLException 
      */
-    public void removeFile(StockFile file) throws SQLException {
+    @Override
+	public void removeFile(StockFile file) throws SQLException {
     	
     	super.removeFile(file);
     	
@@ -131,7 +137,8 @@ public class UserFileDAO extends FileDAO {
      * @return
      * @throws SQLException 
      */
-    public Manifest generateManifest() throws SQLException {
+    @Override
+	public Manifest generateManifest() throws SQLException {
 
         Manifest manifest = new Manifest("Server Manifest");
 

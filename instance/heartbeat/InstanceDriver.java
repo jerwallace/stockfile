@@ -4,7 +4,6 @@ import stockfile.PeriodicSync;
 import stockfile.controllers.ServerController;
 import stockfile.controllers.StateController;
 import stockfile.exceptions.ApplicationFailedException;
-import stockfile.security.StockFileSession;
 
 /**
  * Stockfile driver is the main class for the StockFile application.
@@ -26,7 +25,6 @@ public class InstanceDriver
         try {
         	ServerController.getInstance().run();
             StateController.getInstance().loadState();
-            StateController.getInstance().loadDirectoryState(StockFileSession.getInstance().getCurrentClient().getFullDir());
         } catch (ApplicationFailedException ex) {
             System.err.println(ex);
             System.exit(0);

@@ -3,7 +3,11 @@ package stockfile.models;
 import stockfile.security.StockFileSession;
 
 /**
- * Class describing the Singleton FileList
+ * A singleton file list that is serialized into a PBJ file.
+ * @author Jeremy Wallace, Bahman Razmpa, Peter Lee
+ * @project StockFile, CICS 525
+ * @organization University of British Columbia
+ * @date July 20, 2013
  */
 public class FileList {
 

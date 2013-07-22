@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package stockfile.dao;
 
 import java.sql.SQLException;
@@ -13,8 +10,11 @@ import stockfile.models.StockFile;
 import stockfile.security.StockFileSession;
 
 /**
- *
- * @author MrAtheist
+ * File DAO
+ * @author Jeremy Wallace, Bahman Razmpa, Peter Lee
+ * @project StockFile, CICS 525
+ * @organization University of British Columbia
+ * @date July 20, 2013
  */
 public abstract class FileDAO extends StockFileDAO {
 

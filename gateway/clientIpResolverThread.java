@@ -15,7 +15,7 @@ import java.net.SocketException;
  * <p/>
  * @author Bahman
  */
-public class clientIpResolverThread extends Thread
+public class ClientIpResolverThread extends Thread
 {
 
     protected static DatagramSocket socket;
@@ -26,7 +26,7 @@ public class clientIpResolverThread extends Thread
      * <p/>
      * @param receivePort -UDP port listening to client requests
      */
-    public clientIpResolverThread(int receivePort)
+    public ClientIpResolverThread(int receivePort)
     {
         this.receivePortNumber = receivePort;
     }

@@ -6,7 +6,7 @@ package stockfile.exceptions;
 
 /**
  *
- * @author MrAtheist
+ * @author Peter Lee, Jeremy Wallace, Bahman Razmpa
  */
 @SuppressWarnings("serial")
 public class CreateClientException extends Exception {

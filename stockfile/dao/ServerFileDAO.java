@@ -10,11 +10,13 @@ import org.apache.commons.io.FilenameUtils;
 
 import stockfile.models.Manifest;
 import stockfile.models.StockFile;
-import stockfile.security.StockFileSession;
 
 /**
- *
- * @author MrAtheist
+ * ServerFileDAO has specialized methods for a server instance.
+ * @author Jeremy Wallace, Bahman Razmpa, Peter Lee
+ * @project StockFile, CICS 525
+ * @organization University of British Columbia
+ * @date July 20, 2013
  */
 public class ServerFileDAO extends FileDAO {
 
@@ -23,11 +25,12 @@ public class ServerFileDAO extends FileDAO {
     }
 
     /**
-     * Returns a Manifest object that corresponds to the current user within UserSession
+     * Returns a Manifest object that has all files in the system.
      * @return
      * @throws SQLException 
      */
-    public Manifest generateManifest() throws SQLException {
+    @Override
+	public Manifest generateManifest() throws SQLException {
 
         Manifest manifest = new Manifest("Server Manifest");
 

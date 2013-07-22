@@ -11,13 +11,13 @@ import java.net.SocketException;
  *
  * @author Bahman
  */
-public class serverDNSResolverThread extends Thread
+public class ServerDNSResolverThread extends Thread
 {
 
     private int listenPort;
     protected DatagramSocket socket;
 
-    public serverDNSResolverThread(int portNumber)
+    public ServerDNSResolverThread(int portNumber)
     {
         this.listenPort = portNumber;
     }

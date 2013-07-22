@@ -5,6 +5,8 @@ import java.io.IOException;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
+import stockfile.controllers.DNSResolver;
+import stockfile.controllers.DNSResolver.ServerType;
 import stockfile.controllers.DirectoryWatcher;
 import stockfile.controllers.SFTPController;
 import stockfile.controllers.StateController;
@@ -59,7 +61,10 @@ public class PeriodicSync implements Runnable {
 
         // TODO Auto-generated method stub
         try {
-
+        	
+        	// If this is a server instance and it is now a heartbeat, break out of the thread.
+        	if (DNSResolver.getInstance(ServerType.MASTER).getServerDefault().equals(StockFileSession.getInstance().getCurrentClient().getType()))
+        		return;
 //				System.out.println("State:"+watcherThread.getState());
 //				System.out.println("Disabling watcher...");
 
@@ -67,7 +72,9 @@ public class PeriodicSync implements Runnable {
             watcherThread.interrupt();
 
 //				System.out.println("State:"+watcherThread.getState());
-//				
+            
+            StateController.getInstance().loadDirectoryState(StockFileSession.getInstance().getCurrentClient().getFullDir());
+            
             // Run syncronization process.
             System.out.println("===== SYNC PROCESS BEGIN =====");
             SyncController.getInstance().syncronize();

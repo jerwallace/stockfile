@@ -1,22 +1,17 @@
 package stockfile.dao.connection;
  
-import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import stockfile.controllers.DNSResolver;
 import stockfile.controllers.DNSResolver.ServerType;
-import stockfile.dao.connection.Utils;
 import stockfile.exceptions.ApplicationFailedException;
 
 
 /**
- * This is a singleton class connecting to a MySQL database. 
- * To get a instance of the connection, use getConnection().
+ * Abstract connection class to be used by both client and server.
  */ 
 public abstract class MySQLConnection {
     

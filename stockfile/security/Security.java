@@ -1,7 +1,4 @@
-/*
- * Security is a singleton class that provides permissions 
- * structures and authentication for SmartEnrol
- */
+
 package stockfile.security;
 
 import java.security.MessageDigest;
@@ -9,7 +6,11 @@ import java.security.NoSuchAlgorithmException;
 import java.math.BigInteger;
 
 /**
- *
+ * Security class contains the methods needed to sign to the system.
+ * @author Jeremy Wallace, Bahman Razmpa, Peter Lee
+ * @project StockFile, CICS 525
+ * @organization University of British Columbia
+ * @date July 20, 2013
  */
 public class Security {
 

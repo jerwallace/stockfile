@@ -10,6 +10,10 @@ public class CreateUserException extends Exception {
                 NO_ERROR
 	}
 	
+	/**
+	 * Throws a user exception based on certain criteria
+	 * @param error
+	 */
 	public CreateUserException (CreateUserError error) {
 
 		msg = "Invalid input:\n";

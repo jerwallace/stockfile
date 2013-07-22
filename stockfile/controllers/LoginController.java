@@ -32,7 +32,7 @@ import stockfile.exceptions.CreateUserException.CreateUserError;
 import stockfile.exceptions.InvalidAuthenticationException;
 import stockfile.models.Client;
 import stockfile.models.User;
-import stockfile.security.AuthenticateService;
+import stockfile.security.Authenicate;
 import stockfile.security.RegexHelper;
 import stockfile.security.RegexHelper.RegExPattern;
 import stockfile.security.StockFileSession;
@@ -49,7 +49,7 @@ import stockfile.security.StockFileSession;
 public class LoginController {
 
     private static LoginController loginController = null;
-    private final static AuthenticateService as = new AuthenticateService();
+    private final static Authenicate as = new Authenicate();
     private static String macAddr;
 
     /**

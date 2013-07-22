@@ -71,6 +71,7 @@ public class SFTPController {
         this.blackList = new HashSet<>();
         this.blackList.add("stockdata.pbj");
         this.blackList.add(".DS_Store");
+        this.blackList.add("stockfile.sql");
         //this.blackList.add(UserSession.getInstance().getCurrentUser().getHomeDirectory());
 
         // Load properties
@@ -267,7 +268,9 @@ public class SFTPController {
     public boolean upload(String filename) throws SftpException, IOException {
    
         filename = FilenameUtils.separatorsToUnix(filename);
-        if (!inBlackList(filename)) {
+        if (!inBlackList(filename)&&
+        		StockFileSession.getInstance().getCurrentClient().getInstance()!=ClientInstance.SERVER
+        		) {
             
         	System.out.println("Attempting to upload file:" + filename);
             StockFile f = FileList.getInstance().getManifest().getFile(filename);
@@ -364,9 +367,10 @@ public class SFTPController {
 
         StockFile f = FileList.getInstance().getManifest().getFile(filename);
 
-        System.out.println("Attempting to delete the file or folder: " + f.getFullRemotePath());
+        System.out.println("Attempting to delete the file or folder: /stockfiles" + f.getRelativePath());
 
         ChannelExec chanExec = (ChannelExec) session.openChannel("exec");
+        
         chanExec.setCommand("/bin/rm -rf /stockfiles/" + f.getRelativePath());
         chanExec.connect();
         chanExec.disconnect();
@@ -379,39 +383,68 @@ public class SFTPController {
      * @throws IOException 
      */
     public final void copyDatabase() throws SftpException, JSchException, IOException {
-
-        System.out.println("Creating copy of database... This may take a few minutes.");
-        String backupLocation = userRoot+"stockfile.sql";
-        
+    	String backupLocation = userRoot+"stockfile.sql";
+        System.out.println("Creating copy of master database... saving it to: "+backupLocation);
+	        
         ChannelExec chanExec = (ChannelExec) session.openChannel("exec");
         chanExec.setCommand("/usr/bin/mysqldump -uroot -pMSSPBJ13! Stockfile > "+backupLocation);
         chanExec.connect();
-        chanExec.disconnect();
-        
+        chanExec.disconnect();        
+
         File databaseCopy = new File(backupLocation);
-        
-        if (databaseCopy.exists())
-        	databaseCopy.delete();
+
+        if(!databaseCopy.exists()) {
+        	databaseCopy.createNewFile();
+        }
         
         FileOutputStream fileStream = new FileOutputStream(databaseCopy);
         
         try {
+        	System.out.println(backupLocation);
             ch_sftp.get(backupLocation, fileStream);
+            
         } catch (Exception e) {
+        	e.printStackTrace();
             throw e;
         } finally {
-            if (fileStream != null)
+            
+        	if (fileStream != null)
             	fileStream.close();
             System.gc();
+            System.out.println("Updating local database...");
+            System.out.println(databaseCopy.getName()+" takes up "+databaseCopy.getTotalSpace()+"bytes");
+            restoreDB(backupLocation); 
+
         }
-        
+    }   
+    
+    /**
+     * Restores the database back to its original state with the latest .sql file from the Master.
+     * @param location Location of the stored SQL file.
+     * @return true if the database has been restored.
+     */
+    public static boolean restoreDB(String location) {
+
+        String[] executeCmd = new String[]{"mysql", "-uroot", "-pMSSPBJ13!","Stockfile","-e", "source "+location};
+
+        Process runtimeProcess;
         try {
-            Runtime.getRuntime().exec("mysqldump -uroot -pMSSPBJ13! Stockfile < "+backupLocation);
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
+
+            runtimeProcess = Runtime.getRuntime().exec(executeCmd);
+            int processComplete = runtimeProcess.waitFor();
+
+            if (processComplete == 0) {
+                System.out.println("Database has been restored!!");
+                return true;
+            } else {
+                System.out.println("Sorry, there was a problem restoring the database.");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
-    }    
+        return false;
+    }
     
     /**
      * Helper function: Creates a duplicate file name based on StockFile

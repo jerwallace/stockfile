@@ -41,10 +41,10 @@ public class GatewayDriver
         Thread failCheck = new Thread(new InstanceFailCheckThread(100));
 
         //Create ONE thread that will resolve the master server DNS name for the client
-        Thread ipResolver = new Thread(new clientIpResolverThread(myProperties.getGatewayIpResolverPort()));
+        Thread ipResolver = new Thread(new ClientIpResolverThread(myProperties.getGatewayIpResolverPort()));
 
         //Create ONE thread that will resolve the slave DNS name for the servers
-        Thread DNSresolver = new Thread(new serverDNSResolverThread(myProperties.getGatewayDNSresolverPort()));
+        Thread DNSresolver = new Thread(new ServerDNSResolverThread(myProperties.getGatewayDNSresolverPort()));
 
         //Start each thread
         for (int i = 0; i < threadPool.size(); i++)
