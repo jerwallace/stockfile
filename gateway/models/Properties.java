@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 /**
  * Public class that describes the overall properties of the Gateway and is
- * access by gateway driver when starting the gateway to create threads, assign
+ * accessed by gateway driver when starting the gateway to create threads, assign
  * ports and addresses all contained in this class.
  * <p/>
  * @author Bahman

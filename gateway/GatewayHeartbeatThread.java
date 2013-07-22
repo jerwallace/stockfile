@@ -9,7 +9,7 @@ import gateway.models.InstanceList;
  * class is used to send and receive heart beats to and from a single EC2
  * instance. The thread first sends a packet, if send is successful, it sleeps
  * for a specified a period and listens to receive a response. Once it receives
- * a response, it immediately sends another heartbeat. While its listening,
+ * a response, it immediately sends another heartbeat. While it's listening,
  * there is a arbitrary timer which in case it runs out, it means that no heart
  * beat is detected and therefore the server is down. In this case it updates
  * the state of the monitored instance from "ON" to "DOWN".

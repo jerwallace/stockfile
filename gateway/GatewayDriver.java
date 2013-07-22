@@ -108,7 +108,7 @@ public class GatewayDriver
             //All instances can use same port number to respond to heartbeat on themselves
             int sendPortNumber = myProperties.getGatewayPort();
 
-            //Generate a unique port number for the Gaetway to listen to each incoming heartbeat
+            //Generate a unique port number for the Gateway to listen to each incoming heartbeat
             int receivePortNumber = myProperties.getGatewayPort() + i;
 
             //Set the starting status for all instances to "ON"
