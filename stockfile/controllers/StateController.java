@@ -118,8 +118,9 @@ public class StateController {
                 	StockFile thisFile = new StockFile(file.toString(), null);
                     
                     String key = thisFile.getRelativePath();
-                    
-                   // System.out.println("Visited file" + file.toString());
+                    //System.out.println(thisFile);
+       
+                    //System.out.println("Visited file" + file.toString());
                     
                     // If the file is already in the list, take a look at the last modified dates.
                     if (FileList.getInstance().getManifest().containsFile(key)) {
@@ -145,7 +146,7 @@ public class StateController {
 
                 @Override
                 public FileVisitResult visitFileFailed(Path file, IOException e) {
-                    //System.err.println("Visiting file " + file.toString() + " failed.");
+                    System.err.println("Visiting file " + file.toString() + " failed.");
                     return FileVisitResult.CONTINUE;
                 }
             });

@@ -11,7 +11,7 @@ import stockfile.models.User;
  */
 public class StockFileSession {
 
-    private static StockFileSession userSession = null;
+    private static StockFileSession stockFileSession = null;
     private User currentUser;
     private Client currentClient;
     private boolean validSession = false;
@@ -25,22 +25,22 @@ public class StockFileSession {
     //Default constructor for the singleton instance of the UserSession
     public static StockFileSession getInstance() {
 
-        if (userSession == null) {
+        if (stockFileSession == null) {
 
             synchronized (StockFileSession.class) {
 
-                StockFileSession inst = userSession;
+                StockFileSession inst = stockFileSession;
 
                 if (inst == null) {
 
                     synchronized (StockFileSession.class) {
 
-                        userSession = new StockFileSession();
+                        stockFileSession = new StockFileSession();
                     }
                 }
             }
         }
-        return userSession;
+        return stockFileSession;
     }
 
     /**
@@ -104,6 +104,11 @@ public class StockFileSession {
      * @param currentClient the currentClient to set
      */
     public void setCurrentClient(Client currentClient) {
+    	
         this.currentClient = currentClient;
+    }
+    
+    public String toString() {
+    	return "User:"+this.currentUser+"\n Client"+this.currentClient+"\n";
     }
 }

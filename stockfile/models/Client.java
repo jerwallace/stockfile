@@ -31,6 +31,7 @@ public class Client {
     }
     
     public Client() {
+    	this.setInstance(ClientInstance.HOST);
     }
 
     public Client(String type, String description, String manufacturer, String modelNo, String homeDir) throws UnknownHostException, SocketException {
@@ -205,7 +206,9 @@ public class Client {
                 + "\nManufacturer: " + getManufacturer()
                 + "\nModel Number: " + getModelNo()
                 + "\nIP Address: " + getIpAddress()
-                + "\nMAC Address: " + getMacAddress();
+                + "\nMAC Address: " + getMacAddress()
+                + "\nFull Dir: " + getFullDir()
+        		+ "\nHome Dir: " + getHomeDir();
     }
 
 	public ClientInstance getInstance() {

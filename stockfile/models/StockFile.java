@@ -35,6 +35,7 @@ public class StockFile extends File {
         //System.out.println("LONG"+" | HOME_PATH: "+HOME_PATH+ " | Rel: " + relativePath);
         resetSync();
         this.setRelativePath(relativePath);
+        
         this.setVersion(version);
         this.setLastSyncTimeDB(lastMod);
         this.setLastSyncBy(lastSyncBy);
@@ -77,7 +78,8 @@ public class StockFile extends File {
      * @param relativePath the relative path to set
      */
     public void setRelativePath(String relativePath) {
-    	if (StockFileSession.getInstance().getCurrentClient().getInstance()==ClientInstance.SERVER) {
+    	ClientInstance thisInstance = StockFileSession.getInstance().getCurrentClient().getInstance();
+    	if (thisInstance==null||thisInstance==ClientInstance.HOST) {
     		this.relFilePath = filterPathForWindows(relativePath).replace(HOME_PATH, "");
     	} else {
     		this.relFilePath = getFullRemotePath().replace("/stockfiles/", "");

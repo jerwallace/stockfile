@@ -374,7 +374,8 @@ public class SFTPController {
     }
 
     /**
-     * Deletes a file on the server. TODO: Make this more secure!
+     * Deletes a file on the server. 
+     * TODO: Make this more secure!
      * @throws IOException 
      */
     public final void copyDatabase() throws SftpException, JSchException, IOException {
@@ -404,11 +405,11 @@ public class SFTPController {
             System.gc();
         }
         
-        /*try {
+        try {
             Runtime.getRuntime().exec("mysqldump -uroot -pMSSPBJ13! Stockfile < "+backupLocation);
         } catch (IOException ioe) {
             ioe.printStackTrace();
-        }*/
+        }
 
     }    
     
